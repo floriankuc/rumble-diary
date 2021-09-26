@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-//mongoose schema ts?
 const ItemSchema = new Schema({
   id: {
     type: String,
