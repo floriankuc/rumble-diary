@@ -1,21 +1,13 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import uuid from 'uuid';
 import { getItems, deleteItem } from '../actions/itemActions';
 
 const ShoppingList = ({ getItems, deleteItem, item, user }) => {
-  // const [items, setItems] = React.useState([
-  //   { id: uuid(), name: 'eggs' },
-  //   { id: uuid(), name: 'eggs2' },
-  //   { id: uuid(), name: 'eggs3' },
-  //   { id: uuid(), name: 'eggs4' },
-  // ]);
-
   useEffect(() => {
-    if (user && user._id) {
-      getItems(user._id);
+    if (user && user.id) {
+      getItems(user.id);
     }
-  }, []);
+  }, [user]);
 
   const onDeleteClick = (id) => {
     deleteItem(id);

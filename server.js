@@ -4,10 +4,11 @@ const mongoose = require('mongoose');
 const path = require('path');
 const config = require('config');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 //COOKIE
-app.use(express.json());
+app.use(express.json(), cors());
 //app.use(bodyPorser.json())
 
 //db config with env
