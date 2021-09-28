@@ -1,13 +1,24 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import LoginModal from './auth/LoginModal';
+import Logout from './auth/Logout';
+import RegisterModal from './auth/RegisterModal';
 
-const AppNavbar = () => {
+const AppNavbar = (props) => {
+  const { isAuthenticated, user } = props.auth;
   return (
     <div>
       <ul>
-        <li>some link</li>
+        {!isAuthenticated ? <RegisterModal /> : null}
+        {!isAuthenticated ? <LoginModal /> : null}
+        {isAuthenticated ? <Logout /> : null}
       </ul>
     </div>
   );
 };
 
-export default AppNavbar;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, null)(AppNavbar);

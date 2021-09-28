@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
+import { loadUser } from './actions/authActions';
 import './App.css';
 import AppNavbar from './components/AppNavbar';
 import ItemModal from './components/ItemModal';
@@ -8,7 +9,9 @@ import store from './store';
 
 function App() {
   console.log(process.env);
-
+  useEffect(() => {
+    store.dispatch(loadUser());
+  }, []);
   return (
     <Provider store={store}>
       <div className="App">

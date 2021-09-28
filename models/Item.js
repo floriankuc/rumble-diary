@@ -31,6 +31,10 @@ const ItemSchema = new Schema({
     type: Date,
     required: false,
   },
+  user: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = Item = mongoose.model('item', ItemSchema);
