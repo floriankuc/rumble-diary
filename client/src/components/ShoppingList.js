@@ -12,9 +12,9 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
   // ]);
 
   useEffect(() => {
-    // if (user && user._id) {
-    getItems(user._id);
-    // }
+    if (user && user._id) {
+      getItems(user._id);
+    }
   }, []);
 
   const onDeleteClick = (id) => {
