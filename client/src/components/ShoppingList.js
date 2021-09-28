@@ -7,7 +7,9 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
     if (user && user.id) {
       getItems(user.id);
     }
-  }, [user]);
+  }, [user, getItems]);
+
+  if (user && user.id) console.log('user.id', user.id);
 
   const onDeleteClick = (id) => {
     deleteItem(id);
@@ -19,10 +21,12 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
         {user &&
           item &&
           item.items.map(({ _id, name }) => (
-            <li key={_id}>
-              {<button onClick={() => onDeleteClick(_id)}>D</button>}
-              {name}
-            </li>
+            <>
+              <li key={_id}>
+                {<button onClick={() => onDeleteClick(_id)}>D</button>}
+                {name}
+              </li>
+            </>
           ))}
       </ul>
     </div>

@@ -46,7 +46,12 @@ router.post('/', (req, res) => {
 router.get('/user', authMiddleware, (req, res) => {
   User.findById(req.user.id)
     .select('-password')
-    .then((user) => res.json(user));
+    .then((user) =>
+      res.json({
+        id: user.id,
+        email: user.email,
+      })
+    );
 });
 
 module.exports = router;

@@ -6,6 +6,7 @@ import RegisterModal from './auth/RegisterModal';
 
 const AppNavbar = (props) => {
   const { isAuthenticated, user } = props.auth;
+  console.log('user in appnavbar', user);
   return (
     <div>
       <ul>
