@@ -5,7 +5,7 @@ import { getItems, deleteItem } from '../actions/itemActions';
 const ShoppingList = ({ getItems, deleteItem, item, user }) => {
   useEffect(() => {
     if (user && user.id) {
-      getItems(user.id);
+      getItems();
     }
   }, [user, getItems]);
 

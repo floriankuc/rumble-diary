@@ -3,10 +3,11 @@ import axios from 'axios';
 import { tokenConfig } from './authActions';
 import { returnErrors } from './errorActions';
 
-export const getItems = (userId) => (dispatch, getState) => {
+export const getItems = () => (dispatch, getState) => {
+  const userIdFromState = getState().auth.user.id;
   dispatch(setItemsLoading());
   axios
-    .get(`/api/items/${userId}`, tokenConfig(getState))
+    .get(`/api/items/${userIdFromState}`, tokenConfig(getState))
     .then((res) => {
       console.log('res.data', res.data);
       dispatch({
@@ -30,7 +31,8 @@ export const deleteItem = (id) => (dispatch, getState) => {
 };
 
 export const addItem = (item) => (dispatch, getState) => {
-  const newItem = { ...item, user: getState().auth.user._id };
+  const newItem = { ...item, user: getState().auth.user.id };
+  console.log('newItem', newItem);
   axios
     .post('/api/items', newItem, tokenConfig(getState))
     .then((res) => {
