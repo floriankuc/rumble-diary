@@ -1,13 +1,7 @@
-import uuid from 'uuid';
 import { GET_ITEM, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING } from '../actions/types';
 
 const initialState = {
-  items: [
-    // { id: uuid(), name: 'eggs' },
-    // { id: uuid(), name: 'eggs2' },
-    // { id: uuid(), name: 'eggs3' },
-    // { id: uuid(), name: 'eggs4' },
-  ],
+  items: [],
   loading: false,
 };
 

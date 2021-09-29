@@ -8,10 +8,10 @@ import ShoppingList from './components/ShoppingList';
 import store from './store';
 
 function App() {
-  console.log(process.env);
   useEffect(() => {
     store.dispatch(loadUser());
   }, []);
+
   return (
     <Provider store={store}>
       <div className="App">
