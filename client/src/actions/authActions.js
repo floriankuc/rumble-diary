@@ -41,6 +41,7 @@ export const register =
       )
       .catch((err) => {
         dispatch(returnErrors(err.response.data, err.response.status, 'REGISTER_FAIL'));
+        console.log(err);
         dispatch({
           type: REGISTER_FAIL,
         });

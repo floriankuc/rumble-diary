@@ -1,24 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const config = require('config');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../middleware/auth');
-
-//user model
 const User = require('../../models/User');
 
 //@route POST api/auth
-//@desc authenticates
+//@desc Authenticates login
 //@access public
 router.post('/', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ msg: 'all fields required auth' });
+    return res.status(400).json({ msg: 'All fields are required' });
   }
 
   User.findOne({ email }).then((user) => {
-    if (!user) return res.status(400).json({ msg: 'user does not exists' });
+    if (!user) return res.status(400).json({ msg: 'User does not exist' });
 
     //validate pw
     bcrypt.compare(password, user.password).then((isMatch) => {
@@ -41,7 +38,7 @@ router.post('/', (req, res) => {
 });
 
 //@route GET api/auth/user
-//@desc authenticates
+//@desc Returns user
 //@access private
 router.get('/user', authMiddleware, (req, res) => {
   User.findById(req.user.id)

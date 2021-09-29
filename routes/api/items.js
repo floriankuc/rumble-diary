@@ -1,24 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middleware/auth');
-
-//item model
 const Item = require('../../models/Item');
 
 //@route GET api/items
-//@desc get all items
-//@access public
+//@desc Get all items
+//@access private
 router.get('/:userId', authMiddleware, (req, res) => {
   Item.find({ user: req.params.userId })
-
-    // Item.find({ owner: req.user.userId })
     // sort({}).
     .then((items) => res.json(items));
 });
 
 //@route POST api/items
-//@desc create item
-//@access public
+//@desc Create item
+//@access private
 router.post('/', authMiddleware, (req, res) => {
   const newItem = new Item({
     id: req.body.id,
@@ -31,8 +27,8 @@ router.post('/', authMiddleware, (req, res) => {
 });
 
 //@route DELETE api/items/:id
-//@desc delete item
-//@access public
+//@desc Delete item
+//@access private
 router.delete('/:id', authMiddleware, (req, res) => {
   Item.findById(req.params.id)
     .then((item) => item.remove().then(() => res.json({ success: true })))
