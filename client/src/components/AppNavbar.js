@@ -7,10 +7,16 @@ import RegisterModal from './auth/RegisterModal';
 import Button from '@mui/material/Button';
 import { logout } from '../actions/authActions';
 import MenuIcon from '@mui/icons-material/Menu';
+import { ModalContext } from './Modal/ModalContext';
+import { useHistory } from 'react-router-dom';
 
 function AppNavbar(props) {
   const { isAuthenticated } = props.auth;
+  const context = React.useContext(ModalContext);
+  const history = useHistory();
+  const navigateToLogin = () => history.push('/login');
 
+  console.log('context', context);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
@@ -24,7 +30,12 @@ function AppNavbar(props) {
           {!isAuthenticated ? <RegisterModal /> : null}
           {!isAuthenticated ? <LoginModal /> : null}
           {!isAuthenticated && <Button color="inherit">Register</Button>}
-          {!isAuthenticated && <Button color="inherit">Login</Button>}
+          {!isAuthenticated && (
+            // <Button color="inherit" onClick={() => context.toggleModal(!context.open)}>
+            <Button color="inherit" onClick={navigateToLogin}>
+              Login
+            </Button>
+          )}
           {isAuthenticated && (
             <Button color="inherit" onClick={props.logout}>
               Logout

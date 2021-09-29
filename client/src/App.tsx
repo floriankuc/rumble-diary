@@ -1,9 +1,12 @@
 import { CssBaseline } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { loadUser } from './actions/authActions';
 import AppNavbar from './components/AppNavbar';
 import ItemModal from './components/ItemModal';
+import ModalActually from './components/Modal/Modal';
+import ModalStateComponent from './components/Modal/ModalStateComponent';
 import ShoppingList from './components/ShoppingList';
 import store from './store';
 
@@ -14,10 +17,15 @@ function App() {
 
   return (
     <Provider store={store}>
-      <CssBaseline />
-      <AppNavbar />
-      <ItemModal />
-      <ShoppingList />
+      {/* <Router> */}
+      <ModalStateComponent>
+        <ModalActually />
+        <CssBaseline />
+        <AppNavbar />
+        <ItemModal />
+        <ShoppingList />
+      </ModalStateComponent>
+      {/* </Router> */}
     </Provider>
   );
 }
