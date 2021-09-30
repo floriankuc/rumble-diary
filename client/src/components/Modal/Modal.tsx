@@ -1,15 +1,33 @@
-import React, { useContext } from 'react';
+import React, { ReactElement } from 'react';
 import { Dialog } from '@mui/material';
-import { ModalContext } from './ModalContext';
+import { makeStyles } from '@mui/styles';
+import { useHistory } from 'react-router';
+import { APP_ROUTES } from '../../routes';
 
-const ModalActually = () => {
-  const context = useContext(ModalContext);
+const useStyles = makeStyles({
+  root: {
+    '& .MuiPaper-root': {
+      padding: 20,
+      width: 600,
+    },
+  },
+});
+
+interface IModal {
+  component: ReactElement;
+}
+
+const Modal = (props: IModal) => {
+  const classes = useStyles();
+  const history = useHistory();
+
+  const handleClose = (): void => history.push(APP_ROUTES.root);
 
   return (
-    <Dialog open={context.open} onClose={(): void => context.toggleModal(false)}>
-      test here
+    <Dialog open onClose={handleClose} className={classes.root}>
+      {props.component}
     </Dialog>
   );
 };
 
-export default ModalActually;
+export default Modal;

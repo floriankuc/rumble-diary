@@ -1,75 +1,109 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input, NavLink, Alert } from 'reactstrap';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import { login } from '../../actions/authActions';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { useHistory } from 'react-router';
+import { makeStyles } from '@mui/styles';
+import { Typography } from '@mui/material';
 
-const LoginModal = ({ isAuthenticated, error, register, login, clearErrors }) => {
-  const [modal, setModal] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const useStyles = makeStyles({
+  textfield: {
+    marginBottom: 32,
+  },
+  errorMsg: {
+    marginBottom: 32,
+    color: 'red',
+  },
+  loginHeadline: {
+    marginBottom: 32,
+  },
+});
+
+const validationSchema = yup.object({
+  email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
+  password: yup.string('Enter your password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
+});
+
+const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
+  const classes = useStyles();
+  const history = useHistory();
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      handleSubmit(values);
+    },
+  });
+
   const [msg, setMsg] = useState(null);
 
-  const handleToggle = useCallback(() => {
-    // Clear errors
-    clearErrors();
-    setModal(!modal);
-  }, [clearErrors, modal]);
+  const handleSubmit = useCallback(
+    (values) => {
+      login({ email: values.email, password: values.password });
 
-  const handleChangeEmail = (e) => setEmail(e.target.value);
-  const handleChangePassword = (e) => setPassword(e.target.value);
-
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-    const user = {
-      email,
-      password,
-    };
-
-    login(user);
-  };
+      clearErrors();
+    },
+    [clearErrors, login]
+  );
 
   useEffect(() => {
-    // Check for register error
+    if (isAuthenticated) {
+      history.push('/');
+    }
+  }, [isAuthenticated, history]);
+
+  useEffect(() => {
     if (error.id === 'LOGIN_FAIL') {
       setMsg(error.msg.msg);
     } else {
       setMsg(null);
     }
-
-    // If authenticated, close modal
-    if (modal) {
-      if (isAuthenticated) {
-        handleToggle();
-      }
-    }
-  }, [error, handleToggle, isAuthenticated, modal]);
+  }, [error, isAuthenticated]);
 
   return (
     <div>
-      <NavLink onClick={handleToggle} href="#">
+      <Typography variant="h5" className={classes.loginHeadline}>
         Login
-      </NavLink>
+      </Typography>
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          fullWidth
+          id="email"
+          name="email"
+          label="Email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+          variant="standard"
+          className={classes.textfield}
+        />
+        <TextField
+          fullWidth
+          id="password"
+          name="password"
+          label="Password"
+          type="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+          variant="standard"
+          className={classes.textfield}
+        />
+        <Typography className={classes.errorMsg}>{msg}</Typography>
 
-      <Modal isOpen={modal} toggle={handleToggle}>
-        <ModalHeader toggle={handleToggle}>Login</ModalHeader>
-        <ModalBody>
-          {msg ? <>{msg}</> : null}
-
-          <Form onSubmit={handleOnSubmit}>
-            <FormGroup>
-              <Label for="email">Email</Label>
-              <Input type="email" name="email" id="email" placeholder="Email" className="mb-3" onChange={handleChangeEmail} />
-
-              <Label for="password">Password</Label>
-              <Input type="password" name="password" id="password" placeholder="Password" className="mb-3" onChange={handleChangePassword} />
-              <Button color="dark" style={{ marginTop: '2rem' }} block>
-                Login
-              </Button>
-            </FormGroup>
-          </Form>
-        </ModalBody>
-      </Modal>
+        <Button color="primary" variant="contained" fullWidth type="submit">
+          Submit
+        </Button>
+      </form>
     </div>
   );
 };
