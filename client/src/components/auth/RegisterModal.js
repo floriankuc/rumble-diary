@@ -1,83 +1,121 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input, NavLink, Alert } from 'reactstrap';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import { register } from '../../actions/authActions';
+import { makeStyles } from '@mui/styles';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import { useHistory } from 'react-router';
+import { TextField, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+
+const useStyles = makeStyles({
+  textfield: {
+    marginBottom: 32,
+  },
+  errorMsg: {
+    marginBottom: 32,
+    color: 'red',
+  },
+  loginHeadline: {
+    marginBottom: 32,
+  },
+});
+
+const validationSchema = yup.object({
+  name: yup.string('Enter a name').required('Name is required'),
+  email: yup.string('Enter an email').email('Enter a valid email').required('Email is required'),
+  password: yup.string('Enter a password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
+});
 
 const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
-  const [modal, setModal] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const classes = useStyles();
+  const history = useHistory();
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      handleSubmit(values);
+    },
+  });
+
   const [msg, setMsg] = useState(null);
 
-  const handleToggle = useCallback(() => {
-    // Clear errors
-    clearErrors();
-    setModal(!modal);
-  }, [clearErrors, modal]);
+  const handleSubmit = useCallback(
+    (values) => {
+      register({ name: values.name, email: values.email, password: values.password });
 
-  const handleChangeName = (e) => setName(e.target.value);
-  const handleChangeEmail = (e) => setEmail(e.target.value);
-  const handleChangePassword = (e) => setPassword(e.target.value);
-
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-
-    // Create user object
-    const user = {
-      name,
-      email,
-      password,
-    };
-
-    // Attempt to login
-    register(user);
-  };
+      clearErrors();
+    },
+    [clearErrors, register]
+  );
 
   useEffect(() => {
-    // Check for register error
+    if (isAuthenticated) {
+      history.push('/');
+    }
+  }, [isAuthenticated, history]);
+
+  useEffect(() => {
     if (error.id === 'REGISTER_FAIL') {
       setMsg(error.msg.msg);
     } else {
       setMsg(null);
     }
-
-    // If authenticated, close modal
-    if (modal) {
-      if (isAuthenticated) {
-        handleToggle();
-      }
-    }
-  }, [error, handleToggle, isAuthenticated, modal]);
+  }, [error, isAuthenticated]);
 
   return (
     <div>
-      <NavLink onClick={handleToggle} href="#">
+      <Typography variant="h5" className={classes.loginHeadline}>
         Register
-      </NavLink>
-
-      <Modal isOpen={modal} toggle={handleToggle}>
-        <ModalHeader toggle={handleToggle}>Register</ModalHeader>
-        <ModalBody>
-          {msg ? <>{msg}</> : null}
-          <Form onSubmit={handleOnSubmit}>
-            <FormGroup>
-              <Label for="name">Name</Label>
-              <Input type="text" name="name" id="name" placeholder="Name" className="mb-3" onChange={handleChangeName} />
-
-              <Label for="email">Email</Label>
-              <Input type="email" name="email" id="email" placeholder="Email" className="mb-3" onChange={handleChangeEmail} />
-
-              <Label for="password">Password</Label>
-              <Input type="password" name="password" id="password" placeholder="Password" className="mb-3" onChange={handleChangePassword} />
-              <Button color="dark" style={{ marginTop: '2rem' }} block>
-                Register
-              </Button>
-            </FormGroup>
-          </Form>
-        </ModalBody>
-      </Modal>
+      </Typography>
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          fullWidth
+          id="name"
+          name="name"
+          label="Name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
+          variant="standard"
+          className={classes.textfield}
+        />
+        <TextField
+          fullWidth
+          id="email"
+          name="email"
+          label="Email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+          variant="standard"
+          className={classes.textfield}
+        />
+        <TextField
+          fullWidth
+          id="password"
+          name="password"
+          label="Password"
+          type="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+          variant="standard"
+          className={classes.textfield}
+        />
+        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Button color="primary" variant="contained" fullWidth type="submit">
+          Submit
+        </Button>
+      </form>
     </div>
   );
 };
