@@ -5,25 +5,34 @@ import { connect } from 'react-redux';
 import Button from '@mui/material/Button';
 import { logout } from '../actions/authActions';
 import MenuIcon from '@mui/icons-material/Menu';
-import { ModalContext } from './Modal/ModalContext';
 import { useHistory } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
+import { SidebarContext } from './Sidebar/SidebarContext';
 
 function AppNavbar(props) {
-  const { isAuthenticated } = props.auth;
-  const context = React.useContext(ModalContext);
+  const { isAuthenticated, isLoading } = props.auth;
+  const sidebarContext = React.useContext(SidebarContext);
   const history = useHistory();
   const navigateToLogin = () => history.push(APP_ROUTES.login);
   const navigateToRegister = () => history.push(APP_ROUTES.register);
 
-  console.log('context', context);
+  //isLoading jitter removen
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
         <Toolbar>
-          <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
-            <MenuIcon />
-          </IconButton>
+          {isAuthenticated && (
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => sidebarContext.toggleSidebar(!sidebarContext.open)}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Sleep Tracker
           </Typography>
