@@ -3,7 +3,7 @@ export const APP_ROUTES = {
   login: '/login',
   register: '/register',
   start: '/start', //zeigt übersicht oder empty state
-  add: '/items/add', //add nicht in modal
-  show: '/items/:id/',
-  //kein edit, mit editmode!
+  add: '/diary/add', //add nicht in modal
+  diary: '/diary', //add nicht in modal
+  show: '/diary/:id/', //kein edit, mit editmode!
 };

@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import { useHistory } from 'react-router';
 import { makeStyles } from '@mui/styles';
 import { Typography } from '@mui/material';
+import { APP_ROUTES } from '../../routes';
 
 const useStyles = makeStyles({
   textfield: {
@@ -55,7 +56,7 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      history.push('/');
+      history.push(APP_ROUTES.start);
     }
   }, [isAuthenticated, history]);
 
