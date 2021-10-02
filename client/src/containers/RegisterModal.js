@@ -1,15 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { clearErrors } from '../../actions/errorActions';
-import { login } from '../../actions/authActions';
+import { clearErrors } from '../actions/errorActions';
+import { makeStyles } from '@mui/styles';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import { useHistory } from 'react-router';
-import { makeStyles } from '@mui/styles';
-import { Typography } from '@mui/material';
-import { APP_ROUTES } from '../../routes';
+import { TextField, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import { APP_ROUTES } from '../routes';
+import { register } from '../actions/authActions';
 
 const useStyles = makeStyles({
   textfield: {
@@ -25,15 +24,17 @@ const useStyles = makeStyles({
 });
 
 const validationSchema = yup.object({
-  email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-  password: yup.string('Enter your password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
+  name: yup.string('Enter a name').required('Name is required'),
+  email: yup.string('Enter an email').email('Enter a valid email').required('Email is required'),
+  password: yup.string('Enter a password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
+const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
   const classes = useStyles();
   const history = useHistory();
   const formik = useFormik({
     initialValues: {
+      name: '',
       email: '',
       password: '',
     },
@@ -47,11 +48,11 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
 
   const handleSubmit = useCallback(
     (values) => {
-      login({ email: values.email, password: values.password });
+      register({ name: values.name, email: values.email, password: values.password });
 
       clearErrors();
     },
-    [clearErrors, login]
+    [clearErrors, register]
   );
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
   }, [isAuthenticated, history]);
 
   useEffect(() => {
-    if (error.id === 'LOGIN_FAIL') {
+    if (error.id === 'REGISTER_FAIL') {
       setMsg(error.msg.msg);
     } else {
       setMsg(null);
@@ -71,9 +72,21 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
   return (
     <div>
       <Typography variant="h5" className={classes.loginHeadline}>
-        Login
+        Register
       </Typography>
       <form onSubmit={formik.handleSubmit}>
+        <TextField
+          fullWidth
+          id="name"
+          name="name"
+          label="Name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
+          variant="standard"
+          className={classes.textfield}
+        />
         <TextField
           fullWidth
           id="email"
@@ -100,7 +113,6 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
           className={classes.textfield}
         />
         <Typography className={classes.errorMsg}>{msg}</Typography>
-
         <Button color="primary" variant="contained" fullWidth type="submit">
           Submit
         </Button>
@@ -114,4 +126,4 @@ const mapStateToProps = (state) => ({
   error: state.error,
 });
 
-export default connect(mapStateToProps, { login, clearErrors })(LoginModal);
+export default connect(mapStateToProps, { register, clearErrors })(RegisterModal);
