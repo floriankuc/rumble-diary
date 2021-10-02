@@ -1,15 +1,15 @@
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router';
-import AppNavbar from '../components/AppNavbar';
-import ItemModal from '../components/ItemModal';
-import ShoppingList from '../components/ShoppingList';
+import AppNavbar from './AppNavbar';
+import ItemModal from './ItemModal';
+import ShoppingList from './ShoppingList';
 import Modal from '../components/Modal/Modal';
-import LoginModal from '../components/auth/LoginModal';
-import RegisterModal from '../components/auth/RegisterModal';
+import LoginModal from './LoginModal';
 import { APP_ROUTES } from '../routes';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { connect, ConnectedProps } from 'react-redux';
 import { sidebarItems } from '../components/Sidebar/sidebarItems';
+import RegisterModal from './RegisterModal';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -18,7 +18,7 @@ interface IMain extends PropsFromRedux {
   isLoading: boolean;
 }
 
-const Main = (props: IMain) => {
+const MainScreen = (props: IMain) => {
   const renderLoginModal = (): ReactElement => <Modal component={<LoginModal />} />;
   const renderRegisterModal = (): ReactElement => <Modal component={<RegisterModal />} />;
   const location = useLocation();
@@ -52,4 +52,4 @@ const mapStateToProps = (state: any) => ({
 
 const connector = connect(mapStateToProps);
 
-export default connector(Main);
+export default connector(MainScreen);

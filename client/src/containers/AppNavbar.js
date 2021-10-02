@@ -7,7 +7,7 @@ import { logout } from '../actions/authActions';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useHistory } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
-import { SidebarContext } from './Sidebar/SidebarContext';
+import { SidebarContext } from '../components/Sidebar/SidebarContext';
 
 function AppNavbar(props) {
   const { isAuthenticated, isLoading } = props.auth;
@@ -16,7 +16,7 @@ function AppNavbar(props) {
   const navigateToLogin = () => history.push(APP_ROUTES.login);
   const navigateToRegister = () => history.push(APP_ROUTES.register);
 
-  //isLoading jitter removen
+  //isLoading jitter still there?
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
