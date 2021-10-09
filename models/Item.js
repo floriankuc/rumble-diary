@@ -2,22 +2,21 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
-  name: {
-    //namen wird nicht benötigt
-    type: String,
-    required: false,
-  },
+  // name: {
+  //   type: String,
+  //   required: false,
+  // },
   date: {
     type: Date,
-    required: false,
+    required: true,
   },
   startTime: {
     type: Date,
-    required: false,
+    required: true,
   },
   endTime: {
     type: Date,
-    required: false,
+    required: true,
   },
   breaks: {
     type: [
@@ -31,21 +30,21 @@ const ItemSchema = new Schema({
   duration: {
     //rechnet FE aus
     type: Number,
-    required: false,
+    required: true,
   },
   nightmares: {
     type: Boolean,
-    required: false,
+    required: true,
   },
   noise: {
     type: Boolean,
-    required: false,
+    required: true,
   },
   quality: {
     type: Number,
     min: 0,
     max: 5,
-    required: false,
+    required: true,
   },
   notes: {
     type: String,
@@ -54,42 +53,42 @@ const ItemSchema = new Schema({
   entry_date: {
     type: Date,
     default: Date.now,
-    required: false,
+    required: true,
   },
   user: {
     type: String,
-    required: false,
+    required: true,
   },
   conditions: {
     temperature: {
       type: Number,
-      required: false,
+      required: true,
     },
     freshAir: {
       type: Boolean,
-      required: false,
+      required: true,
     },
     fed: {
       type: Boolean,
-      required: false,
+      required: true,
     },
     mentalStatus: {
       type: Number,
       min: 0,
       max: 5,
-      required: false,
+      required: true,
     },
     noDrinks1HourBefore: {
       type: Boolean,
-      required: false,
+      required: true,
     },
     noCaffeine4HoursBefore: {
       type: Boolean,
-      required: false,
+      required: true,
     },
     noElectronicDevices: {
       type: Boolean,
-      required: false,
+      required: true,
     },
   },
 });

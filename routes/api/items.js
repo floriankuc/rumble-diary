@@ -16,13 +16,7 @@ router.get('/:userId', authMiddleware, (req, res) => {
 //@desc Create item
 //@access private
 router.post('/', authMiddleware, (req, res) => {
-  const newItem = new Item({
-    id: req.body.id,
-    name: req.body.name,
-    type: req.body.type,
-    user: req.body.user,
-  });
-
+  const newItem = new Item({ ...req.body });
   newItem.save().then((item) => res.json(item));
 });
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { addItem } from '../actions/itemActions';
-import { TextField, Typography, Button, Checkbox, Rating, Divider } from '@mui/material';
+import { TextField, Typography, Button, Checkbox, Rating, Divider, SliderValueLabel } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
 import { FieldArray, Formik, Form } from 'formik';
@@ -58,9 +58,9 @@ const ItemModal = (props: IItemModal) => {
 
   console.log('props.addmodal', props);
 
-  const handleSubmit = (values: { name: string }) => {
+  const handleSubmit = (values: {}) => {
     const newItem = {
-      name: values.name,
+      // name: values.name,
     };
 
     // console.log('addItem', values);
@@ -91,7 +91,7 @@ const ItemModal = (props: IItemModal) => {
       <Typography variant="h5">Conditions before going to bed</Typography>
       <Formik
         initialValues={{
-          name: '',
+          // name: '',
           date: new Date(),
           startTime: new Date(),
           endTime: new Date(),
@@ -105,6 +105,7 @@ const ItemModal = (props: IItemModal) => {
           noise: false,
           quality: 0,
           notes: '',
+          duration: 0,
           conditions: {
             temperature: 20,
             freshAir: false,
@@ -321,7 +322,19 @@ const ItemModal = (props: IItemModal) => {
               minRows={2}
               maxRows={5}
             />
-
+            <TextField
+              fullWidth
+              disabled
+              type="text"
+              id="duration"
+              name="duration"
+              label="duration"
+              value={values.duration}
+              onChange={handleChange}
+              error={touched.duration && Boolean(errors.duration)}
+              helperText={touched.duration && errors.duration}
+              variant="outlined"
+            />
             <Button color="primary" variant="contained" fullWidth type="submit">
               Add
             </Button>
