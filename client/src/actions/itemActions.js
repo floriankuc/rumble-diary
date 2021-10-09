@@ -32,6 +32,7 @@ export const deleteItem = (itemId) => async (dispatch, getState) => {
 
 export const addItem = (item) => async (dispatch, getState) => {
   const newItem = { ...item, user: getState().auth.user.id };
+  dispatch(setItemsLoading());
 
   try {
     const response = await axios.post('/api/items', newItem, tokenConfig(getState));

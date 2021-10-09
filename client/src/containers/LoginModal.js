@@ -30,7 +30,7 @@ const validationSchema = yup.object({
 });
 
 const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const history = useHistory();
   const formik = useFormik({
     initialValues: {
@@ -70,7 +70,10 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
 
   return (
     <div>
-      <Typography variant="h5" className={classes.loginHeadline}>
+      <Typography
+        variant="h5"
+        // className={classes.loginHeadline}
+      >
         Login
       </Typography>
       <form onSubmit={formik.handleSubmit}>
@@ -83,8 +86,8 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
           onChange={formik.handleChange}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
-          variant="standard"
-          className={classes.textfield}
+          variant="filled"
+          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -96,10 +99,14 @@ const LoginModal = ({ isAuthenticated, error, login, clearErrors }) => {
           onChange={formik.handleChange}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
-          variant="standard"
-          className={classes.textfield}
+          variant="filled"
+          // className={classes.textfield}
         />
-        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Typography
+        // className={classes.errorMsg}
+        >
+          {msg}
+        </Typography>
 
         <Button color="primary" variant="contained" fullWidth type="submit">
           Submit

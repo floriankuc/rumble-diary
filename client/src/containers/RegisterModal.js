@@ -30,7 +30,7 @@ const validationSchema = yup.object({
 });
 
 const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const history = useHistory();
   const formik = useFormik({
     initialValues: {
@@ -71,7 +71,10 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
 
   return (
     <div>
-      <Typography variant="h5" className={classes.loginHeadline}>
+      <Typography
+        variant="h5"
+        // className={classes.loginHeadline}
+      >
         Register
       </Typography>
       <form onSubmit={formik.handleSubmit}>
@@ -85,7 +88,7 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           error={formik.touched.name && Boolean(formik.errors.name)}
           helperText={formik.touched.name && formik.errors.name}
           variant="standard"
-          className={classes.textfield}
+          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -97,7 +100,7 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
           variant="standard"
-          className={classes.textfield}
+          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -110,9 +113,13 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
           variant="standard"
-          className={classes.textfield}
+          // className={classes.textfield}
         />
-        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Typography
+        // className={classes.errorMsg}
+        >
+          {msg}
+        </Typography>
         <Button color="primary" variant="contained" fullWidth type="submit">
           Submit
         </Button>

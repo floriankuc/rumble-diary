@@ -27,7 +27,7 @@ function App() {
       <Router2>
         <ModalProvider>
           <SidebarProvider>
-            <CssBaseline />
+            {/* <CssBaseline /> */}
             <MainScreen />
           </SidebarProvider>
         </ModalProvider>
