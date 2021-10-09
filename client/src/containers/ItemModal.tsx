@@ -24,16 +24,26 @@ interface IItemModal extends PropsFromRedux {
 }
 
 const useStyles = makeStyles({
-  textfield: {
-    marginBottom: 32,
+  calendar: {
+    transitionDuration: '0s',
+    '&:hover': {
+      border: '1px solid black',
+    },
+    '&:focus': {
+      // hier noch padding/margin calc für move
+      border: '1px solid blue',
+    },
   },
-  errorMsg: {
-    marginBottom: 32,
-    color: 'red',
-  },
-  loginHeadline: {
-    marginBottom: 32,
-  },
+  // textfield: {
+  //   marginBottom: 32,
+  // },
+  // errorMsg: {
+  //   marginBottom: 32,
+  //   color: 'red',
+  // },
+  // loginHeadline: {
+  //   marginBottom: 32,
+  // },
 });
 
 //https://codesandbox.io/s/1o8n593z6q?file=/index.js:237-276 für form auslagern
@@ -43,7 +53,7 @@ const validationSchema = yup.object({
 });
 
 const ItemModal = (props: IItemModal) => {
-  // const classes = useStyles();
+  const classes = useStyles();
   const history = useHistory();
 
   console.log('props.addmodal', props);
@@ -53,7 +63,9 @@ const ItemModal = (props: IItemModal) => {
       name: values.name,
     };
 
-    props.addItem(newItem);
+    // console.log('addItem', values);
+    // props.addItem(newItem);
+    props.addItem(values);
   };
 
   if (props.itemLoading) {
@@ -199,7 +211,7 @@ const ItemModal = (props: IItemModal) => {
               selected={values.date}
               placeholderText="Date"
               dateFormat="MMMM d, yyyy"
-              className="form-control"
+              className={`form-control ${classes.calendar}`}
               name="date"
               onChange={(date) => setFieldValue('date', date)}
             />

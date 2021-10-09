@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getItems, deleteItem } from '../actions/itemActions';
@@ -15,19 +16,21 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
     deleteItem(id);
   };
 
+  console.log('item in shoppinglist', item);
   return (
     <div>
       <ul>
         {user &&
           item &&
-          item.items.map(({ _id, name }) => (
-            <>
-              <li key={_id}>
-                {<button onClick={() => onDeleteClick(_id)}>D</button>}
-                {name}
+          item.items.map((item) => {
+            console.log('ITEM', item);
+            return (
+              <li key={item._id}>
+                {<button onClick={() => onDeleteClick(item._id)}>D</button>}
+                {format(new Date(item.date), 'PPPPpppp')}
               </li>
-            </>
-          ))}
+            );
+          })}
       </ul>
     </div>
   );
