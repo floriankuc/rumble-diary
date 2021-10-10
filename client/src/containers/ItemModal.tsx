@@ -92,7 +92,29 @@ const validationSchema = yup.object({
       then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").required('End Date/Time is required'),
     })
     .nullable(),
-  breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
+  // breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
+  breaks: yup.array(
+    yup.object({
+      start: yup
+        .date()
+        .default(() => new Date())
+        .required('Enter a break start time'),
+      end: yup
+        .date()
+        .required() //works, before of after test?
+        .test('end-valid', (value, ctx): boolean | yup.ValidationError => {
+          // console.log('value in break validation', value);
+          // console.log('ctx', ctx);
+          // console.log('ctx.parent', ctx.parent['start']);
+          // console.log('ctx.options', ctx.options);
+          // console.log('ctx.path', ctx.path);
+          // console.log('handle on start TODO', ctx.path.replace('end', 'start'));
+          console.log('handle on start TODO', ctx.parent['start']);
+          return value && ctx.parent['start'] < value ? true : ctx.createError({ message: 'break end before break start' });
+        })
+        .nullable(),
+    })
+  ),
   nightmares: yup.bool().required(),
   noise: yup.bool().required(),
   quality: yup.number().required(),
@@ -339,7 +361,8 @@ const ItemModal = (props: IItemModal) => {
                           (errors.breaks[i] as FormikErrors<IBreak>).end &&
                           touched.breaks &&
                           (touched.breaks as unknown as IBreak[])[i] &&
-                          (touched.breaks as unknown as IBreak[])[i].end && <span>enter an end time</span>}
+                          // (touched.breaks as unknown as IBreak[])[i].end && <span>enter an end time</span>}
+                          (touched.breaks as unknown as IBreak[])[i].end && <span>{(errors.breaks[i] as FormikErrors<IBreak>).end}</span>}
                         <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
                           Remove this break
                         </Button>
