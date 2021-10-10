@@ -92,6 +92,7 @@ const validationSchema = yup.object({
       then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").required('End Date/Time is required'),
     })
     .nullable(),
+  breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
   nightmares: yup.bool().required(),
   noise: yup.bool().required(),
   quality: yup.number().required(),
