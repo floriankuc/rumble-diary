@@ -13,8 +13,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { differenceInMinutes, subDays, isAfter, isBefore } from 'date-fns';
-import { SchemaLike } from 'yup/lib/types';
+import { addDays, differenceInMinutes, subDays } from 'date-fns';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -44,12 +43,18 @@ export interface INight {
   conditions: IConditions;
 }
 
+export interface AdditionalFormProps {
+  sleepless: boolean;
+}
+
 interface IItemModal extends PropsFromRedux {
   isAuthenticated: boolean;
   isLoading: boolean;
   itemLoading: boolean;
   itemSuccess: boolean;
 }
+
+type NightAndFormProps = AdditionalFormProps & INight;
 
 const useStyles = makeStyles({
   calendar: {
@@ -79,20 +84,31 @@ const validationSchema = yup.object({
     })
     .required(),
   date: yup.date().required('Enter a date'),
+  sleepless: yup.bool(),
   startTime: yup
     .date()
     .default(() => new Date())
     .required('Enter a start time'),
   endTime: yup
     .date()
-    .when('startTime', {
-      is: (startTime: Date) => {
-        return !!startTime ? true : false;
-      },
-      then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").required('End Date/Time is required'),
+    // .when('startTime', {
+    //   is: (startTime: Date) => {
+    //     return !!startTime ? true : false;
+    //   },
+    //   then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").min(yup.ref('startTime')).required('End Date/Time is required'),
+    // })
+    .when('startTime', (st) => {
+      return yup.date().max(addDays(st, 1), 'Earlier').min(st, 'lkasjfd');
     })
+    //start: 1. 18:00
+    //end: 2. 18:00
+    // .when('startTime', {
+    //   is: (startTime: Date) => {
+    //     return !!startTime ? true : false;
+    //   },
+    //   then: yup.date().max(addDays(yup.ref('startTime'), 1))
+    // })
     .nullable(),
-  // breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
   breaks: yup.array(
     yup.object({
       start: yup
@@ -101,15 +117,8 @@ const validationSchema = yup.object({
         .required('Enter a break start time'),
       end: yup
         .date()
-        .required() //works, before of after test?
+        .required()
         .test('end-valid', (value, ctx): boolean | yup.ValidationError => {
-          // console.log('value in break validation', value);
-          // console.log('ctx', ctx);
-          // console.log('ctx.parent', ctx.parent['start']);
-          // console.log('ctx.options', ctx.options);
-          // console.log('ctx.path', ctx.path);
-          // console.log('handle on start TODO', ctx.path.replace('end', 'start'));
-          console.log('handle on start TODO', ctx.parent['start']);
           return value && ctx.parent['start'] < value ? true : ctx.createError({ message: 'break end before break start' });
         })
         .nullable(),
@@ -137,9 +146,10 @@ const ItemModal = (props: IItemModal) => {
     return calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
   };
 
-  const handleSubmit = (values: INight) => {
+  const handleSubmit = (values: NightAndFormProps) => {
     const duration = calculateDuration(values.startTime, values.endTime, values.breaks);
-    props.addItem({ ...values, duration });
+    const { sleepless, ...restValues } = values;
+    props.addItem({ ...restValues, duration });
   };
 
   if (props.itemLoading) {
@@ -152,11 +162,10 @@ const ItemModal = (props: IItemModal) => {
     }
   }, [props.itemSuccess, history]);
 
-  //todo bei sleepless muss start/end disabled
   //validation: eine nacht sollte idr einen Tag unterschied haben
-  //validation: breaks dürfen nicht in vergangenheit gehen
-  const initialValues: INight = {
+  const initialValues: NightAndFormProps = {
     date: subDays(new Date(), 1),
+    sleepless: false,
     startTime: subDays(new Date(), 1),
     endTime: subDays(new Date(), 1),
     breaks: undefined,
@@ -273,11 +282,12 @@ const ItemModal = (props: IItemModal) => {
             <FormControlLabel
               control={
                 <Checkbox
-                  // value={values.conditions.noElectronicDevices}
                   onChange={(): void => {
-                    setFieldValue('startTime', new Date().setHours(0, 0, 0, 0));
-                    setFieldValue('endTime', new Date().setHours(0, 0, 0, 0));
+                    setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
+                    setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
                     setFieldValue('breaks', undefined);
+                    setFieldValue('sleepless', !values.sleepless);
+                    // setTimesdisabled(!timesDisabled);
                   }}
                   name="noElectronicDevices"
                   id="noElectronicDevices"
@@ -288,10 +298,11 @@ const ItemModal = (props: IItemModal) => {
             />
             <DatePicker
               id="date"
+              disabled={values.sleepless}
               onBlur={handleBlur}
               selected={values.date}
               placeholderText="Date"
-              dateFormat="MMMM d, yyyy"
+              dateFormat="d MMMM yyyy"
               className={`form-control ${classes.calendar}`}
               name="date"
               onChange={(date) => setFieldValue('date', date)}
@@ -299,23 +310,25 @@ const ItemModal = (props: IItemModal) => {
             {errors.date && touched.date && <p>Enter a date</p>}
             <DatePicker
               id="startTime"
+              disabled={values.sleepless}
               onBlur={handleBlur}
               selected={values.startTime}
               showTimeSelect
               placeholderText="Start of sleep"
-              dateFormat="hh:mm"
+              dateFormat="d MMMM yyyy, hh:mm"
               className="form-control"
               name="startTime"
               onChange={(time) => setFieldValue('startTime', time)}
             />
             {errors.startTime && touched.startTime && errors.startTime}
             <DatePicker
+              disabled={values.sleepless}
               id="endTime"
               selected={values.endTime}
               onBlur={handleBlur}
               showTimeSelect
               placeholderText="End of sleep"
-              dateFormat="hh:mm"
+              dateFormat="d MMMM yyyy, hh:mm"
               className="form-control"
               name="endTime"
               onChange={(time) => setFieldValue('endTime', time)}
@@ -361,7 +374,6 @@ const ItemModal = (props: IItemModal) => {
                           (errors.breaks[i] as FormikErrors<IBreak>).end &&
                           touched.breaks &&
                           (touched.breaks as unknown as IBreak[])[i] &&
-                          // (touched.breaks as unknown as IBreak[])[i].end && <span>enter an end time</span>}
                           (touched.breaks as unknown as IBreak[])[i].end && <span>{(errors.breaks[i] as FormikErrors<IBreak>).end}</span>}
                         <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
                           Remove this break
@@ -371,7 +383,12 @@ const ItemModal = (props: IItemModal) => {
                   ) : (
                     <></>
                   )}
-                  <Button startIcon={<AddIcon />} variant="outlined" onClick={() => arrayHelpers.push({ start: new Date(), end: new Date() })}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    variant="outlined"
+                    disabled={values.sleepless}
+                    onClick={() => arrayHelpers.push({ start: new Date(), end: new Date() })}
+                  >
                     Add a break
                   </Button>
                 </div>
@@ -444,7 +461,6 @@ const ItemModal = (props: IItemModal) => {
 };
 
 const mapStateToProps = (state: any) => ({
-  item: state.item,
   itemLoading: state.item.loading,
   itemSuccess: state.item.success,
   isAuthenticated: state.auth.isAuthenticated,
