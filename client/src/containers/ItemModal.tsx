@@ -13,7 +13,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, subDays, isAfter, isBefore } from 'date-fns';
+import { SchemaLike } from 'yup/lib/types';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -58,6 +59,7 @@ const useStyles = makeStyles({
     },
     '&:focus': {
       // hier noch padding/margin calc für move
+      boxShadow: 'none',
       border: '1px solid blue',
     },
   },
@@ -77,9 +79,19 @@ const validationSchema = yup.object({
     })
     .required(),
   date: yup.date().required('Enter a date'),
-  startTime: yup.date().required('Enter a start time'),
-  endTime: yup.date().required('Enter an end time'),
-  breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
+  startTime: yup
+    .date()
+    .default(() => new Date())
+    .required('Enter a start time'),
+  endTime: yup
+    .date()
+    .when('startTime', {
+      is: (startTime: Date) => {
+        return !!startTime ? true : false;
+      },
+      then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").required('End Date/Time is required'),
+    })
+    .nullable(),
   nightmares: yup.bool().required(),
   noise: yup.bool().required(),
   quality: yup.number().required(),
@@ -117,15 +129,18 @@ const ItemModal = (props: IItemModal) => {
     }
   }, [props.itemSuccess, history]);
 
+  //todo bei sleepless muss start/end disabled
+  //validation: eine nacht sollte idr einen Tag unterschied haben
+  //validation: breaks dürfen nicht in vergangenheit gehen
   const initialValues: INight = {
-    date: new Date(),
-    startTime: new Date(),
-    endTime: new Date(),
-    breaks: [],
+    date: subDays(new Date(), 1),
+    startTime: subDays(new Date(), 1),
+    endTime: subDays(new Date(), 1),
+    breaks: undefined,
     nightmares: false,
     noise: false,
     quality: 0,
-    notes: '',
+    notes: undefined,
     conditions: {
       temperature: 20,
       freshAir: false,
@@ -232,6 +247,22 @@ const ItemModal = (props: IItemModal) => {
             />
             <Divider />
             <Typography variant="h5">How the night went</Typography>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  // value={values.conditions.noElectronicDevices}
+                  onChange={(): void => {
+                    setFieldValue('startTime', new Date().setHours(0, 0, 0, 0));
+                    setFieldValue('endTime', new Date().setHours(0, 0, 0, 0));
+                    setFieldValue('breaks', undefined);
+                  }}
+                  name="noElectronicDevices"
+                  id="noElectronicDevices"
+                  inputProps={{ 'aria-label': 'noElectronicDevices' }}
+                />
+              }
+              label="Sleepless night"
+            />
             <DatePicker
               id="date"
               onBlur={handleBlur}
@@ -254,7 +285,7 @@ const ItemModal = (props: IItemModal) => {
               name="startTime"
               onChange={(time) => setFieldValue('startTime', time)}
             />
-            {errors.startTime && touched.startTime && <p>Enter a startTime</p>}
+            {errors.startTime && touched.startTime && errors.startTime}
             <DatePicker
               id="endTime"
               selected={values.endTime}
@@ -266,6 +297,7 @@ const ItemModal = (props: IItemModal) => {
               name="endTime"
               onChange={(time) => setFieldValue('endTime', time)}
             />
+            {errors.endTime && touched.endTime && <p>{errors.endTime}</p>}
             <Typography>Breaks</Typography>
             <FieldArray
               name="breaks"
@@ -366,7 +398,9 @@ const ItemModal = (props: IItemModal) => {
               id="duration"
               name="duration"
               label="duration"
-              value={calculateDuration(values.startTime, values.endTime, values.breaks)}
+              value={
+                calculateDuration(values.startTime, values.endTime, values.breaks) > 0 ? calculateDuration(values.startTime, values.endTime, values.breaks) : 0
+              }
               variant="outlined"
             />
             <Button color="primary" variant="contained" fullWidth type="submit">
