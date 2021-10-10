@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { addItem } from '../actions/itemActions';
-import { TextField, Typography, Button, Checkbox, Rating, Divider, SliderValueLabel } from '@mui/material';
+import { TextField, Typography, Button, Checkbox, Rating, Divider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
-import { FieldArray, Formik, Form } from 'formik';
+import { FieldArray, Formik, Form, FormikErrors } from 'formik';
 import * as yup from 'yup';
 import { ConnectedProps } from 'react-redux';
 import { APP_ROUTES } from '../routes';
@@ -13,8 +13,35 @@ import 'react-datepicker/dist/react-datepicker.css';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { differenceInMinutes } from 'date-fns';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export interface IConditions {
+  temperature: number;
+  freshAir: boolean;
+  fed: boolean;
+  mentalStatus: number;
+  noDrinks1HourBefore: boolean;
+  noCaffeine4HoursBefore: boolean;
+  noElectronicDevices: boolean;
+}
+
+export interface IBreak {
+  start: Date;
+  end: Date;
+}
+export interface INight {
+  date: Date;
+  startTime: Date;
+  endTime: Date;
+  breaks?: IBreak[];
+  nightmares: boolean;
+  noise: boolean;
+  quality: number;
+  notes?: string;
+  conditions: IConditions;
+}
 
 interface IItemModal extends PropsFromRedux {
   isAuthenticated: boolean;
@@ -34,22 +61,28 @@ const useStyles = makeStyles({
       border: '1px solid blue',
     },
   },
-  // textfield: {
-  //   marginBottom: 32,
-  // },
-  // errorMsg: {
-  //   marginBottom: 32,
-  //   color: 'red',
-  // },
-  // loginHeadline: {
-  //   marginBottom: 32,
-  // },
 });
 
 //https://codesandbox.io/s/1o8n593z6q?file=/index.js:237-276 für form auslagern
-//<Formik> nutzen testen, s. https://stackblitz.com/edit/demo-react-formik-datepicker
 const validationSchema = yup.object({
-  // name: yup.string().required('Email is required'),
+  conditions: yup
+    .object({
+      temperature: yup.number().required('Enter a temperature'),
+      freshAir: yup.bool().required(),
+      fed: yup.bool().required(),
+      mentalStatus: yup.number().required(),
+      noDrinks1HourBefore: yup.bool().required(),
+      noCaffeine4HoursBefore: yup.bool().required(),
+      noElectronicDevices: yup.bool().required(),
+    })
+    .required(),
+  date: yup.date().required('Enter a date'),
+  startTime: yup.date().required('Enter a start time'),
+  endTime: yup.date().required('Enter an end time'),
+  breaks: yup.array(yup.object({ start: yup.date().required(), end: yup.date().required() })).notRequired(),
+  nightmares: yup.bool().required(),
+  noise: yup.bool().required(),
+  quality: yup.number().required(),
 });
 
 const ItemModal = (props: IItemModal) => {
@@ -57,15 +90,21 @@ const ItemModal = (props: IItemModal) => {
   const history = useHistory();
 
   console.log('props.addmodal', props);
+  console.log('success', props.itemSuccess);
 
-  const handleSubmit = (values: {}) => {
-    const newItem = {
-      // name: values.name,
-    };
+  const sumUpBreaksInMinutes = (breaks: IBreak[] = []) => {
+    return breaks.reduce((a: number, b: IBreak): number => a + differenceInMinutes(new Date(b.end), new Date(b.start)), 0);
+  };
 
-    // console.log('addItem', values);
-    // props.addItem(newItem);
-    props.addItem(values);
+  const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(new Date(endTime), new Date(startTime));
+
+  const calculateDuration = (startTime: Date, endTime: Date, breaks: IBreak[] = []): number => {
+    return calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
+  };
+
+  const handleSubmit = (values: INight) => {
+    const duration = calculateDuration(values.startTime, values.endTime, values.breaks);
+    props.addItem({ ...values, duration });
   };
 
   if (props.itemLoading) {
@@ -78,50 +117,39 @@ const ItemModal = (props: IItemModal) => {
     }
   }, [props.itemSuccess, history]);
 
-  console.log('success', props.itemSuccess);
+  const initialValues: INight = {
+    date: new Date(),
+    startTime: new Date(),
+    endTime: new Date(),
+    breaks: [],
+    nightmares: false,
+    noise: false,
+    quality: 0,
+    notes: '',
+    conditions: {
+      temperature: 20,
+      freshAir: false,
+      fed: false,
+      mentalStatus: 0,
+      noDrinks1HourBefore: false,
+      noCaffeine4HoursBefore: false,
+      noElectronicDevices: false,
+    },
+  };
 
   return (
     <div style={{ width: 1000, paddingLeft: 200, paddingRight: 200 }}>
-      <Typography
-        variant="h3"
-        // className={classes.loginHeadline}
-      >
-        Add
-      </Typography>
+      <Typography variant="h3">Add</Typography>
       <Typography variant="h5">Conditions before going to bed</Typography>
       <Formik
-        initialValues={{
-          // name: '',
-          date: new Date(),
-          startTime: new Date(),
-          endTime: new Date(),
-          breaks: [
-            {
-              start: new Date(),
-              end: new Date(),
-            },
-          ],
-          nightmares: false,
-          noise: false,
-          quality: 0,
-          notes: '',
-          duration: 0,
-          conditions: {
-            temperature: 20,
-            freshAir: false,
-            fed: false,
-            mentalStatus: 0,
-            noDrinks1HourBefore: false,
-            noCaffeine4HoursBefore: false,
-            noElectronicDevices: false,
-          },
-        }}
+        initialValues={initialValues}
+        validateOnBlur
         validationSchema={validationSchema}
         onSubmit={(values) => {
           handleSubmit(values);
         }}
       >
-        {({ handleChange, values, errors, touched, setFieldValue }) => (
+        {({ handleChange, values, errors, touched, setFieldValue, handleBlur }) => (
           <Form style={{ display: 'flex', flexDirection: 'column' }}>
             <TextField
               fullWidth
@@ -131,13 +159,10 @@ const ItemModal = (props: IItemModal) => {
               label="conditions.temperature"
               value={values.conditions.temperature}
               onChange={handleChange}
-              error={touched.conditions && Boolean(errors.conditions)}
-              helperText={touched.conditions && errors.conditions}
+              onBlur={handleBlur}
+              error={touched.conditions?.temperature && Boolean(errors.conditions?.temperature)}
+              helperText={touched.conditions?.temperature && errors.conditions?.temperature}
               variant="outlined"
-              // InputLabelProps={{
-              //   shrink: true,
-              // }}
-              // className={classes.textfield}
             />
             <FormControlLabel
               control={
@@ -207,8 +232,9 @@ const ItemModal = (props: IItemModal) => {
             />
             <Divider />
             <Typography variant="h5">How the night went</Typography>
-
             <DatePicker
+              id="date"
+              onBlur={handleBlur}
               selected={values.date}
               placeholderText="Date"
               dateFormat="MMMM d, yyyy"
@@ -216,21 +242,25 @@ const ItemModal = (props: IItemModal) => {
               name="date"
               onChange={(date) => setFieldValue('date', date)}
             />
+            {errors.date && touched.date && <p>Enter a date</p>}
             <DatePicker
+              id="startTime"
+              onBlur={handleBlur}
               selected={values.startTime}
               showTimeSelect
-              // showTimeSelectOnly
               placeholderText="Start of sleep"
               dateFormat="hh:mm"
               className="form-control"
               name="startTime"
               onChange={(time) => setFieldValue('startTime', time)}
             />
+            {errors.startTime && touched.startTime && <p>Enter a startTime</p>}
             <DatePicker
+              id="endTime"
               selected={values.endTime}
+              onBlur={handleBlur}
               showTimeSelect
               placeholderText="End of sleep"
-              // showTimeSelectOnly
               dateFormat="hh:mm"
               className="form-control"
               name="endTime"
@@ -241,37 +271,45 @@ const ItemModal = (props: IItemModal) => {
               name="breaks"
               render={(arrayHelpers) => (
                 <div>
-                  {values.breaks.length > 0 ? (
+                  {values.breaks && values.breaks.length > 0 ? (
                     values.breaks.map((f, i) => (
                       <div key={i}>
                         <p>Break {i + 1}</p>
                         <DatePicker
-                          selected={values.breaks[i].start}
+                          id={`${values.breaks && values.breaks[i].start}`}
+                          onBlur={handleBlur}
+                          selected={values.breaks && values.breaks[i].start}
                           showTimeSelect
-                          // showTimeSelectOnly
                           dateFormat="hh:mm"
                           className="form-control"
                           name={`breaks.${i}.start`}
                           onChange={(time) => setFieldValue(`breaks.${i}.start`, time)}
                         />
+                        {errors.breaks &&
+                          (errors.breaks[i] as FormikErrors<IBreak>) &&
+                          (errors.breaks[i] as FormikErrors<IBreak>).start &&
+                          touched.breaks &&
+                          (touched.breaks as unknown as IBreak[])[i] &&
+                          (touched.breaks as unknown as IBreak[])[i].start && <span>enter a start time</span>}
                         <DatePicker
-                          selected={values.breaks[i].end}
+                          id={`${values.breaks && values.breaks[i].end}`}
+                          onBlur={handleBlur}
+                          selected={values.breaks && values.breaks[i].end}
                           showTimeSelect
-                          // showTimeSelectOnly
                           dateFormat="hh:mm"
                           className="form-control"
                           name={`breaks.${i}.end`}
                           onChange={(time) => setFieldValue(`breaks.${i}.end`, time)}
                         />
+                        {errors.breaks &&
+                          (errors.breaks[i] as FormikErrors<IBreak>) &&
+                          (errors.breaks[i] as FormikErrors<IBreak>).end &&
+                          touched.breaks &&
+                          (touched.breaks as unknown as IBreak[])[i] &&
+                          (touched.breaks as unknown as IBreak[])[i].end && <span>enter an end time</span>}
                         <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
                           Remove this break
                         </Button>
-                        {/* <button
-                          type="button"
-                          onClick={() => arrayHelpers.insert(i, { start: new Date(), end: new Date() })} // insert an empty string at a position
-                        >
-                          +
-                        </button> */}
                       </div>
                     ))
                   ) : (
@@ -317,7 +355,6 @@ const ItemModal = (props: IItemModal) => {
               error={touched.notes && Boolean(errors.notes)}
               helperText={touched.notes && errors.notes}
               variant="outlined"
-              // className={classes.textfield}
               multiline
               minRows={2}
               maxRows={5}
@@ -329,16 +366,18 @@ const ItemModal = (props: IItemModal) => {
               id="duration"
               name="duration"
               label="duration"
-              value={values.duration}
-              onChange={handleChange}
-              error={touched.duration && Boolean(errors.duration)}
-              helperText={touched.duration && errors.duration}
+              value={calculateDuration(values.startTime, values.endTime, values.breaks)}
               variant="outlined"
             />
             <Button color="primary" variant="contained" fullWidth type="submit">
               Add
             </Button>
+            values:
             <pre>{JSON.stringify(values, null, 2)}</pre>
+            errors:
+            <pre>{JSON.stringify(errors, null, 2)}</pre>
+            touched:
+            <pre>{JSON.stringify(touched, null, 2)}</pre>
           </Form>
         )}
       </Formik>
