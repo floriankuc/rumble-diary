@@ -10,6 +10,7 @@ import { ConnectedProps } from 'react-redux';
 import { APP_ROUTES } from '../routes';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+// import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,6 +18,7 @@ import { addDays, differenceInMinutes, subDays } from 'date-fns';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
+//normal interfaces
 export interface IConditions {
   temperature: number;
   freshAir: boolean;
@@ -43,9 +45,9 @@ export interface INight {
   conditions: IConditions;
 }
 
-export interface AdditionalFormProps {
+export type AdditionalFormProps = {
   sleepless: boolean;
-}
+};
 
 interface IItemModal extends PropsFromRedux {
   isAuthenticated: boolean;
@@ -54,23 +56,45 @@ interface IItemModal extends PropsFromRedux {
   itemSuccess: boolean;
 }
 
-type NightAndFormProps = AdditionalFormProps & INight;
+type NightAndFormProps = INight & AdditionalFormProps;
 
 const useStyles = makeStyles({
+  formControlLabel: {
+    alignItems: 'flex-start',
+    marginLeft: 0,
+  },
+  calendarErrorMessage: {
+    color: '#D32F2F',
+    fontWeight: 400,
+    fontSize: '.75rem',
+    marginLeft: 14,
+  },
   calendar: {
     transitionDuration: '0s',
-    '&:hover': {
+    border: '1px solid #C4C4C4',
+    borderRadius: 5,
+    height: 40,
+    padding: 14,
+    width: 260,
+    fontSize: 16,
+    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+    '&:hover:enabled': {
       border: '1px solid black',
     },
-    '&:focus': {
-      // hier noch padding/margin calc für move
+    '&:focus:enabled': {
+      outline: 'none',
+      padding: 13,
       boxShadow: 'none',
-      border: '1px solid blue',
+      border: '2px solid #1976D2',
     },
   },
 });
 
 //https://codesandbox.io/s/1o8n593z6q?file=/index.js:237-276 für form auslagern
+//empty initialising wo es sinn macht
+//TODO validation: breaks müssen entweder am tag des start of sleeps oder am tag des end of sleeps sein!
+//TODO WICHTIG: Wenn "too long sleep" endTime error -> kein date auf startTime -> error throw weil kein date
+
 const validationSchema = yup.object({
   conditions: yup
     .object({
@@ -97,8 +121,11 @@ const validationSchema = yup.object({
     //   },
     //   then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").min(yup.ref('startTime')).required('End Date/Time is required'),
     // })
-    .when('startTime', (st) => {
-      return yup.date().max(addDays(st, 1), 'Earlier').min(st, 'lkasjfd');
+    .when('startTime', (st: Date) => {
+      if (st) {
+        return yup.date().max(addDays(st, 1), 'Are you sure you slept this long?').min(st, 'End time cannot be before start time');
+      }
+      return yup.date().required();
     })
     //start: 1. 18:00
     //end: 2. 18:00
@@ -136,18 +163,24 @@ const ItemModal = (props: IItemModal) => {
   console.log('props.addmodal', props);
   console.log('success', props.itemSuccess);
 
+  const outputMinutes = (mins: number): string => {
+    const phours = `${Math.floor(mins / 60)}`.padStart(2, '0');
+    const pmins = `${mins % 60}`.padStart(2, '0');
+    return mins < 60 ? `${mins} mins` : `${phours}:${pmins} h`;
+  };
+
   const sumUpBreaksInMinutes = (breaks: IBreak[] = []) => {
     return breaks.reduce((a: number, b: IBreak): number => a + differenceInMinutes(new Date(b.end), new Date(b.start)), 0);
   };
 
   const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(new Date(endTime), new Date(startTime));
 
-  const calculateDuration = (startTime: Date, endTime: Date, breaks: IBreak[] = []): number => {
+  const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: IBreak[] = []): number => {
     return calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
   };
 
   const handleSubmit = (values: NightAndFormProps) => {
-    const duration = calculateDuration(values.startTime, values.endTime, values.breaks);
+    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     const { sleepless, ...restValues } = values;
     props.addItem({ ...restValues, duration });
   };
@@ -162,7 +195,6 @@ const ItemModal = (props: IItemModal) => {
     }
   }, [props.itemSuccess, history]);
 
-  //validation: eine nacht sollte idr einen Tag unterschied haben
   const initialValues: NightAndFormProps = {
     date: subDays(new Date(), 1),
     sleepless: false,
@@ -174,7 +206,7 @@ const ItemModal = (props: IItemModal) => {
     quality: 0,
     notes: undefined,
     conditions: {
-      temperature: 20,
+      temperature: 0,
       freshAir: false,
       fed: false,
       mentalStatus: 0,
@@ -187,7 +219,9 @@ const ItemModal = (props: IItemModal) => {
   return (
     <div style={{ width: 1000, paddingLeft: 200, paddingRight: 200 }}>
       <Typography variant="h3">Add</Typography>
-      <Typography variant="h5">Conditions before going to bed</Typography>
+      <Typography variant="h5" sx={{ mb: 5 }}>
+        Conditions before going to bed
+      </Typography>
       <Formik
         initialValues={initialValues}
         validateOnBlur
@@ -197,20 +231,33 @@ const ItemModal = (props: IItemModal) => {
         }}
       >
         {({ handleChange, values, errors, touched, setFieldValue, handleBlur }) => (
-          <Form style={{ display: 'flex', flexDirection: 'column' }}>
-            <TextField
-              fullWidth
-              type="number"
-              id="conditions.temperature"
-              name="conditions.temperature"
-              label="conditions.temperature"
-              value={values.conditions.temperature}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.conditions?.temperature && Boolean(errors.conditions?.temperature)}
-              helperText={touched.conditions?.temperature && errors.conditions?.temperature}
-              variant="outlined"
+          <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <FormControlLabel
+              control={
+                <TextField
+                  type="number"
+                  id="conditions.temperature"
+                  name="conditions.temperature"
+                  value={values.conditions.temperature}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.conditions?.temperature && Boolean(errors.conditions?.temperature)}
+                  helperText={touched.conditions?.temperature && errors.conditions?.temperature}
+                  variant="outlined"
+                />
+              }
+              label="Room temperature"
+              labelPlacement="top"
+              className={classes.formControlLabel}
             />
+            <FormControlLabel
+              control={<Rating name="conditions.mentalStatus" id="mentalStatus" value={values.conditions.mentalStatus} onChange={handleChange} />}
+              label="How was your mental state?"
+              labelPlacement="top"
+              sx={{ my: 3 }}
+              className={classes.formControlLabel}
+            />
+            <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
             <FormControlLabel
               control={
                 <Checkbox
@@ -219,6 +266,9 @@ const ItemModal = (props: IItemModal) => {
                   name="freshAir"
                   id="freshAir"
                   inputProps={{ 'aria-label': 'freshAir' }}
+                  disableRipple
+                  disableTouchRipple
+                  disableFocusRipple
                 />
               }
               label="Fresh air"
@@ -231,16 +281,13 @@ const ItemModal = (props: IItemModal) => {
                   name="fed"
                   id="fed"
                   inputProps={{ 'aria-label': 'fed' }}
+                  disableRipple
+                  disableTouchRipple
+                  disableFocusRipple
                 />
               }
-              label="Fed"
+              label="Eaten enough"
             />
-            <div>
-              <label>
-                <Typography>Mental status</Typography>
-              </label>
-              <Rating name="conditions.mentalStatus" id="mentalStatus" value={values.conditions.mentalStatus} onChange={handleChange} />
-            </div>
             <FormControlLabel
               control={
                 <Checkbox
@@ -249,6 +296,9 @@ const ItemModal = (props: IItemModal) => {
                   name="noDrinks1HourBefore"
                   id="noDrinks1HourBefore"
                   inputProps={{ 'aria-label': 'noDrinks1HourBefore' }}
+                  disableRipple
+                  disableTouchRipple
+                  disableFocusRipple
                 />
               }
               label="No drinks 1 hour before bed"
@@ -261,6 +311,9 @@ const ItemModal = (props: IItemModal) => {
                   name="noCaffeine4HoursBefore"
                   id="noCaffeine4HoursBefore"
                   inputProps={{ 'aria-label': 'noCaffeine4HoursBefore' }}
+                  disableRipple
+                  disableTouchRipple
+                  disableFocusRipple
                 />
               }
               label="No caffein 4 hours before bed"
@@ -273,12 +326,17 @@ const ItemModal = (props: IItemModal) => {
                   name="noElectronicDevices"
                   id="noElectronicDevices"
                   inputProps={{ 'aria-label': 'noElectronicDevices' }}
+                  disableRipple
+                  disableTouchRipple
+                  disableFocusRipple
                 />
               }
               label="No electronic devices running"
             />
             <Divider />
-            <Typography variant="h5">How the night went</Typography>
+            <Typography variant="h5" sx={{ mt: 8, mb: 4 }}>
+              How the night went
+            </Typography>
             <FormControlLabel
               control={
                 <Checkbox
@@ -287,7 +345,6 @@ const ItemModal = (props: IItemModal) => {
                     setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
                     setFieldValue('breaks', undefined);
                     setFieldValue('sleepless', !values.sleepless);
-                    // setTimesdisabled(!timesDisabled);
                   }}
                   name="noElectronicDevices"
                   id="noElectronicDevices"
@@ -296,101 +353,138 @@ const ItemModal = (props: IItemModal) => {
               }
               label="Sleepless night"
             />
-            <DatePicker
-              id="date"
-              disabled={values.sleepless}
-              onBlur={handleBlur}
-              selected={values.date}
-              placeholderText="Date"
-              dateFormat="d MMMM yyyy"
-              className={`form-control ${classes.calendar}`}
-              name="date"
-              onChange={(date) => setFieldValue('date', date)}
+            <FormControlLabel
+              control={
+                <DatePicker
+                  id="date"
+                  disabled={values.sleepless}
+                  onBlur={handleBlur}
+                  selected={values.date}
+                  placeholderText="Date"
+                  dateFormat="d MMMM yyyy"
+                  className={`form-control ${classes.calendar}`}
+                  name="date"
+                  onChange={(date) => setFieldValue('date', date)}
+                />
+              }
+              label="Date"
+              labelPlacement="top"
+              className={classes.formControlLabel}
+              sx={{ mt: 2 }}
             />
-            {errors.date && touched.date && <p>Enter a date</p>}
-            <DatePicker
-              id="startTime"
-              disabled={values.sleepless}
-              onBlur={handleBlur}
-              selected={values.startTime}
-              showTimeSelect
-              placeholderText="Start of sleep"
-              dateFormat="d MMMM yyyy, hh:mm"
-              className="form-control"
-              name="startTime"
-              onChange={(time) => setFieldValue('startTime', time)}
+            {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>}
+            <FormControlLabel
+              control={
+                <DatePicker
+                  id="startTime"
+                  disabled={values.sleepless}
+                  onBlur={handleBlur}
+                  selected={values.startTime}
+                  showTimeSelect
+                  placeholderText="Start of sleep"
+                  dateFormat="d MMMM yyyy, hh:mm"
+                  name="startTime"
+                  className={`form-control ${classes.calendar}`}
+                  onChange={(time) => setFieldValue('startTime', time)}
+                />
+              }
+              label="Start of sleep"
+              labelPlacement="top"
+              className={classes.formControlLabel}
+              sx={{ mt: 2 }}
             />
-            {errors.startTime && touched.startTime && errors.startTime}
-            <DatePicker
-              disabled={values.sleepless}
-              id="endTime"
-              selected={values.endTime}
-              onBlur={handleBlur}
-              showTimeSelect
-              placeholderText="End of sleep"
-              dateFormat="d MMMM yyyy, hh:mm"
-              className="form-control"
-              name="endTime"
-              onChange={(time) => setFieldValue('endTime', time)}
+            {errors.startTime && touched.startTime && <Typography className={classes.calendarErrorMessage}>{errors.startTime}</Typography>}
+            <FormControlLabel
+              control={
+                <DatePicker
+                  disabled={values.sleepless}
+                  id="endTime"
+                  selected={values.endTime}
+                  onBlur={handleBlur}
+                  showTimeSelect
+                  placeholderText="End of sleep"
+                  dateFormat="d MMMM yyyy, hh:mm"
+                  className={`form-control ${classes.calendar}`}
+                  name="endTime"
+                  onChange={(time) => setFieldValue('endTime', time)}
+                />
+              }
+              label="End of sleep"
+              labelPlacement="top"
+              className={classes.formControlLabel}
+              sx={{ mt: 2, mb: 4 }}
             />
-            {errors.endTime && touched.endTime && <p>{errors.endTime}</p>}
-            <Typography>Breaks</Typography>
+            {errors.endTime && touched.endTime && <Typography className={classes.calendarErrorMessage}>{errors.endTime}</Typography>}
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (
-                <div>
+                <div style={{ width: '100%' }}>
+                  <div style={{ width: '100%', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>Breaks</Typography>
+                    <Button
+                      sx={{ mt: 1 }}
+                      startIcon={<AddIcon />}
+                      variant="outlined"
+                      disabled={values.sleepless}
+                      onClick={() => arrayHelpers.push({ start: new Date(), end: new Date() })}
+                    >
+                      Add a break
+                    </Button>
+                  </div>
                   {values.breaks && values.breaks.length > 0 ? (
                     values.breaks.map((f, i) => (
                       <div key={i}>
-                        <p>Break {i + 1}</p>
-                        <DatePicker
-                          id={`${values.breaks && values.breaks[i].start}`}
-                          onBlur={handleBlur}
-                          selected={values.breaks && values.breaks[i].start}
-                          showTimeSelect
-                          dateFormat="hh:mm"
-                          className="form-control"
-                          name={`breaks.${i}.start`}
-                          onChange={(time) => setFieldValue(`breaks.${i}.start`, time)}
-                        />
-                        {errors.breaks &&
-                          (errors.breaks[i] as FormikErrors<IBreak>) &&
-                          (errors.breaks[i] as FormikErrors<IBreak>).start &&
-                          touched.breaks &&
-                          (touched.breaks as unknown as IBreak[])[i] &&
-                          (touched.breaks as unknown as IBreak[])[i].start && <span>enter a start time</span>}
-                        <DatePicker
-                          id={`${values.breaks && values.breaks[i].end}`}
-                          onBlur={handleBlur}
-                          selected={values.breaks && values.breaks[i].end}
-                          showTimeSelect
-                          dateFormat="hh:mm"
-                          className="form-control"
-                          name={`breaks.${i}.end`}
-                          onChange={(time) => setFieldValue(`breaks.${i}.end`, time)}
-                        />
-                        {errors.breaks &&
-                          (errors.breaks[i] as FormikErrors<IBreak>) &&
-                          (errors.breaks[i] as FormikErrors<IBreak>).end &&
-                          touched.breaks &&
-                          (touched.breaks as unknown as IBreak[])[i] &&
-                          (touched.breaks as unknown as IBreak[])[i].end && <span>{(errors.breaks[i] as FormikErrors<IBreak>).end}</span>}
-                        <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
-                          Remove this break
-                        </Button>
+                        <div style={{ background: '#F6F6F6', padding: 10, borderRadius: 5, marginBottom: 30 }}>
+                          <div style={{ width: '100%', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{ mb: 1 }}>Break {i + 1}</Typography>
+                            <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
+                              Remove break
+                            </Button>
+                          </div>
+                          <div style={{ display: 'flex' }}>
+                            <div>
+                              <DatePicker
+                                id={`${values.breaks && values.breaks[i].start}`}
+                                onBlur={handleBlur}
+                                selected={values.breaks && values.breaks[i].start}
+                                showTimeSelect
+                                dateFormat="d MMMM yyyy, hh:mm"
+                                className={`form-control ${classes.calendar}`}
+                                name={`breaks.${i}.start`}
+                                onChange={(time) => setFieldValue(`breaks.${i}.start`, time)}
+                              />
+                              {errors.breaks &&
+                                (errors.breaks[i] as FormikErrors<IBreak>) &&
+                                (errors.breaks[i] as FormikErrors<IBreak>).start &&
+                                touched.breaks &&
+                                (touched.breaks as unknown as IBreak[])[i] &&
+                                (touched.breaks as unknown as IBreak[])[i].start && <span>enter a start time</span>}
+                            </div>
+                            <div>
+                              <DatePicker
+                                id={`${values.breaks && values.breaks[i].end}`}
+                                onBlur={handleBlur}
+                                selected={values.breaks && values.breaks[i].end}
+                                showTimeSelect
+                                dateFormat="d MMMM yyyy, hh:mm"
+                                className={`form-control ${classes.calendar}`}
+                                name={`breaks.${i}.end`}
+                                onChange={(time) => setFieldValue(`breaks.${i}.end`, time)}
+                              />
+                              {errors.breaks &&
+                                (errors.breaks[i] as FormikErrors<IBreak>) &&
+                                (errors.breaks[i] as FormikErrors<IBreak>).end &&
+                                touched.breaks &&
+                                (touched.breaks as unknown as IBreak[])[i] &&
+                                (touched.breaks as unknown as IBreak[])[i].end && <span>{(errors.breaks[i] as FormikErrors<IBreak>).end}</span>}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ))
                   ) : (
                     <></>
                   )}
-                  <Button
-                    startIcon={<AddIcon />}
-                    variant="outlined"
-                    disabled={values.sleepless}
-                    onClick={() => arrayHelpers.push({ start: new Date(), end: new Date() })}
-                  >
-                    Add a break
-                  </Button>
                 </div>
               )}
             />
@@ -416,31 +510,49 @@ const ItemModal = (props: IItemModal) => {
               }
               label="Noise"
             />
-            <FormControlLabel control={<Rating name="quality" id="quality" value={values.quality} onChange={handleChange} />} label="Rating" />
-            <TextField
-              fullWidth
-              type="text"
-              id="notes"
-              name="notes"
-              label="notes"
-              value={values.notes}
-              onChange={handleChange}
-              error={touched.notes && Boolean(errors.notes)}
-              helperText={touched.notes && errors.notes}
-              variant="outlined"
-              multiline
-              minRows={2}
-              maxRows={5}
+            <FormControlLabel
+              control={<Rating name="quality" id="quality" value={values.quality} onChange={handleChange} />}
+              label="Overall quality of the night?"
+              labelPlacement="top"
+              sx={{ my: 3 }}
+              className={classes.formControlLabel}
+            />
+            <FormControlLabel
+              style={{ width: '100%' }}
+              control={
+                <TextField
+                  fullWidth
+                  type="text"
+                  id="notes"
+                  name="notes"
+                  value={values.notes}
+                  onChange={handleChange}
+                  error={touched.notes && Boolean(errors.notes)}
+                  helperText={touched.notes && errors.notes}
+                  variant="outlined"
+                  multiline
+                  minRows={2}
+                  maxRows={5}
+                  sx={{ mb: 4 }}
+                />
+              }
+              label="Notes"
+              labelPlacement="top"
+              className={classes.formControlLabel}
+              sx={{ mt: 2 }}
             />
             <TextField
               fullWidth
               disabled
+              sx={{ mb: 4 }}
               type="text"
               id="duration"
               name="duration"
-              label="duration"
+              label="Calculated duration of sleep"
               value={
-                calculateDuration(values.startTime, values.endTime, values.breaks) > 0 ? calculateDuration(values.startTime, values.endTime, values.breaks) : 0
+                calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
+                  ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
+                  : 0
               }
               variant="outlined"
             />
