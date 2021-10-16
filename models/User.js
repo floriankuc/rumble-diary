@@ -17,8 +17,18 @@ const UserSchema = new Schema({
   },
   register_date: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 
+//comments: [{ body: String, date: Date }],
+
+// meta: {
+//   votes: Number,
+//   favs:  Number
+// }
+// age:     { type: Number, min: 18, max: 65 },
+
+// keys:
+// validate: function, adds a validator function for this property
 module.exports = User = mongoose.model('user', UserSchema);

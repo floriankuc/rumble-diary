@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router';
 import AppNavbar from './AppNavbar';
-import ItemModal from './ItemModal';
+import ItemModal from './Form';
 import ShoppingList from './ShoppingList';
 import Modal from '../components/Modal/Modal';
 import LoginModal from './LoginModal';
