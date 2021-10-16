@@ -15,7 +15,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as yup from 'yup';
-import { DefiniteNightAndFormProps, IBreak, IOptionalBreak, NightAndFormProps } from '../../containers/ItemModal';
+import { DefiniteNightAndFormProps, Break, IOptionalBreak, NightAndFormProps } from '../../containers/Form';
+import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import { validationSchema } from '../../helpers/validationSchema';
+import CustomCheckbox from '../FormFields/Checkbox';
+import CustomRatingField from '../FormFields/Rating';
+import CustomTextField from '../FormFields/TextField';
+import CustomDatePicker from '../FormFields/DatePicker';
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -49,95 +55,6 @@ const useStyles = makeStyles({
   },
 });
 
-const validationSchema = yup.object({
-  conditions: yup
-    .object({
-      temperature: yup.number().required('Enter a temperature'),
-      freshAir: yup.bool().required(),
-      fed: yup.bool().required(),
-      mentalStatus: yup.number().required(),
-      noDrinks1HourBefore: yup.bool().required(),
-      noCaffeine4HoursBefore: yup.bool().required(),
-      noElectronicDevices: yup.bool().required(),
-    })
-    .required(),
-  date: yup.date().required('Enter a date'),
-  sleepless: yup.bool(),
-  startTime: yup
-    .date()
-    .test({
-      test: (values, ctx) => {
-        if (values) {
-          return differenceInHours(values, ctx.parent.date) > 24 || differenceInHours(values, ctx.parent.date) < 0
-            ? ctx.createError({ message: 'Start of sleep must be on same day or one day after', path: 'startTime' })
-            : true;
-        }
-        return true;
-      },
-    })
-    .nullable()
-    .required('Enter a start time'),
-  endTime: yup
-    .date()
-    .when('startTime', {
-      is: (startTime: Date) => {
-        return !!startTime ? true : false;
-      },
-      then: yup
-        .date()
-        .min(yup.ref('startTime'), "End date can't be before Start date")
-        .test({
-          test: function (endTime, ctx) {
-            if (endTime) {
-              return differenceInDays(endTime, ctx.parent.date) > 1 ? this.createError({ message: 'Too long', path: 'endTime' }) : true;
-            }
-            return true;
-          },
-        }),
-    })
-    .nullable()
-    .required('Enter an end time'),
-  breaks: yup.array(
-    yup.object({
-      start: yup
-        .date()
-        .test({
-          test: function (breakStart, ctx) {
-            if (ctx.options.context!.startTime && breakStart) {
-              return !isWithinInterval(breakStart, { start: ctx.options.context!.startTime, end: ctx.options.context!.endTime })
-                ? ctx.createError({ message: 'Break Start of sleep must be between start and end', path: this.path })
-                : true;
-            }
-            return true;
-          },
-        })
-        .nullable()
-        .required('enter a break start time'),
-      end: yup
-        .date()
-        .test({
-          test: function (breakEnd, ctx) {
-            if (ctx.options.context!.startTime && breakEnd) {
-              if (!isWithinInterval(breakEnd, { start: ctx.options.context!.startTime, end: ctx.options.context!.endTime })) {
-                return ctx.createError({ message: 'Break end of sleep must be between start and end', path: this.path });
-              } else if (breakEnd < ctx.parent.start) {
-                return ctx.createError({ message: 'break end before breaks start', path: this.path });
-              } else {
-                return true;
-              }
-            }
-            return true;
-          },
-        })
-        .nullable()
-        .required('enter a break end time'),
-    })
-  ),
-  nightmares: yup.bool().required(),
-  noise: yup.bool().required(),
-  quality: yup.number().required(),
-});
-
 interface NightAddFormProps {
   handleSubmit: (values: DefiniteNightAndFormProps) => void;
 }
@@ -166,31 +83,6 @@ const NightAddForm = (props: NightAddFormProps) => {
     },
   };
 
-  const outputMinutes = (mins: number): string => {
-    const phours = `${Math.floor(mins / 60)}`.padStart(2, '0');
-    const pmins = `${mins % 60}`.padStart(2, '0');
-    return mins < 60 ? `${mins} mins` : `${phours}:${pmins} h`;
-  };
-
-  const sumUpBreaksInMinutes = (breaks: (IOptionalBreak | IBreak)[] = []): number => {
-    return breaks.reduce((a: number, b: IBreak | IOptionalBreak): number => {
-      if (b.end && b.start) {
-        return a + differenceInMinutes(b.end, b.start);
-      } else {
-        return 0;
-      }
-    }, 0);
-  };
-
-  const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(endTime, startTime);
-
-  const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: (IOptionalBreak | IBreak)[] = []): number => {
-    if (!breaks) {
-      return startTime && endTime && calculateDifferenceInMinutes(endTime, startTime);
-    }
-    return startTime && endTime && calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
-  };
-
   return (
     <div style={{ width: 1000, paddingLeft: 100, paddingRight: 200 }}>
       <Typography variant="h3">Add</Typography>
@@ -200,15 +92,12 @@ const NightAddForm = (props: NightAddFormProps) => {
       <Formik
         initialValues={initialValues}
         validateOnBlur
-        // validationSchema={validationSchema}
         validate={(values) => {
           try {
             validateYupSchema(values, validationSchema, true, values);
           } catch (err: any) {
-            return yupToFormErrors(err); //for rendering validation errors
+            return yupToFormErrors(err);
           }
-
-          // return {};
         }}
         onSubmit={(values) => {
           values.startTime && values.endTime && props.handleSubmit(values as DefiniteNightAndFormProps);
@@ -216,7 +105,8 @@ const NightAddForm = (props: NightAddFormProps) => {
       >
         {({ handleChange, values, errors, touched, setFieldValue, handleBlur, setFieldTouched, dirty, isValid }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <FormControlLabel
+            <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
+            {/* <FormControlLabel
               control={
                 <TextField
                   type="number"
@@ -233,16 +123,18 @@ const NightAddForm = (props: NightAddFormProps) => {
               label="Room temperature"
               labelPlacement="top"
               className={classes.formControlLabel}
-            />
-            <FormControlLabel
+            /> */}
+            <CustomRatingField id="mentalStatus" name="mentalStatus" label="How was your mental state?" />
+            {/* <FormControlLabel
               control={<Rating name="conditions.mentalStatus" id="mentalStatus" value={values.conditions.mentalStatus} onChange={handleChange} />}
               label="How was your mental state?"
               labelPlacement="top"
               sx={{ my: 3 }}
               className={classes.formControlLabel}
-            />
+            /> */}
             <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
-            <FormControlLabel
+            <CustomCheckbox id="conditions.freshAir" label="Fresh air" name="conditions.freshAir" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   onChange={(): void => setFieldValue('conditions.freshAir', !values.conditions.freshAir)}
@@ -253,8 +145,9 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="Fresh air"
-            />
-            <FormControlLabel
+            /> */}
+            <CustomCheckbox id="conditions.fed" name="conditions.fed" label="Eaten enough" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   onChange={(): void => setFieldValue('conditions.fed', !values.conditions.fed)}
@@ -265,8 +158,9 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="Eaten enough"
-            />
-            <FormControlLabel
+            /> */}
+            <CustomCheckbox id="conditions.noDrinks1HourBefore" name="conditions.noDrinks1HourBefore" label="No drinks 1 hour before bed" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   value={values.conditions.noDrinks1HourBefore}
@@ -277,8 +171,9 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="No drinks 1 hour before bed"
-            />
-            <FormControlLabel
+            /> */}
+            <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" label="No caffeine 4 hours before bed" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   value={values.conditions.noCaffeine4HoursBefore}
@@ -288,9 +183,10 @@ const NightAddForm = (props: NightAddFormProps) => {
                   inputProps={{ 'aria-label': 'noCaffeine4HoursBefore' }}
                 />
               }
-              label="No caffein 4 hours before bed"
-            />
-            <FormControlLabel
+              label="No caffein 4 hours before bed" */}
+            {/* /> */}
+            <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" label="No electronic devices running" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   value={values.conditions.noElectronicDevices}
@@ -301,7 +197,7 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="No electronic devices running"
-            />
+            /> */}
             <Divider />
             <Typography variant="h5" sx={{ mt: 8, mb: 4 }}>
               How the night went
@@ -315,35 +211,37 @@ const NightAddForm = (props: NightAddFormProps) => {
                     setFieldValue('breaks', undefined);
                     setFieldValue('sleepless', !values.sleepless);
                   }}
-                  name="noElectronicDevices"
-                  id="noElectronicDevices"
-                  inputProps={{ 'aria-label': 'noElectronicDevices' }}
+                  // name="noElectronicDevices"
+                  // id="noElectronicDevices"
+                  // inputProps={{ 'aria-label': 'noElectronicDevices' }}
                 />
               }
               label="Sleepless night"
             />
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <FormControlLabel
-                control={
-                  <DatePicker
-                    id="date"
-                    disabled={values.sleepless}
-                    onBlur={handleBlur}
-                    selected={values.date}
-                    placeholderText="Date"
-                    dateFormat="d MMMM yyyy"
-                    className={`form-control ${classes.calendar}`}
-                    name="date"
-                    onChange={(date) => setFieldValue('date', date)}
-                  />
-                }
-                label="Date"
-                labelPlacement="top"
-                className={classes.formControlLabel}
-                sx={{ mt: 2 }}
-              />
-            </LocalizationProvider>
+            {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
+            {/* <CustomDatePicker id="date" name="date" label="Date" /> */}
+            <FormControlLabel
+              control={
+                <DatePicker
+                  id="date"
+                  disabled={values.sleepless}
+                  onBlur={handleBlur}
+                  selected={values.date}
+                  placeholderText="Date"
+                  dateFormat="d MMMM yyyy"
+                  className={`form-control ${classes.calendar}`}
+                  name="date"
+                  onChange={(date) => setFieldValue('date', date)}
+                />
+              }
+              label="Date"
+              labelPlacement="top"
+              className={classes.formControlLabel}
+              sx={{ mt: 2 }}
+            />
+            {/* </LocalizationProvider> */}
             {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>}
+            {/* <CustomDatePicker id="startTime" name="startTime" label="startTime" /> */}
             <FormControlLabel
               control={
                 <DatePicker
@@ -366,6 +264,7 @@ const NightAddForm = (props: NightAddFormProps) => {
               sx={{ mt: 2 }}
             />
             {errors.startTime && touched.startTime && <Typography className={classes.calendarErrorMessage}>{errors.startTime}</Typography>}
+            {/* <CustomDatePicker id="endTime" name="endTime" label="endTime" /> */}
             <FormControlLabel
               control={
                 <DatePicker
@@ -431,11 +330,11 @@ const NightAddForm = (props: NightAddFormProps) => {
                                 }}
                               />
                               {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<IBreak>) &&
-                                (errors.breaks[i] as FormikErrors<IBreak>).start &&
+                                (errors.breaks[i] as FormikErrors<Break>) &&
+                                (errors.breaks[i] as FormikErrors<Break>).start &&
                                 touched.breaks &&
-                                (touched.breaks as unknown as IBreak[])[i] &&
-                                (touched.breaks as unknown as IBreak[])[i].start && <Typography>{(errors.breaks[i] as FormikErrors<IBreak>).start}</Typography>}
+                                (touched.breaks as unknown as Break[])[i] &&
+                                (touched.breaks as unknown as Break[])[i].start && <Typography>{(errors.breaks[i] as FormikErrors<Break>).start}</Typography>}
                             </div>
                             <div>
                               <DatePicker
@@ -453,11 +352,11 @@ const NightAddForm = (props: NightAddFormProps) => {
                                 }}
                               />
                               {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<IBreak>) &&
-                                (errors.breaks[i] as FormikErrors<IBreak>).end &&
+                                (errors.breaks[i] as FormikErrors<Break>) &&
+                                (errors.breaks[i] as FormikErrors<Break>).end &&
                                 touched.breaks &&
-                                (touched.breaks as unknown as IBreak[])[i] &&
-                                (touched.breaks as unknown as IBreak[])[i].end && <Typography>{(errors.breaks[i] as FormikErrors<IBreak>).end}</Typography>}
+                                (touched.breaks as unknown as Break[])[i] &&
+                                (touched.breaks as unknown as Break[])[i].end && <Typography>{(errors.breaks[i] as FormikErrors<Break>).end}</Typography>}
                             </div>
                           </div>
                         </div>
@@ -469,7 +368,7 @@ const NightAddForm = (props: NightAddFormProps) => {
                 </div>
               )}
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   value={values.nightmares}
@@ -478,8 +377,10 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="Nightmares"
-            />
-            <FormControlLabel
+            /> */}
+            <CustomCheckbox id="nightmares" name="nightmares" label="Nightmares" />
+            <CustomCheckbox id="noise" name="noise" label="noise" />
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   name="noise"
@@ -490,15 +391,17 @@ const NightAddForm = (props: NightAddFormProps) => {
                 />
               }
               label="Noise"
-            />
-            <FormControlLabel
+            /> */}
+            <CustomRatingField id="quality" name="quality" label="Overall quality of the night?" />
+            {/* <FormControlLabel
               control={<Rating name="quality" id="quality" value={values.quality} onChange={handleChange} />}
               label="Overall quality of the night?"
               labelPlacement="top"
               sx={{ my: 3 }}
               className={classes.formControlLabel}
-            />
-            <FormControlLabel
+            /> */}
+            <CustomTextField id="notes" type="text" label="Notes" name="notes" />
+            {/* <FormControlLabel
               style={{ width: '100%' }}
               control={
                 <TextField
@@ -521,8 +424,20 @@ const NightAddForm = (props: NightAddFormProps) => {
               labelPlacement="top"
               className={classes.formControlLabel}
               sx={{ mt: 2 }}
+            /> */}
+            <CustomTextField
+              id="duration"
+              disabled
+              value={
+                values.startTime && values.endTime && calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
+                  ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
+                  : 0
+              }
+              type="text"
+              label="Calculated duration of sleep"
+              name="duration"
             />
-            <TextField
+            {/* <TextField
               fullWidth
               disabled
               sx={{ mb: 4 }}
@@ -536,7 +451,7 @@ const NightAddForm = (props: NightAddFormProps) => {
                   : 0
               }
               variant="outlined"
-            />
+            /> */}
             <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid}>
               Add
             </Button>

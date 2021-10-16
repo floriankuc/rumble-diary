@@ -5,7 +5,7 @@ import { BrowserRouter as Router2, Switch, Route } from 'react-router-dom';
 import { loadUser } from './actions/authActions';
 import AppNavbar from './containers/AppNavbar';
 import LoginModal from './containers/LoginModal';
-import ItemModal from './containers/ItemModal';
+import ItemModal from './containers/Form';
 import Modal from './components/Modal/Modal';
 import ModalProvider from './components/Modal/ModalProvider';
 import SidebarProvider from './components/Sidebar/SidebarProvider';
