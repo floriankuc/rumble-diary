@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
-  // name: {
-  //   type: String,
-  //   required: false,
-  // },
   date: {
     type: Date,
     required: true,
@@ -28,7 +24,6 @@ const ItemSchema = new Schema({
     required: false,
   },
   duration: {
-    //rechnet FE aus
     type: Number,
     required: true,
   },

@@ -1,20 +1,9 @@
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import { Button, Checkbox, Divider, Rating, TextField, Typography } from '@mui/material';
 // import custom react datepicker overrides
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { makeStyles } from '@mui/styles';
-import { differenceInMinutes } from 'date-fns';
-import { differenceInDays, differenceInHours } from 'date-fns/esm';
-import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
+import { FormikProps } from 'formik';
 import React, { useEffect } from 'react';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import * as yup from 'yup';
 import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
 import NightAddForm from '../components/Form';
@@ -37,15 +26,16 @@ export interface Break {
   end: Date;
 }
 
-export interface IOptionalBreak {
+export interface BreakOptional {
   start?: Date;
   end?: Date;
 }
-export interface INight {
+
+export interface NightOptional {
   date?: Date | null;
   startTime?: Date;
   endTime?: Date;
-  breaks?: IOptionalBreak[];
+  breaks?: BreakOptional[];
   nightmares: boolean;
   noise: boolean;
   quality: number;
@@ -53,7 +43,7 @@ export interface INight {
   conditions: Conditions;
 }
 
-export interface IDefiniteNight {
+export interface Night {
   date: Date;
   startTime: Date;
   endTime: Date;
@@ -65,21 +55,23 @@ export interface IDefiniteNight {
   conditions: Conditions;
 }
 
-export type AdditionalFormProps = {
+export type FormProps = {
   sleepless: boolean;
 };
 
-export interface IItemModal extends PropsFromRedux {
+export interface AddNightReduxProps extends PropsFromRedux {
   isAuthenticated: boolean;
   isLoading: boolean;
   itemLoading: boolean;
   itemSuccess: boolean;
 }
 
-export type DefiniteNightAndFormProps = IDefiniteNight & AdditionalFormProps;
-export type NightAndFormProps = INight & AdditionalFormProps;
+export type DefiniteNightAndFormProps = Night & FormProps;
+export type NightAndFormProps = NightOptional & FormProps;
 
-const ItemModal = (props: IItemModal) => {
+const ItemModal: React.FC<FormikProps<FormProps> & NightOptional & AddNightReduxProps> = (
+  props: FormikProps<FormProps> & NightOptional & AddNightReduxProps
+) => {
   const history = useHistory();
 
   console.log('props.addmodal', props);

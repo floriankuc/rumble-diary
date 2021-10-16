@@ -1,5 +1,5 @@
 import { differenceInMinutes } from 'date-fns';
-import { Break, IOptionalBreak } from '../containers/Form';
+import { Break, BreakOptional } from '../containers/Form';
 
 export const outputMinutes = (mins: number): string => {
   const phours = `${Math.floor(mins / 60)}`.padStart(2, '0');
@@ -7,8 +7,8 @@ export const outputMinutes = (mins: number): string => {
   return mins < 60 ? `${mins} mins` : `${phours}:${pmins} h`;
 };
 
-export const sumUpBreaksInMinutes = (breaks: (IOptionalBreak | Break)[] = []): number => {
-  return breaks.reduce((a: number, b: Break | IOptionalBreak): number => {
+export const sumUpBreaksInMinutes = (breaks: (BreakOptional | Break)[] = []): number => {
+  return breaks.reduce((a: number, b: Break | BreakOptional): number => {
     if (b.end && b.start) {
       return a + differenceInMinutes(b.end, b.start);
     } else {
@@ -19,7 +19,7 @@ export const sumUpBreaksInMinutes = (breaks: (IOptionalBreak | Break)[] = []): n
 
 export const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(endTime, startTime);
 
-export const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: (IOptionalBreak | Break)[] = []): number => {
+export const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: (BreakOptional | Break)[] = []): number => {
   if (!breaks) {
     return startTime && endTime && calculateDifferenceInMinutes(endTime, startTime);
   }
