@@ -1,26 +1,28 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { addItem } from '../actions/itemActions';
-import { TextField, Typography, Button, Checkbox, Rating, Divider } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { useHistory } from 'react-router-dom';
-import { FieldArray, Formik, Form, FormikErrors } from 'formik';
-import * as yup from 'yup';
-import { ConnectedProps } from 'react-redux';
-import { APP_ROUTES } from '../routes';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-// import custom react datepicker overrides
-import FormControlLabel from '@mui/material/FormControlLabel';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { addDays, differenceInMinutes, subDays } from 'date-fns';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { Button, Checkbox, Divider, Rating, TextField, Typography } from '@mui/material';
+// import custom react datepicker overrides
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { makeStyles } from '@mui/styles';
+import { differenceInMinutes } from 'date-fns';
+import { differenceInDays, differenceInHours } from 'date-fns/esm';
+import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
+import React, { useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { connect, ConnectedProps } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import * as yup from 'yup';
+import { addItem } from '../actions/itemActions';
+import { APP_ROUTES } from '../routes';
+import NightAddForm from '../components/Form';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-//normal interfaces
 export interface IConditions {
-  temperature: number;
+  temperature?: number;
   freshAir: boolean;
   fed: boolean;
   mentalStatus: number;
@@ -33,7 +35,24 @@ export interface IBreak {
   start: Date;
   end: Date;
 }
+
+export interface IOptionalBreak {
+  start?: Date;
+  end?: Date;
+}
 export interface INight {
+  date?: Date | null;
+  startTime?: Date;
+  endTime?: Date;
+  breaks?: IOptionalBreak[];
+  nightmares: boolean;
+  noise: boolean;
+  quality: number;
+  notes?: string;
+  conditions: IConditions;
+}
+
+export interface IDefiniteNight {
   date: Date;
   startTime: Date;
   endTime: Date;
@@ -49,14 +68,15 @@ export type AdditionalFormProps = {
   sleepless: boolean;
 };
 
-interface IItemModal extends PropsFromRedux {
+export interface IItemModal extends PropsFromRedux {
   isAuthenticated: boolean;
   isLoading: boolean;
   itemLoading: boolean;
   itemSuccess: boolean;
 }
 
-type NightAndFormProps = INight & AdditionalFormProps;
+export type DefiniteNightAndFormProps = IDefiniteNight & AdditionalFormProps;
+export type NightAndFormProps = INight & AdditionalFormProps;
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -90,11 +110,6 @@ const useStyles = makeStyles({
   },
 });
 
-//https://codesandbox.io/s/1o8n593z6q?file=/index.js:237-276 für form auslagern
-//empty initialising wo es sinn macht
-//TODO validation: breaks müssen entweder am tag des start of sleeps oder am tag des end of sleeps sein!
-//TODO WICHTIG: Wenn "too long sleep" endTime error -> kein date auf startTime -> error throw weil kein date
-
 const validationSchema = yup.object({
   conditions: yup
     .object({
@@ -111,44 +126,72 @@ const validationSchema = yup.object({
   sleepless: yup.bool(),
   startTime: yup
     .date()
-    .default(() => new Date())
+    .test({
+      test: (values, ctx) => {
+        if (values) {
+          return differenceInHours(values, ctx.parent.date) > 24 || differenceInHours(values, ctx.parent.date) < 0
+            ? ctx.createError({ message: 'Start of sleep must be on same day or one day after', path: 'startTime' })
+            : true;
+        }
+        return true;
+      },
+    })
+    .nullable()
     .required('Enter a start time'),
   endTime: yup
     .date()
-    // .when('startTime', {
-    //   is: (startTime: Date) => {
-    //     return !!startTime ? true : false;
-    //   },
-    //   then: yup.date().min(yup.ref('startTime'), "End date can't be before Start date").min(yup.ref('startTime')).required('End Date/Time is required'),
-    // })
-    .when('startTime', (st: Date) => {
-      if (st) {
-        return yup.date().max(addDays(st, 1), 'Are you sure you slept this long?').min(st, 'End time cannot be before start time');
-      }
-      return yup.date().required();
+    .when('startTime', {
+      is: (startTime: Date) => {
+        return !!startTime ? true : false;
+      },
+      then: yup
+        .date()
+        .min(yup.ref('startTime'), "End date can't be before Start date")
+        .test({
+          test: function (endTime, ctx) {
+            if (endTime) {
+              return differenceInDays(endTime, ctx.parent.date) > 1 ? this.createError({ message: 'Too long', path: 'endTime' }) : true;
+            }
+            return true;
+          },
+        }),
     })
-    //start: 1. 18:00
-    //end: 2. 18:00
-    // .when('startTime', {
-    //   is: (startTime: Date) => {
-    //     return !!startTime ? true : false;
-    //   },
-    //   then: yup.date().max(addDays(yup.ref('startTime'), 1))
-    // })
-    .nullable(),
+    .nullable()
+    .required('Enter an end time'),
   breaks: yup.array(
     yup.object({
       start: yup
         .date()
-        .default(() => new Date())
-        .required('Enter a break start time'),
+        .test({
+          test: function (breakStart, ctx) {
+            if (ctx.options.context!.startTime && breakStart) {
+              return differenceInHours(breakStart, ctx.options.context!.date) > 24 || differenceInHours(breakStart, ctx.options.context!.date) < 0
+                ? ctx.createError({ message: 'Break Start of sleep must be on same day or one day after', path: this.path })
+                : true;
+            }
+            return true;
+          },
+        })
+        .nullable()
+        .required('enter a break start time'),
       end: yup
         .date()
-        .required()
-        .test('end-valid', (value, ctx): boolean | yup.ValidationError => {
-          return value && ctx.parent['start'] < value ? true : ctx.createError({ message: 'break end before break start' });
+        .test({
+          test: function (breakEnd, ctx) {
+            if (ctx.options.context!.startTime && breakEnd) {
+              if (differenceInHours(breakEnd, ctx.options.context!.date) > 24 || differenceInHours(breakEnd, ctx.options.context!.date) < 0) {
+                return ctx.createError({ message: 'Break end of sleep must be on same day or one day after', path: this.path });
+              } else if (breakEnd < ctx.parent.start) {
+                return ctx.createError({ message: 'break end before breaks start', path: this.path });
+              } else {
+                return true;
+              }
+            }
+            return true;
+          },
         })
-        .nullable(),
+        .nullable()
+        .required('enter a break end time'),
     })
   ),
   nightmares: yup.bool().required(),
@@ -169,17 +212,26 @@ const ItemModal = (props: IItemModal) => {
     return mins < 60 ? `${mins} mins` : `${phours}:${pmins} h`;
   };
 
-  const sumUpBreaksInMinutes = (breaks: IBreak[] = []) => {
-    return breaks.reduce((a: number, b: IBreak): number => a + differenceInMinutes(new Date(b.end), new Date(b.start)), 0);
+  const sumUpBreaksInMinutes = (breaks: (IOptionalBreak | IBreak)[] = []): number => {
+    return breaks.reduce((a: number, b: IBreak | IOptionalBreak): number => {
+      if (b.end && b.start) {
+        return a + differenceInMinutes(b.end, b.start);
+      } else {
+        return 0;
+      }
+    }, 0);
   };
 
-  const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(new Date(endTime), new Date(startTime));
+  const calculateDifferenceInMinutes = (endTime: Date, startTime: Date): number => differenceInMinutes(endTime, startTime);
 
-  const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: IBreak[] = []): number => {
-    return calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
+  const calculateDurationInMinutes = (startTime: Date, endTime: Date, breaks: (IOptionalBreak | IBreak)[] = []): number => {
+    if (!breaks) {
+      return startTime && endTime && calculateDifferenceInMinutes(endTime, startTime);
+    }
+    return startTime && endTime && calculateDifferenceInMinutes(endTime, startTime) - sumUpBreaksInMinutes(breaks);
   };
 
-  const handleSubmit = (values: NightAndFormProps) => {
+  const handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     const { sleepless, ...restValues } = values;
     props.addItem({ ...restValues, duration });
@@ -195,381 +247,7 @@ const ItemModal = (props: IItemModal) => {
     }
   }, [props.itemSuccess, history]);
 
-  const initialValues: NightAndFormProps = {
-    date: subDays(new Date(), 1),
-    sleepless: false,
-    startTime: subDays(new Date(), 1),
-    endTime: subDays(new Date(), 1),
-    breaks: undefined,
-    nightmares: false,
-    noise: false,
-    quality: 0,
-    notes: undefined,
-    conditions: {
-      temperature: 0,
-      freshAir: false,
-      fed: false,
-      mentalStatus: 0,
-      noDrinks1HourBefore: false,
-      noCaffeine4HoursBefore: false,
-      noElectronicDevices: false,
-    },
-  };
-
-  return (
-    <div style={{ width: 1000, paddingLeft: 200, paddingRight: 200 }}>
-      <Typography variant="h3">Add</Typography>
-      <Typography variant="h5" sx={{ mb: 5 }}>
-        Conditions before going to bed
-      </Typography>
-      <Formik
-        initialValues={initialValues}
-        validateOnBlur
-        validationSchema={validationSchema}
-        onSubmit={(values) => {
-          handleSubmit(values);
-        }}
-      >
-        {({ handleChange, values, errors, touched, setFieldValue, handleBlur }) => (
-          <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <FormControlLabel
-              control={
-                <TextField
-                  type="number"
-                  id="conditions.temperature"
-                  name="conditions.temperature"
-                  value={values.conditions.temperature}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={touched.conditions?.temperature && Boolean(errors.conditions?.temperature)}
-                  helperText={touched.conditions?.temperature && errors.conditions?.temperature}
-                  variant="outlined"
-                />
-              }
-              label="Room temperature"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-            />
-            <FormControlLabel
-              control={<Rating name="conditions.mentalStatus" id="mentalStatus" value={values.conditions.mentalStatus} onChange={handleChange} />}
-              label="How was your mental state?"
-              labelPlacement="top"
-              sx={{ my: 3 }}
-              className={classes.formControlLabel}
-            />
-            <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(): void => setFieldValue('conditions.freshAir', !values.conditions.freshAir)}
-                  value={values.conditions.freshAir}
-                  name="freshAir"
-                  id="freshAir"
-                  inputProps={{ 'aria-label': 'freshAir' }}
-                  disableRipple
-                  disableTouchRipple
-                  disableFocusRipple
-                />
-              }
-              label="Fresh air"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(): void => setFieldValue('conditions.fed', !values.conditions.fed)}
-                  value={values.conditions.fed}
-                  name="fed"
-                  id="fed"
-                  inputProps={{ 'aria-label': 'fed' }}
-                  disableRipple
-                  disableTouchRipple
-                  disableFocusRipple
-                />
-              }
-              label="Eaten enough"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={values.conditions.noDrinks1HourBefore}
-                  onChange={(): void => setFieldValue('conditions.noDrinks1HourBefore', !values.conditions.noDrinks1HourBefore)}
-                  name="noDrinks1HourBefore"
-                  id="noDrinks1HourBefore"
-                  inputProps={{ 'aria-label': 'noDrinks1HourBefore' }}
-                  disableRipple
-                  disableTouchRipple
-                  disableFocusRipple
-                />
-              }
-              label="No drinks 1 hour before bed"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={values.conditions.noCaffeine4HoursBefore}
-                  onChange={(): void => setFieldValue('conditions.noCaffeine4HoursBefore', !values.conditions.noCaffeine4HoursBefore)}
-                  name="noCaffeine4HoursBefore"
-                  id="noCaffeine4HoursBefore"
-                  inputProps={{ 'aria-label': 'noCaffeine4HoursBefore' }}
-                  disableRipple
-                  disableTouchRipple
-                  disableFocusRipple
-                />
-              }
-              label="No caffein 4 hours before bed"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={values.conditions.noElectronicDevices}
-                  onChange={(): void => setFieldValue('conditions.noElectronicDevices', !values.conditions.noElectronicDevices)}
-                  name="noElectronicDevices"
-                  id="noElectronicDevices"
-                  inputProps={{ 'aria-label': 'noElectronicDevices' }}
-                  disableRipple
-                  disableTouchRipple
-                  disableFocusRipple
-                />
-              }
-              label="No electronic devices running"
-            />
-            <Divider />
-            <Typography variant="h5" sx={{ mt: 8, mb: 4 }}>
-              How the night went
-            </Typography>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={(): void => {
-                    setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('breaks', undefined);
-                    setFieldValue('sleepless', !values.sleepless);
-                  }}
-                  name="noElectronicDevices"
-                  id="noElectronicDevices"
-                  inputProps={{ 'aria-label': 'noElectronicDevices' }}
-                />
-              }
-              label="Sleepless night"
-            />
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="date"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.date}
-                  placeholderText="Date"
-                  dateFormat="d MMMM yyyy"
-                  className={`form-control ${classes.calendar}`}
-                  name="date"
-                  onChange={(date) => setFieldValue('date', date)}
-                />
-              }
-              label="Date"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="startTime"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.startTime}
-                  showTimeSelect
-                  placeholderText="Start of sleep"
-                  dateFormat="d MMMM yyyy, hh:mm"
-                  name="startTime"
-                  className={`form-control ${classes.calendar}`}
-                  onChange={(time) => setFieldValue('startTime', time)}
-                />
-              }
-              label="Start of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.startTime && touched.startTime && <Typography className={classes.calendarErrorMessage}>{errors.startTime}</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  disabled={values.sleepless}
-                  id="endTime"
-                  selected={values.endTime}
-                  onBlur={handleBlur}
-                  showTimeSelect
-                  placeholderText="End of sleep"
-                  dateFormat="d MMMM yyyy, hh:mm"
-                  className={`form-control ${classes.calendar}`}
-                  name="endTime"
-                  onChange={(time) => setFieldValue('endTime', time)}
-                />
-              }
-              label="End of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2, mb: 4 }}
-            />
-            {errors.endTime && touched.endTime && <Typography className={classes.calendarErrorMessage}>{errors.endTime}</Typography>}
-            <FieldArray
-              name="breaks"
-              render={(arrayHelpers) => (
-                <div style={{ width: '100%' }}>
-                  <div style={{ width: '100%', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>Breaks</Typography>
-                    <Button
-                      sx={{ mt: 1 }}
-                      startIcon={<AddIcon />}
-                      variant="outlined"
-                      disabled={values.sleepless}
-                      onClick={() => arrayHelpers.push({ start: new Date(), end: new Date() })}
-                    >
-                      Add a break
-                    </Button>
-                  </div>
-                  {values.breaks && values.breaks.length > 0 ? (
-                    values.breaks.map((f, i) => (
-                      <div key={i}>
-                        <div style={{ background: '#F6F6F6', padding: 10, borderRadius: 5, marginBottom: 30 }}>
-                          <div style={{ width: '100%', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography sx={{ mb: 1 }}>Break {i + 1}</Typography>
-                            <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
-                              Remove break
-                            </Button>
-                          </div>
-                          <div style={{ display: 'flex' }}>
-                            <div>
-                              <DatePicker
-                                id={`${values.breaks && values.breaks[i].start}`}
-                                onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].start}
-                                showTimeSelect
-                                dateFormat="d MMMM yyyy, hh:mm"
-                                className={`form-control ${classes.calendar}`}
-                                name={`breaks.${i}.start`}
-                                onChange={(time) => setFieldValue(`breaks.${i}.start`, time)}
-                              />
-                              {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<IBreak>) &&
-                                (errors.breaks[i] as FormikErrors<IBreak>).start &&
-                                touched.breaks &&
-                                (touched.breaks as unknown as IBreak[])[i] &&
-                                (touched.breaks as unknown as IBreak[])[i].start && <span>enter a start time</span>}
-                            </div>
-                            <div>
-                              <DatePicker
-                                id={`${values.breaks && values.breaks[i].end}`}
-                                onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].end}
-                                showTimeSelect
-                                dateFormat="d MMMM yyyy, hh:mm"
-                                className={`form-control ${classes.calendar}`}
-                                name={`breaks.${i}.end`}
-                                onChange={(time) => setFieldValue(`breaks.${i}.end`, time)}
-                              />
-                              {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<IBreak>) &&
-                                (errors.breaks[i] as FormikErrors<IBreak>).end &&
-                                touched.breaks &&
-                                (touched.breaks as unknown as IBreak[])[i] &&
-                                (touched.breaks as unknown as IBreak[])[i].end && <span>{(errors.breaks[i] as FormikErrors<IBreak>).end}</span>}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              )}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={values.nightmares}
-                  onChange={(): void => setFieldValue('nightmares', !values.nightmares)}
-                  inputProps={{ id: 'nightmares', name: 'nightmares', 'aria-label': 'nightmares' }}
-                />
-              }
-              label="Nightmares"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="noise"
-                  id="noise"
-                  value={values.noise}
-                  onChange={(): void => setFieldValue('noise', !values.noise)}
-                  inputProps={{ id: 'noise', name: 'noise', 'aria-label': 'noise' }}
-                />
-              }
-              label="Noise"
-            />
-            <FormControlLabel
-              control={<Rating name="quality" id="quality" value={values.quality} onChange={handleChange} />}
-              label="Overall quality of the night?"
-              labelPlacement="top"
-              sx={{ my: 3 }}
-              className={classes.formControlLabel}
-            />
-            <FormControlLabel
-              style={{ width: '100%' }}
-              control={
-                <TextField
-                  fullWidth
-                  type="text"
-                  id="notes"
-                  name="notes"
-                  value={values.notes}
-                  onChange={handleChange}
-                  error={touched.notes && Boolean(errors.notes)}
-                  helperText={touched.notes && errors.notes}
-                  variant="outlined"
-                  multiline
-                  minRows={2}
-                  maxRows={5}
-                  sx={{ mb: 4 }}
-                />
-              }
-              label="Notes"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              fullWidth
-              disabled
-              sx={{ mb: 4 }}
-              type="text"
-              id="duration"
-              name="duration"
-              label="Calculated duration of sleep"
-              value={
-                calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
-                  ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
-                  : 0
-              }
-              variant="outlined"
-            />
-            <Button color="primary" variant="contained" fullWidth type="submit">
-              Add
-            </Button>
-            values:
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            errors:
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
-            touched:
-            <pre>{JSON.stringify(touched, null, 2)}</pre>
-          </Form>
-        )}
-      </Formik>
-    </div>
-  );
+  return <NightAddForm handleSubmit={handleSubmit} />;
 };
 
 const mapStateToProps = (state: any) => ({
