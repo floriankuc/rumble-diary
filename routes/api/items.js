@@ -44,35 +44,11 @@ router.delete('/:id', authMiddleware, (req, res) => {
 router.get('/:userId/:id', authMiddleware, (req, res) => {
   Item.find({ user: req.params.userId, _id: req.params.id }).then((item) => res.json(item));
 });
-//TODO
-// @route PATCH api/lists/:id
-// router.patch('/:id', auth,
-//     async (req, res) => {
-//         try {
-//             await List.findById(req.params.id, (error, item) => {
-//                 if (req.body.type === "delete") {
-//                     item.todos = item.todos.filter(todo => todo._id + '' !== req.body.id)
-//                 } else {
-//                     item.todos = item.todos.map(todo => {
-//                         if (todo._id + '' === req.body.id) {
-//                             if (req.body.type === "rename") {
-//                                 todo.name = req.body.name
-//                                 todo.date = Date.now()
-//                             } else if (req.body.type === "complete") {
-//                                 todo.done = !todo.done
-//                                 todo.date = Date.now()
-//                             }
-//                         } return todo
-//                     })
-//                 }
-//                 item.save()
-//             })
-//             res.status(200).json({ success: true })
 
-//         } catch(error) {
-//             res.status(500).json({ message: 'Something went wrong... Try again' })
-//         }
-//     }
-// )
+router.patch('/:userId/:id', authMiddleware, (req, res) => {
+  Item.findByIdAndUpdate({ user: req.params.userId, _id: req.params.id }, { ...req.body })
+    .then((item) => res.json(item))
+    .catch(() => res.status(500).json({ success: false }));
+});
 
 module.exports = router;

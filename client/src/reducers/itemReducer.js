@@ -1,9 +1,10 @@
-import { GET_ITEMS, GET_ITEM, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING } from '../actions/types';
+import { GET_ITEMS, GET_ITEM, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING, EDIT_ITEM } from '../actions/types';
 
 const initialState = {
   items: [],
   loading: false,
   success: false,
+  editSuccess: false,
 };
 
 export default function itemReducer(state = initialState, action) {
@@ -15,7 +16,9 @@ export default function itemReducer(state = initialState, action) {
     case ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case GET_ITEM:
-      return { item: action.payload, loading: false, success: true };
+      return { ...state, items: action.payload, loading: false, success: true };
+    case EDIT_ITEM:
+      return { ...state, items: [action.payload, ...state.items], loading: false, editSuccess: true };
     case ITEMS_LOADING:
       return {
         ...state,
