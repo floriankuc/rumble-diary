@@ -42,10 +42,10 @@ const Show: React.FC<FormikProps<EditFormProps> & NightOptional & AddNightReduxP
   };
 
   useEffect(() => {
-    if (props.editSuccess) {
+    if (props.success) {
       history.push(APP_ROUTES.diary);
     }
-  }, [props.editSuccess, history]);
+  }, [props.success, history]);
 
   useEffect(() => {
     if (props.user && props.user.id) {
@@ -67,7 +67,7 @@ const Show: React.FC<FormikProps<EditFormProps> & NightOptional & AddNightReduxP
 
 const mapStateToProps = (state: any) => ({
   itemLoading: state.item.loading,
-  editSuccess: state.item.editSuccess,
+  success: state.item.success,
   isAuthenticated: state.auth.isAuthenticated,
   item: state.item,
   user: state.auth.user,

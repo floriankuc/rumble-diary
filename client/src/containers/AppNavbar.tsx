@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
 import { SidebarContext } from '../components/Sidebar/SidebarContext';
 
-function AppNavbar(props) {
+function AppNavbar(props: any) {
   const { isAuthenticated, isLoading } = props.auth;
   const sidebarContext = React.useContext(SidebarContext);
   const history = useHistory();
@@ -57,7 +57,7 @@ function AppNavbar(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   auth: state.auth,
 });
 

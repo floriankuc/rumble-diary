@@ -13,7 +13,7 @@ export const validationSchema = yup.object({
       noElectronicDevices: yup.bool().required(),
     })
     .required(),
-  date: yup.date().required('Enter a date'),
+  date: yup.date().required('Enter a date').nullable(),
   sleepless: yup.bool(),
   startTime: yup
     .date()

@@ -48,6 +48,8 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
   const classes = useStyles();
   const [field, meta, helpers] = useField(props);
 
+  console.log();
+
   return (
     <>
       <FormControlLabel
@@ -56,7 +58,8 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             id={props.id}
             disabled={props.disabled}
             onBlur={field.onBlur}
-            selected={meta.value}
+            // selected={new Date()}
+            selected={meta.value ? new Date(meta.value) : null}
             showTimeSelect={props.showTimeSelect}
             placeholderText={props.placeholder}
             timeFormat={props.showTimeSelect ? 'kk:mm' : ''}
@@ -64,7 +67,10 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             name={props.id}
             className={`form-control ${classes.calendar}`}
             // onChange={(time) => setFieldValue('startTime', time)}
-            onChange={(time: Date | null) => helpers.setValue(time)}
+            onChange={(time: Date | null) => {
+              helpers.setValue(time);
+              helpers.setTouched(true);
+            }}
           />
         }
         label={props.label}
@@ -72,29 +78,9 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
         className={classes.formControlLabel}
         sx={{ mt: 2 }}
       />
-      {meta.error && meta.touched && <Typography className={classes.calendarErrorMessage}>{props.error}</Typography>}
+      {meta.error && meta.touched && <Typography className={classes.calendarErrorMessage}>{meta.error}</Typography>}
       {/* {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>} */}
     </>
-    // <FormControlLabel
-    //   control={
-    //     <MuiTextField
-    //       {...field}
-    //       disabled={props.disabled}
-    //       type={props.type}
-    //       id={props.id}
-    //       name={props.id}
-    //       value={meta.value || props.value}
-    //       onChange={field.onChange}
-    //       onBlur={field.onBlur}
-    //       error={meta.touched && Boolean(meta.error)}
-    //       helperText={meta.touched && meta.error}
-    //       variant="outlined"
-    //     />
-    //   }
-    //   label={props.label}
-    //   labelPlacement="top"
-    //   className={classes.formControlLabel}
-    // />
   );
 };
 

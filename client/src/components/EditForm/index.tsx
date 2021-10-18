@@ -12,6 +12,7 @@ import { makeStyles } from '@mui/styles';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import CustomDatePicker from '../FormFields/DatePicker';
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -125,70 +126,9 @@ const EditForm = (props: EditFormProps) => {
               }
               label="Sleepless night"
             />
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="date"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.date}
-                  placeholderText="Date"
-                  dateFormat="d MMMM yyyy"
-                  className={`form-control ${classes.calendar}`}
-                  name="date"
-                  onChange={(date) => setFieldValue('date', date)}
-                />
-              }
-              label="Date"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="startTime"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.startTime}
-                  showTimeSelect
-                  placeholderText="Start of sleep"
-                  timeFormat="kk:mm"
-                  dateFormat="d MMMM yyyy, kk:mm"
-                  name="startTime"
-                  className={`form-control ${classes.calendar}`}
-                  onChange={(time) => setFieldValue('startTime', time)}
-                />
-              }
-              label="Start of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.startTime && touched.startTime && <Typography className={classes.calendarErrorMessage}>{errors.startTime}</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  disabled={values.sleepless}
-                  id="endTime"
-                  selected={values.endTime}
-                  onBlur={handleBlur}
-                  showTimeSelect
-                  placeholderText="End of sleep"
-                  timeFormat="kk:mm"
-                  dateFormat="d MMMM yyyy, kk:mm"
-                  className={`form-control ${classes.calendar}`}
-                  name="endTime"
-                  onChange={(time) => setFieldValue('endTime', time)}
-                />
-              }
-              label="End of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2, mb: 4 }}
-            />
-            {errors.endTime && touched.endTime && <Typography className={classes.calendarErrorMessage}>{errors.endTime}</Typography>}
+            <CustomDatePicker id="date" name="date" label="date" />
+            <CustomDatePicker id="startTime" name="startTime" label="startTime" showTimeSelect />
+            <CustomDatePicker id="endTime" name="endTime" label="endTime" showTimeSelect />
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (
@@ -217,7 +157,13 @@ const EditForm = (props: EditFormProps) => {
                           </div>
                           <div style={{ display: 'flex' }}>
                             <div>
-                              <DatePicker
+                              <CustomDatePicker
+                                id={`${values.breaks && values.breaks[i].start}`}
+                                showTimeSelect
+                                name={`breaks.${i}.start`}
+                                label="break start"
+                              />
+                              {/* <DatePicker
                                 id={`${values.breaks && values.breaks[i].start}`}
                                 onBlur={handleBlur}
                                 selected={values.breaks && values.breaks[i] && values.breaks[i].start ? new Date(values.breaks[i].start as Date) : undefined}
@@ -237,10 +183,12 @@ const EditForm = (props: EditFormProps) => {
                                 (errors.breaks[i] as FormikErrors<Break>).start &&
                                 touched.breaks &&
                                 (touched.breaks as unknown as Break[])[i] &&
-                                (touched.breaks as unknown as Break[])[i].start && <Typography>{(errors.breaks[i] as FormikErrors<Break>).start}</Typography>}
+                                (touched.breaks as unknown as Break[])[i].start && <Typography>{(errors.breaks[i] as FormikErrors<Break>).start}</Typography>} */}
                             </div>
                             <div>
-                              <DatePicker
+                              <CustomDatePicker id={`${values.breaks && values.breaks[i].end}`} showTimeSelect name={`breaks.${i}.end`} label="break end" />
+
+                              {/* <DatePicker
                                 id={`${values.breaks && values.breaks[i].end}`}
                                 onBlur={handleBlur}
                                 selected={values.breaks && values.breaks[i] && values.breaks[i].end ? new Date(values.breaks[i].end as Date) : undefined}
@@ -260,7 +208,7 @@ const EditForm = (props: EditFormProps) => {
                                 (errors.breaks[i] as FormikErrors<Break>).end &&
                                 touched.breaks &&
                                 (touched.breaks as unknown as Break[])[i] &&
-                                (touched.breaks as unknown as Break[])[i].end && <Typography>{(errors.breaks[i] as FormikErrors<Break>).end}</Typography>}
+                                (touched.breaks as unknown as Break[])[i].end && <Typography>{(errors.breaks[i] as FormikErrors<Break>).end}</Typography>} */}
                             </div>
                           </div>
                         </div>
