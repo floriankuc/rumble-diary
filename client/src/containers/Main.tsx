@@ -10,6 +10,7 @@ import { Sidebar } from '../components/Sidebar/Sidebar';
 import { connect, ConnectedProps } from 'react-redux';
 import { sidebarItems } from '../components/Sidebar/sidebarItems';
 import RegisterModal from './RegisterModal';
+import Show from './Show';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -34,7 +35,7 @@ const MainScreen = (props: IMain) => {
         <Route path={APP_ROUTES.start} exact component={(): ReactElement => <div>start</div>} />
         <Route path={APP_ROUTES.add} exact component={ItemModal} />
         <Route path={APP_ROUTES.diary} exact component={ShoppingList} />
-        <Route path={APP_ROUTES.show} exact component={(): ReactElement => <div>show</div>} />
+        <Route path={APP_ROUTES.show} exact component={Show} />
         <Route path={APP_ROUTES.root} component={(): ReactElement => <div>root</div>} />
       </Switch>
       <Switch>

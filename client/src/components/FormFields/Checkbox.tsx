@@ -19,6 +19,7 @@ const CustomCheckbox = (props: CheckboxProps & FieldHookConfig<boolean>) => {
           {...field}
           value={field.value}
           disabled={props.disabled}
+          checked={field.value}
           id={props.id}
           name={props.id}
           onChange={(): void => helpers.setValue(!field.value)}

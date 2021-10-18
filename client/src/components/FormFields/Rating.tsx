@@ -29,34 +29,7 @@ const CustomRatingField = (props: RatingFieldProps & FieldHookConfig<string>) =>
       sx={{ my: 3 }}
       className={classes.formControlLabel}
     />
-    // <FormControlLabel
-    //   control={
-    //     <MuiTextField
-    //       {...field}
-    //       disabled={props.disabled}
-    //       type={props.type}
-    //       id={props.id}
-    //       name={props.id}
-    //       value={meta.value || props.value}
-
-    //       error={meta.touched && Boolean(meta.error)}
-    //       helperText={meta.touched && meta.error}
-    //       variant="outlined"
-    //     />
-    //   }
-    //   label={props.label}
-    //   labelPlacement="top"
-    //   className={classes.formControlLabel}
-    // />
   );
 };
 
 export default CustomRatingField;
-
-// <FormControlLabel
-//   control={<Rating name="conditions.mentalStatus" id="mentalStatus" value={values.conditions.mentalStatus} onChange={handleChange} />}
-//   label="How was your mental state?"
-//   labelPlacement="top"
-//   sx={{ my: 3 }}
-//   className={classes.formControlLabel}
-// />;

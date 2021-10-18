@@ -1,19 +1,17 @@
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Checkbox, Divider, Typography } from '@mui/material';
-// import custom react datepicker overrides
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { makeStyles } from '@mui/styles';
 import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
 import React from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, Break, NightAndFormProps } from '../../containers/Form';
-import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import { Break, DefiniteNightAndFormProps, Night, NightAndFormProps, NightOptional } from '../../containers/Form';
 import { validationSchema } from '../../helpers/validationSchema';
+import itemReducer from '../../reducers/itemReducer';
 import CustomCheckbox from '../FormFields/Checkbox';
 import CustomRatingField from '../FormFields/Rating';
 import CustomTextField from '../FormFields/TextField';
+import { Button, Checkbox, Divider, FormControlLabel, Typography } from '@mui/material';
+import DatePicker from 'react-datepicker';
+import { makeStyles } from '@mui/styles';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -47,37 +45,41 @@ const useStyles = makeStyles({
   },
 });
 
-interface NightAddFormProps {
+interface EditFormProps {
+  item: NightOptional;
   handleSubmit: (values: DefiniteNightAndFormProps) => void;
 }
 
-const NightAddForm = (props: NightAddFormProps) => {
+const EditForm = (props: EditFormProps) => {
   const classes = useStyles();
 
+  console.log('editform item', props.item);
   const initialValues: NightAndFormProps = {
-    date: undefined,
-    sleepless: false,
-    startTime: undefined,
-    endTime: undefined,
-    breaks: undefined,
-    nightmares: false,
-    noise: false,
-    quality: 0,
-    notes: undefined,
+    _id: props.item._id,
+    date: props.item.date ? new Date(props.item.date) : new Date(),
+    sleepless: false, //needs to be computed or otherwise inferred
+    startTime: props.item.startTime ? new Date(props.item.startTime) : undefined,
+    endTime: props.item.endTime ? new Date(props.item.endTime) : undefined,
+    breaks: props.item.breaks, //todo
+    // breaks: undefined, //todo
+    nightmares: props.item.nightmares,
+    noise: props.item.noise,
+    quality: props.item.quality,
+    notes: props.item.notes,
     conditions: {
-      temperature: undefined,
-      freshAir: false,
-      fed: false,
-      mentalStatus: 0,
-      noDrinks1HourBefore: false,
-      noCaffeine4HoursBefore: false,
-      noElectronicDevices: false,
+      temperature: props.item.conditions.temperature,
+      freshAir: props.item.conditions.freshAir,
+      fed: props.item.conditions.fed,
+      mentalStatus: props.item.conditions.mentalStatus,
+      noDrinks1HourBefore: props.item.conditions.noDrinks1HourBefore,
+      noCaffeine4HoursBefore: props.item.conditions.noCaffeine4HoursBefore,
+      noElectronicDevices: props.item.conditions.noElectronicDevices,
     },
   };
 
   return (
     <div style={{ width: 1000, paddingLeft: 100, paddingRight: 200 }}>
-      <Typography variant="h3">Add</Typography>
+      <Typography variant="h3">Edit</Typography>
       <Typography variant="h5" sx={{ mb: 5 }}>
         Conditions before going to bed
       </Typography>
@@ -92,6 +94,7 @@ const NightAddForm = (props: NightAddFormProps) => {
           }
         }}
         onSubmit={(values) => {
+          console.log(values);
           values.startTime && values.endTime && props.handleSubmit(values as DefiniteNightAndFormProps);
         }}
       >
@@ -217,7 +220,8 @@ const NightAddForm = (props: NightAddFormProps) => {
                               <DatePicker
                                 id={`${values.breaks && values.breaks[i].start}`}
                                 onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].start}
+                                selected={values.breaks && values.breaks[i] && values.breaks[i].start ? new Date(values.breaks[i].start as Date) : undefined}
+                                // selected={values.breaks[i].start as Date}
                                 showTimeSelect
                                 timeFormat="kk:mm"
                                 dateFormat="d MMMM yyyy, kk:mm"
@@ -239,7 +243,8 @@ const NightAddForm = (props: NightAddFormProps) => {
                               <DatePicker
                                 id={`${values.breaks && values.breaks[i].end}`}
                                 onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].end}
+                                selected={values.breaks && values.breaks[i] && values.breaks[i].end ? new Date(values.breaks[i].end as Date) : undefined}
+                                // selected={values.breaks && values.breaks[i].end}
                                 showTimeSelect
                                 timeFormat="kk:mm"
                                 dateFormat="d MMMM yyyy, kk:mm"
@@ -283,9 +288,10 @@ const NightAddForm = (props: NightAddFormProps) => {
               label="Calculated duration of sleep"
               name="duration"
             />
-            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid}>
-              Add
+            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
+              Save
             </Button>
+            <pre>{JSON.stringify(dirty, null, 2)}</pre>
             values:
             <pre>{JSON.stringify(values, null, 2)}</pre>
             errors:
@@ -299,4 +305,4 @@ const NightAddForm = (props: NightAddFormProps) => {
   );
 };
 
-export default NightAddForm;
+export default EditForm;

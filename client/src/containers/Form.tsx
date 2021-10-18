@@ -32,6 +32,7 @@ export interface BreakOptional {
 }
 
 export interface NightOptional {
+  _id?: string;
   date?: Date | null;
   startTime?: Date;
   endTime?: Date;
@@ -44,6 +45,7 @@ export interface NightOptional {
 }
 
 export interface Night {
+  _id?: string;
   date: Date;
   startTime: Date;
   endTime: Date;
