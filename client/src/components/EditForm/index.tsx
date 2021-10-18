@@ -55,6 +55,7 @@ const EditForm = (props: EditFormProps) => {
 
   console.log('editform item', props.item);
   const initialValues: NightAndFormProps = {
+    _id: props.item._id,
     date: props.item.date ? new Date(props.item.date) : new Date(),
     sleepless: false, //needs to be computed or otherwise inferred
     startTime: props.item.startTime ? new Date(props.item.startTime) : undefined,
