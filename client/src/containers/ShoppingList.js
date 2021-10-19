@@ -5,6 +5,8 @@ import { useHistory } from 'react-router';
 import { getItems, deleteItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Legend, Brush, Tooltip, ReferenceLine } from 'recharts';
+import Chart from '../components/Chart';
+import List from '../components/List';
 
 const ShoppingList = ({ getItems, deleteItem, item, user }) => {
   const history = useHistory();
@@ -29,35 +31,14 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
     });
   };
 
-  const renderLineChart = () => (
-    <BarChart width={400} height={400} data={transformItemsForChartDisplay(item.items)}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="duration" />
-      <YAxis />
-      <Tooltip />
-      <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
-      <Brush dataKey="date" height={30} stroke="#8884d8" />
-      <Bar dataKey="duration" fill="#8884d8" onClick={(n) => navigateToNightShow(n._id)} />
-    </BarChart>
-  );
+  const renderList = (items) => {
+    return <List onDeleteClick={onDeleteClick} onItemClick={navigateToNightShow} items={items} />;
+  };
 
   return (
     <>
-      <div>{user && item && item.items && renderLineChart()}</div>
-      <div>
-        <ul>
-          {user &&
-            item &&
-            item.items.map((item) => {
-              return (
-                <li key={item._id}>
-                  {<button onClick={() => onDeleteClick(item._id)}>D</button>}
-                  {<p onClick={() => navigateToNightShow(item._id)}>{format(new Date(item.date), 'PPPPpppp')}</p>}
-                </li>
-              );
-            })}
-        </ul>
-      </div>
+      <Chart data={transformItemsForChartDisplay(item.items)} onBarClick={navigateToNightShow} />
+      {user && item && renderList(item.items)}
     </>
   );
 };
