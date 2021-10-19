@@ -1,10 +1,11 @@
+import { validate } from '@material-ui/pickers';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, Typography } from '@mui/material';
 // import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
-import React, { ReactNode } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/AddForm';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
@@ -35,6 +36,8 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
         validate={(values) => {
           try {
             validateYupSchema(values, validationSchema, true, values);
+            if (values.sleepless) {
+            }
           } catch (err: any) {
             return yupToFormErrors(err);
           }
@@ -43,7 +46,23 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
           values.startTime && values.endTime && handleSubmit(values as DefiniteNightAndFormProps);
         }}
       >
-        {({ handleChange, values, errors, touched, setFieldValue, handleBlur, setFieldTouched, dirty, isValid }) => (
+        {({
+          handleChange,
+          values,
+          errors,
+          touched,
+          setFieldValue,
+          handleBlur,
+          setFieldTouched,
+          dirty,
+          isValid,
+          setFieldError,
+          setStatus,
+          setErrors,
+          validateField,
+          validateOnChange,
+          validateOnBlur,
+        }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" label="How was your mental state?" />
@@ -61,16 +80,17 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
               control={
                 <Checkbox
                   checked={values.sleepless}
-                  onChange={(): void => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     if (!values.date) {
-                      setFieldValue('date', new Date());
+                      setFieldValue('date', new Date(new Date().setHours(0, 0, 0, 0)), false);
                     }
-                    setFieldValue('startTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
-                    setFieldValue('endTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
-                    // setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    // setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('breaks', undefined);
+                    setFieldValue('startTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
+                    setFieldValue('endTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
+                    setFieldValue('breaks', undefined, false);
                     setFieldValue('sleepless', !values.sleepless);
+                    setTimeout(() => setFieldError('date', undefined));
+                    setTimeout(() => setFieldError('startTime', undefined));
+                    setTimeout(() => setFieldError('endTime', undefined));
                   }}
                 />
               }

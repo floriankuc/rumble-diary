@@ -8,6 +8,7 @@ import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
 import { calculateDurationInMinutes } from '../helpers/date';
 import FormComponents from '../components/Form';
+import history from '../routes/history';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -73,12 +74,10 @@ export interface AddNightReduxProps extends PropsFromRedux {
 export type DefiniteNightAndFormProps = Night & FormProps;
 export type NightAndFormProps = NightOptional & FormProps;
 
-const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightReduxProps> = (
-  props: FormikProps<FormProps> & NightOptional & AddNightReduxProps
-) => {
-  const history = useHistory();
+class FormContainer extends React.Component<FormikProps<FormProps> & NightOptional & AddNightReduxProps> {
+  // const history = useHistory();
 
-  const initialValues: NightAndFormProps = {
+  initialValues: NightAndFormProps = {
     date: undefined,
     sleepless: false,
     startTime: undefined,
@@ -99,27 +98,29 @@ const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightR
     },
   };
 
-  console.log('props.addmodal', props);
-  console.log('success', props.itemSuccess);
+  // console.log('props.addmodal', props);
+  // console.log('success', props.itemSuccess);
 
-  const handleSubmit = (values: DefiniteNightAndFormProps) => {
+  handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     // const { sleepless, ...restValues } = values;
-    props.addItem({ ...values, duration });
+    this.props.addItem({ ...values, duration });
   };
 
-  if (props.itemLoading) {
-    console.log('ITEM LOADED');
-  }
+  // if (props.itemLoading) {
+  //   console.log('ITEM LOADED');
+  // }
 
-  useEffect(() => {
-    if (props.itemSuccess) {
+  componentDidUpdate() {
+    if (this.props.itemSuccess) {
       history.push(APP_ROUTES.diary);
     }
-  }, [props.itemSuccess, history]);
+  }
 
-  return <FormComponents handleSubmit={handleSubmit} initialValues={initialValues} headline={'Add night'} submitText={'Add night'} />;
-};
+  render() {
+    return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.initialValues} headline={'Add night'} submitText={'Add night'} />;
+  }
+}
 
 const mapStateToProps = (state: any) => ({
   itemLoading: state.item.loading,

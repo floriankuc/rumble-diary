@@ -1,34 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { clearErrors } from '../actions/errorActions';
-import { login } from '../actions/authActions';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import { useHistory } from 'react-router';
-import { makeStyles } from '@mui/styles';
-import { Typography } from '@mui/material';
-import { APP_ROUTES } from '../routes';
+import { login } from '../actions/authActions';
+import { clearErrors } from '../actions/errorActions';
 import Login from '../components/Login';
-
-const useStyles = makeStyles({
-  textfield: {
-    marginBottom: 32,
-  },
-  errorMsg: {
-    marginBottom: 32,
-    color: 'red',
-  },
-  loginHeadline: {
-    marginBottom: 32,
-  },
-});
-
-const validationSchema = yup.object({
-  email: yup.string().email('Enter a valid email').required('Email is required'),
-  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
-});
+import { APP_ROUTES } from '../routes';
 
 export interface LoginModalProps {
   isAuthenticated: boolean;
@@ -38,19 +14,7 @@ export interface LoginModalProps {
 }
 
 const LoginModal = ({ isAuthenticated, error, login, clearErrors }: any) => {
-  // const classes = useStyles();
   const history = useHistory();
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      handleSubmit(values);
-    },
-  });
-
   const [msg, setMsg] = useState(null);
 
   const handleSubmit = useCallback(
