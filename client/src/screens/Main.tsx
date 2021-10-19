@@ -4,7 +4,7 @@ import AppNavbar from '../containers/Navbar';
 import ItemModal from '../containers/Form';
 import ShoppingList from '../containers/ShoppingList';
 import Modal from '../components/Modal/Modal';
-import LoginModal from '../containers/LoginModal';
+import LoginModal from '../containers/Login';
 import { APP_ROUTES } from '../routes';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { connect, ConnectedProps } from 'react-redux';

@@ -71,7 +71,7 @@ export interface AddNightReduxProps extends PropsFromRedux {
 export type DefiniteNightAndFormProps = Night & FormProps;
 export type NightAndFormProps = NightOptional & FormProps;
 
-const ItemModal: React.FC<FormikProps<FormProps> & NightOptional & AddNightReduxProps> = (
+const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightReduxProps> = (
   props: FormikProps<FormProps> & NightOptional & AddNightReduxProps
 ) => {
   const history = useHistory();
@@ -106,4 +106,4 @@ const mapStateToProps = (state: any) => ({
 
 const connector = connect(mapStateToProps, { addItem });
 
-export default connector(ItemModal);
+export default connector(FormContainer);

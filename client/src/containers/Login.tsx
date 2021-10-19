@@ -1,15 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { clearErrors } from '../actions/errorActions';
-import { makeStyles } from '@mui/styles';
+import { login } from '../actions/authActions';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useHistory } from 'react-router';
-import { TextField, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { useHistory } from 'react-router';
+import { makeStyles } from '@mui/styles';
+import { Typography } from '@mui/material';
 import { APP_ROUTES } from '../routes';
-import { register } from '../actions/authActions';
-import Register from '../components/Register';
+import Login from '../components/Login';
 
 const useStyles = makeStyles({
   textfield: {
@@ -25,17 +26,22 @@ const useStyles = makeStyles({
 });
 
 const validationSchema = yup.object({
-  name: yup.string('Enter a name').required('Name is required'),
-  email: yup.string('Enter an email').email('Enter a valid email').required('Email is required'),
-  password: yup.string('Enter a password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
+  email: yup.string().email('Enter a valid email').required('Email is required'),
+  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }) => {
+export interface LoginModalProps {
+  isAuthenticated: boolean;
+  error: any;
+  login: ({ email, password }: { email: any; password: any }) => (dispatch: any) => Promise<void>;
+  clearErrors: () => { type: string };
+}
+
+const LoginModal = ({ isAuthenticated, error, login, clearErrors }: any) => {
   // const classes = useStyles();
   const history = useHistory();
   const formik = useFormik({
     initialValues: {
-      name: '',
       email: '',
       password: '',
     },
@@ -49,11 +55,11 @@ const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }) =>
 
   const handleSubmit = useCallback(
     (values) => {
-      register({ name: values.name, email: values.email, password: values.password });
+      login({ email: values.email, password: values.password });
 
       clearErrors();
     },
-    [clearErrors, register]
+    [clearErrors, login]
   );
 
   useEffect(() => {
@@ -63,19 +69,19 @@ const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }) =>
   }, [isAuthenticated, history]);
 
   useEffect(() => {
-    if (error.id === 'REGISTER_FAIL') {
+    if (error.id === 'LOGIN_FAIL') {
       setMsg(error.msg.msg);
     } else {
       setMsg(null);
     }
   }, [error, isAuthenticated]);
 
-  return <Register handleSubmit={handleSubmit} msg={msg} />;
+  return <Login msg={msg} handleSubmit={handleSubmit} />;
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   isAuthenticated: state.auth.isAuthenticated,
   error: state.error,
 });
 
-export default connect(mapStateToProps, { register, clearErrors })(RegisterContainer);
+export default connect(mapStateToProps, { login, clearErrors })(LoginModal);
