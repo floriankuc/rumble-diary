@@ -42,6 +42,7 @@ export interface NightOptional {
   quality: number;
   notes?: string;
   conditions: Conditions;
+  sleepless: boolean;
 }
 
 export interface Night {
@@ -55,10 +56,11 @@ export interface Night {
   quality: number;
   notes?: string;
   conditions: Conditions;
+  sleepless: boolean;
 }
 
 export type FormProps = {
-  sleepless: boolean;
+  // sleepless: boolean;
 };
 
 export interface AddNightReduxProps extends PropsFromRedux {
@@ -81,8 +83,8 @@ const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightR
 
   const handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    const { sleepless, ...restValues } = values;
-    props.addItem({ ...restValues, duration });
+    // const { sleepless, ...restValues } = values;
+    props.addItem({ ...values, duration });
   };
 
   if (props.itemLoading) {

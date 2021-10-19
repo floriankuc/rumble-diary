@@ -59,9 +59,12 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
             <FormControlLabel
               control={
                 <Checkbox
+                  checked={values.sleepless}
                   onChange={(): void => {
-                    setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
+                    setFieldValue('startTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
+                    setFieldValue('endTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
+                    // setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
+                    // setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
                     setFieldValue('breaks', undefined);
                     setFieldValue('sleepless', !values.sleepless);
                   }}
@@ -69,9 +72,9 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
               }
               label="Sleepless night"
             />
-            <CustomDatePicker id="date" name="date" label="date" />
-            <CustomDatePicker id="startTime" name="startTime" label="startTime" showTimeSelect />
-            <CustomDatePicker id="endTime" name="endTime" label="endTime" showTimeSelect />
+            <CustomDatePicker id="date" name="date" label="date" disabled={values.sleepless} />
+            <CustomDatePicker id="startTime" name="startTime" label="startTime" showTimeSelect disabled={values.sleepless} />
+            <CustomDatePicker id="endTime" name="endTime" label="endTime" showTimeSelect disabled={values.sleepless} />
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (

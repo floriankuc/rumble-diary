@@ -23,6 +23,10 @@ const ItemSchema = new Schema({
     ],
     required: false,
   },
+  sleepless: {
+    type: Boolean,
+    required: true,
+  },
   duration: {
     type: Number,
     required: true,

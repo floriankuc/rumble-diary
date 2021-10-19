@@ -37,8 +37,8 @@ const Show: React.FC<FormikProps<EditFormProps> & NightOptional & AddNightReduxP
 
   const handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    const { sleepless, ...restValues } = values;
-    props.editItem({ ...restValues, duration });
+    // const { sleepless, ...restValues } = values;
+    props.editItem({ ...values, duration });
   };
 
   useEffect(() => {
