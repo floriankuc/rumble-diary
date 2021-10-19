@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router';
 import AppNavbar from '../containers/Navbar';
-import ItemModal from '../containers/Form';
+import ItemModal from '../containers/AddForm';
 import ShoppingList from '../containers/ShoppingList';
 import Modal from '../components/Modal/Modal';
 import LoginModal from '../containers/Login';
@@ -10,7 +10,7 @@ import { Sidebar } from '../components/Sidebar/Sidebar';
 import { connect, ConnectedProps } from 'react-redux';
 import { sidebarItems } from '../components/Sidebar/sidebarItems';
 import RegisterModal from '../containers/RegisterModal';
-import Show from '../containers/Show';
+import Show from '../containers/EditForm';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

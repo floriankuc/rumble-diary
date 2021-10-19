@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, FormControlLabel, Typography } from '@mui/material';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React from 'react';
-import { DefiniteNightAndFormProps, NightAndFormProps, NightOptional } from '../../containers/Form';
+import { DefiniteNightAndFormProps, NightAndFormProps, NightOptional } from '../../containers/AddForm';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import FormComponents from '../Form';

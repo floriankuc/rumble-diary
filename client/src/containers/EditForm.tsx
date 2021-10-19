@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { getItem, editItem } from '../actions/itemActions';
 import { useHistory, useRouteMatch } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
-import { Night, NightOptional, NightAndFormProps, DefiniteNightAndFormProps } from './Form';
+import { Night, NightOptional, NightAndFormProps, DefiniteNightAndFormProps } from './AddForm';
 import { FormikProps } from 'formik';
 import EditForm from '../components/EditForm';
 import { makeStyles } from '@mui/styles';
@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { calculateDurationInMinutes } from '../helpers/date';
 import { APP_ROUTES } from '../routes';
+import FormComponents from '../components/Form';
 
 type PropsFromReduxEdit = ConnectedProps<typeof connector>;
 

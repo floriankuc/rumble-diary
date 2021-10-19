@@ -6,8 +6,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
-import NightAddForm from '../components/AddForm';
 import { calculateDurationInMinutes } from '../helpers/date';
+import FormComponents from '../components/Form';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -78,6 +78,27 @@ const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightR
 ) => {
   const history = useHistory();
 
+  const initialValues: NightAndFormProps = {
+    date: undefined,
+    sleepless: false,
+    startTime: undefined,
+    endTime: undefined,
+    breaks: undefined,
+    nightmares: false,
+    noise: false,
+    quality: 0,
+    notes: undefined,
+    conditions: {
+      temperature: undefined,
+      freshAir: false,
+      fed: false,
+      mentalStatus: 0,
+      noDrinks1HourBefore: false,
+      noCaffeine4HoursBefore: false,
+      noElectronicDevices: false,
+    },
+  };
+
   console.log('props.addmodal', props);
   console.log('success', props.itemSuccess);
 
@@ -97,7 +118,7 @@ const FormContainer: React.FC<FormikProps<FormProps> & NightOptional & AddNightR
     }
   }, [props.itemSuccess, history]);
 
-  return <NightAddForm handleSubmit={handleSubmit} />;
+  return <FormComponents handleSubmit={handleSubmit} initialValues={initialValues} headline={'Add night'} submitText={'Add night'} />;
 };
 
 const mapStateToProps = (state: any) => ({

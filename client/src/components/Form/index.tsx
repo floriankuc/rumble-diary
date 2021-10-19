@@ -6,7 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/Form';
+import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/AddForm';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
@@ -19,6 +19,7 @@ interface FormComponentsProps {
   initialValues: NightAndFormProps;
   headline: ReactNode;
   submitText: ReactNode;
+  item?: any;
 }
 
 const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: FormComponentsProps) => {
@@ -61,6 +62,9 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
                 <Checkbox
                   checked={values.sleepless}
                   onChange={(): void => {
+                    if (!values.date) {
+                      setFieldValue('date', new Date());
+                    }
                     setFieldValue('startTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
                     setFieldValue('endTime', new Date(values.date ? values.date : new Date()).setHours(0, 0, 0, 0));
                     // setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
@@ -139,7 +143,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
               label="Calculated duration of sleep"
               name="duration"
             />
-            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid}>
+            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
               {submitText}
             </Button>
             values:

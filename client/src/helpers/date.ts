@@ -1,5 +1,5 @@
 import { differenceInMinutes } from 'date-fns';
-import { Break, BreakOptional } from '../containers/Form';
+import { Break, BreakOptional } from '../containers/AddForm';
 
 export const outputMinutes = (mins: number): string => {
   const phours = `${Math.floor(mins / 60)}`.padStart(2, '0');
