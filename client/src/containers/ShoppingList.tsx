@@ -4,13 +4,18 @@ import { connect } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getItems, deleteItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Legend, Brush, Tooltip, ReferenceLine } from 'recharts';
 import Chart from '../components/Chart';
 import List from '../components/List';
 
-const ShoppingList = ({ getItems, deleteItem, item, user }) => {
+export interface ListContainerProps {
+  getItems: any;
+  deleteItem: any;
+  item: any;
+  user: any;
+}
+
+const ListContainer = ({ getItems, deleteItem, item, user }: ListContainerProps) => {
   const history = useHistory();
-  const navigateToLogin = () => history.push(APP_ROUTES.login);
   useEffect(() => {
     if (user && user.id) {
       getItems();
@@ -19,19 +24,19 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
 
   if (user && user.id) console.log('user.id', user.id);
 
-  const onDeleteClick = (id) => {
+  const onDeleteClick = (id: string) => {
     deleteItem(id);
   };
 
-  const navigateToNightShow = (id) => history.push(APP_ROUTES.show.replace(':id', id));
+  const navigateToNightShow = (id: string) => history.push(APP_ROUTES.show.replace(':id', id));
 
-  const transformItemsForChartDisplay = (items) => {
-    return items.map((night) => {
+  const transformItemsForChartDisplay = (items: any) => {
+    return items.map((night: any) => {
       return { ...night, duration: night.duration / 60, date: format(new Date(night.date), 'dd/MM/yy') };
     });
   };
 
-  const renderList = (items) => {
+  const renderList = (items: any) => {
     return <List onDeleteClick={onDeleteClick} onItemClick={navigateToNightShow} items={items} />;
   };
 
@@ -43,9 +48,9 @@ const ShoppingList = ({ getItems, deleteItem, item, user }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   item: state.item,
   user: state.auth.user,
 });
 
-export default connect(mapStateToProps, { getItems, deleteItem })(ShoppingList);
+export default connect(mapStateToProps, { getItems, deleteItem })(ListContainer);
