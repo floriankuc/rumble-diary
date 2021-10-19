@@ -25,12 +25,12 @@ const useStyles = makeStyles({
 });
 
 const validationSchema = yup.object({
-  name: yup.string('Enter a name').required('Name is required'),
-  email: yup.string('Enter an email').email('Enter a valid email').required('Email is required'),
-  password: yup.string('Enter a password').min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
+  name: yup.string().required('Name is required'),
+  email: yup.string().email('Enter a valid email').required('Email is required'),
+  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }) => {
+const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }: any) => {
   // const classes = useStyles();
   const history = useHistory();
   const formik = useFormik({
@@ -73,7 +73,7 @@ const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }) =>
   return <Register handleSubmit={handleSubmit} msg={msg} />;
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: any) => ({
   isAuthenticated: state.auth.isAuthenticated,
   error: state.error,
 });
