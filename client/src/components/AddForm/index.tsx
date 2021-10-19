@@ -3,58 +3,22 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, Typography } from '@mui/material';
 // import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { makeStyles } from '@mui/styles';
-import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
+import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React from 'react';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, Break, NightAndFormProps } from '../../containers/Form';
+import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/Form';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../FormFields/Checkbox';
+import CustomDatePicker from '../FormFields/DatePicker';
 import CustomRatingField from '../FormFields/Rating';
 import CustomTextField from '../FormFields/TextField';
-import CustomDatePicker from '../FormFields/DatePicker';
 
-const useStyles = makeStyles({
-  formControlLabel: {
-    alignItems: 'flex-start',
-    marginLeft: 0,
-  },
-  calendarErrorMessage: {
-    color: '#D32F2F',
-    fontWeight: 400,
-    fontSize: '.75rem',
-    marginLeft: 14,
-  },
-  calendar: {
-    transitionDuration: '0s',
-    border: '1px solid #C4C4C4',
-    borderRadius: 5,
-    height: 40,
-    padding: 14,
-    width: 260,
-    fontSize: 16,
-    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
-    '&:hover:enabled': {
-      border: '1px solid black',
-    },
-    '&:focus:enabled': {
-      outline: 'none',
-      padding: 13,
-      boxShadow: 'none',
-      border: '2px solid #1976D2',
-    },
-  },
-});
-
-interface NightAddFormProps {
+interface AddFormProps {
   handleSubmit: (values: DefiniteNightAndFormProps) => void;
 }
 
-const NightAddForm = (props: NightAddFormProps) => {
-  const classes = useStyles();
-
+const AddForm = (props: AddFormProps) => {
   const initialValues: NightAndFormProps = {
     date: undefined,
     sleepless: false,
@@ -206,4 +170,4 @@ const NightAddForm = (props: NightAddFormProps) => {
   );
 };
 
-export default NightAddForm;
+export default AddForm;

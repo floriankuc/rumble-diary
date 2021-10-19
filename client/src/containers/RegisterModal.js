@@ -87,7 +87,7 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           onChange={formik.handleChange}
           error={formik.touched.name && Boolean(formik.errors.name)}
           helperText={formik.touched.name && formik.errors.name}
-          variant="standard"
+          variant="outlined"
           // className={classes.textfield}
         />
         <TextField
@@ -99,7 +99,7 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           onChange={formik.handleChange}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
-          variant="standard"
+          variant="outlined"
           // className={classes.textfield}
         />
         <TextField
@@ -112,7 +112,7 @@ const RegisterModal = ({ isAuthenticated, error, register, clearErrors }) => {
           onChange={formik.handleChange}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
-          variant="standard"
+          variant="outlined"
           // className={classes.textfield}
         />
         <Typography

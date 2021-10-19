@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
-import NightAddForm from '../components/Form';
+import NightAddForm from '../components/AddForm';
 import { calculateDurationInMinutes } from '../helpers/date';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;

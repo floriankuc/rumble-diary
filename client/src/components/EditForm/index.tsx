@@ -1,50 +1,15 @@
-import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
-import React from 'react';
-import { Break, DefiniteNightAndFormProps, Night, NightAndFormProps, NightOptional } from '../../containers/Form';
-import { validationSchema } from '../../helpers/validationSchema';
-import itemReducer from '../../reducers/itemReducer';
-import CustomCheckbox from '../FormFields/Checkbox';
-import CustomRatingField from '../FormFields/Rating';
-import CustomTextField from '../FormFields/TextField';
-import { Button, Checkbox, Divider, FormControlLabel, Typography } from '@mui/material';
-import DatePicker from 'react-datepicker';
-import { makeStyles } from '@mui/styles';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Checkbox, Divider, FormControlLabel, Typography } from '@mui/material';
+import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
+import React from 'react';
+import { DefiniteNightAndFormProps, NightAndFormProps, NightOptional } from '../../containers/Form';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import { validationSchema } from '../../helpers/validationSchema';
+import CustomCheckbox from '../FormFields/Checkbox';
 import CustomDatePicker from '../FormFields/DatePicker';
-
-const useStyles = makeStyles({
-  formControlLabel: {
-    alignItems: 'flex-start',
-    marginLeft: 0,
-  },
-  calendarErrorMessage: {
-    color: '#D32F2F',
-    fontWeight: 400,
-    fontSize: '.75rem',
-    marginLeft: 14,
-  },
-  calendar: {
-    transitionDuration: '0s',
-    border: '1px solid #C4C4C4',
-    borderRadius: 5,
-    height: 40,
-    padding: 14,
-    width: 260,
-    fontSize: 16,
-    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
-    '&:hover:enabled': {
-      border: '1px solid black',
-    },
-    '&:focus:enabled': {
-      outline: 'none',
-      padding: 13,
-      boxShadow: 'none',
-      border: '2px solid #1976D2',
-    },
-  },
-});
+import CustomRatingField from '../FormFields/Rating';
+import CustomTextField from '../FormFields/TextField';
 
 interface EditFormProps {
   item: NightOptional;
@@ -52,8 +17,6 @@ interface EditFormProps {
 }
 
 const EditForm = (props: EditFormProps) => {
-  const classes = useStyles();
-
   console.log('editform item', props.item);
   const initialValues: NightAndFormProps = {
     _id: props.item._id,
