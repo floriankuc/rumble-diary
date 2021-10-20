@@ -46,23 +46,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
           values.startTime && values.endTime && handleSubmit(values as DefiniteNightAndFormProps);
         }}
       >
-        {({
-          handleChange,
-          values,
-          errors,
-          touched,
-          setFieldValue,
-          handleBlur,
-          setFieldTouched,
-          dirty,
-          isValid,
-          setFieldError,
-          setStatus,
-          setErrors,
-          validateField,
-          validateOnChange,
-          validateOnBlur,
-        }) => (
+        {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" label="How was your mental state?" />

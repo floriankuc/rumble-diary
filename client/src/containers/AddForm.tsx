@@ -1,9 +1,8 @@
 // import custom react datepicker overrides
 import { FormikProps } from 'formik';
-import React, { useEffect } from 'react';
+import React from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
 import { calculateDurationInMinutes } from '../helpers/date';
@@ -75,8 +74,6 @@ export type DefiniteNightAndFormProps = Night & FormProps;
 export type NightAndFormProps = NightOptional & FormProps;
 
 class FormContainer extends React.Component<FormikProps<FormProps> & NightOptional & AddNightReduxProps> {
-  // const history = useHistory();
-
   initialValues: NightAndFormProps = {
     date: undefined,
     sleepless: false,
@@ -98,18 +95,10 @@ class FormContainer extends React.Component<FormikProps<FormProps> & NightOption
     },
   };
 
-  // console.log('props.addmodal', props);
-  // console.log('success', props.itemSuccess);
-
   handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    // const { sleepless, ...restValues } = values;
     this.props.addItem({ ...values, duration });
   };
-
-  // if (props.itemLoading) {
-  //   console.log('ITEM LOADED');
-  // }
 
   componentDidUpdate() {
     if (this.props.itemSuccess) {

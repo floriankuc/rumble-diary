@@ -1,26 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { getItem, editItem } from '../actions/itemActions';
-import { useHistory, useRouteMatch } from 'react-router';
+import { match, withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
-import { Night, NightOptional, NightAndFormProps, DefiniteNightAndFormProps } from './AddForm';
-import { FormikProps } from 'formik';
+import { editItem, getItem } from '../actions/itemActions';
 import EditForm from '../components/EditForm';
-import { makeStyles } from '@mui/styles';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { calculateDurationInMinutes } from '../helpers/date';
 import { APP_ROUTES } from '../routes';
-import FormComponents from '../components/Form';
+import history from '../routes/history';
+import { DefiniteNightAndFormProps, NightOptional } from './AddForm';
 
 type PropsFromReduxEdit = ConnectedProps<typeof connector>;
 
-export interface EditFormProps extends RouteComponentProps {
+export interface EditFormProps extends RouteComponentProps<RouteParams> {
   sleepless: boolean;
 }
 
 interface MatchParams {
   id: string;
+  match: match;
 }
 
 export interface AddNightReduxProps extends PropsFromReduxEdit {
@@ -30,41 +27,34 @@ export interface AddNightReduxProps extends PropsFromReduxEdit {
   itemSuccess: boolean;
 }
 
-const Show: React.FC<FormikProps<EditFormProps> & NightOptional & AddNightReduxProps> = (
-  props: FormikProps<EditFormProps> & NightOptional & AddNightReduxProps
-) => {
-  const match = useRouteMatch<MatchParams>();
-  const history = useHistory();
+interface RouteParams {
+  id: string;
+}
 
-  const handleSubmit = (values: DefiniteNightAndFormProps) => {
+class ShowContainer extends React.Component<EditFormProps & NightOptional & AddNightReduxProps & MatchParams> {
+  handleSubmit = (values: DefiniteNightAndFormProps) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    // const { sleepless, ...restValues } = values;
-    props.editItem({ ...values, duration });
+    this.props.editItem({ ...values, duration });
   };
 
-  useEffect(() => {
-    if (props.success) {
+  componentDidUpdate() {
+    if (this.props.success) {
       history.push(APP_ROUTES.diary);
     }
-  }, [props.success, history]);
-
-  useEffect(() => {
-    if (props.user && props.user.id) {
+    if (this.props.user && this.props.user.id) {
       console.log('get item fires');
-      props.getItem(match.params.id);
+      this.props.getItem(this.props.match.params.id);
     }
-  }, [props.user, match.params.id]);
-
-  console.log('this is item', props.item);
-
-  console.log('props', props);
-
-  if (props.item && props.item.items && props.item.items.length === 1 && props.item.items[0]) {
-    return <EditForm item={props.item.items[0]} handleSubmit={handleSubmit} />;
-  } else {
-    return <></>;
   }
-};
+
+  render() {
+    if (this.props.item && this.props.item.items && this.props.item.items.length === 1 && this.props.item.items[0]) {
+      return <EditForm item={this.props.item.items[0]} handleSubmit={this.handleSubmit} />;
+    } else {
+      return <></>;
+    }
+  }
+}
 
 const mapStateToProps = (state: any) => ({
   itemLoading: state.item.loading,
@@ -76,4 +66,4 @@ const mapStateToProps = (state: any) => ({
 
 const connector = connect(mapStateToProps, { getItem, editItem });
 
-export default connector(Show);
+export default connector(withRouter(ShowContainer));
