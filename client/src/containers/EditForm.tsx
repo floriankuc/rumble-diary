@@ -41,6 +41,9 @@ class ShowContainer extends React.Component<EditFormProps & NightOptional & AddN
     if (this.props.success) {
       history.push(APP_ROUTES.diary);
     }
+  }
+
+  componentDidMount() {
     if (this.props.user && this.props.user.id) {
       console.log('get item fires');
       this.props.getItem(this.props.match.params.id);
