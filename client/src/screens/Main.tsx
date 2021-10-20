@@ -1,16 +1,16 @@
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router';
-import AppNavbar from './AppNavbar';
-import ItemModal from './Form';
-import ShoppingList from './ShoppingList';
+import AppNavbar from '../containers/Navbar';
+import ItemModal from '../containers/AddForm';
+import ShoppingList from '../containers/ShoppingList';
 import Modal from '../components/Modal/Modal';
-import LoginModal from './LoginModal';
+import LoginModal from '../containers/Login';
 import { APP_ROUTES } from '../routes';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { connect, ConnectedProps } from 'react-redux';
 import { sidebarItems } from '../components/Sidebar/sidebarItems';
-import RegisterModal from './RegisterModal';
-import Show from './Show';
+import RegisterModal from '../containers/RegisterModal';
+import Show from '../containers/EditForm';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -29,9 +29,12 @@ const MainScreen = (props: IMain) => {
       <AppNavbar />
       <Sidebar actionItems={sidebarItems} />
       <Switch>
-        {!props.isAuthenticated && props.isAuthenticated !== null && !props.isLoading && location.pathname !== '/' && location.pathname !== '/login' && (
-          <Redirect to="/" />
-        )}
+        {!props.isAuthenticated &&
+          props.isAuthenticated !== null &&
+          !props.isLoading &&
+          location.pathname !== '/' &&
+          location.pathname !== '/login' &&
+          location.pathname !== '/register' && <Redirect to="/" />}
         <Route path={APP_ROUTES.start} exact component={(): ReactElement => <div>start</div>} />
         <Route path={APP_ROUTES.add} exact component={ItemModal} />
         <Route path={APP_ROUTES.diary} exact component={ShoppingList} />

@@ -1,83 +1,32 @@
+import { validate } from '@material-ui/pickers';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, Typography } from '@mui/material';
 // import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { makeStyles } from '@mui/styles';
-import { FieldArray, Form, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
-import React from 'react';
-import DatePicker from 'react-datepicker';
+import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
+import React, { ChangeEvent, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, Break, NightAndFormProps } from '../../containers/Form';
+import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/AddForm';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
-import CustomCheckbox from '../FormFields/Checkbox';
-import CustomRatingField from '../FormFields/Rating';
-import CustomTextField from '../FormFields/TextField';
+import CustomCheckbox from '../Form/Fields/Checkbox';
+import CustomDatePicker from '../Form/Fields/DatePicker';
+import CustomRatingField from '../Form/Fields/Rating';
+import CustomTextField from '../Form/Fields/TextField';
 
-const useStyles = makeStyles({
-  formControlLabel: {
-    alignItems: 'flex-start',
-    marginLeft: 0,
-  },
-  calendarErrorMessage: {
-    color: '#D32F2F',
-    fontWeight: 400,
-    fontSize: '.75rem',
-    marginLeft: 14,
-  },
-  calendar: {
-    transitionDuration: '0s',
-    border: '1px solid #C4C4C4',
-    borderRadius: 5,
-    height: 40,
-    padding: 14,
-    width: 260,
-    fontSize: 16,
-    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
-    '&:hover:enabled': {
-      border: '1px solid black',
-    },
-    '&:focus:enabled': {
-      outline: 'none',
-      padding: 13,
-      boxShadow: 'none',
-      border: '2px solid #1976D2',
-    },
-  },
-});
-
-interface NightAddFormProps {
+interface FormComponentsProps {
   handleSubmit: (values: DefiniteNightAndFormProps) => void;
+  initialValues: NightAndFormProps;
+  headline: ReactNode;
+  submitText: ReactNode;
+  item?: any;
 }
 
-const NightAddForm = (props: NightAddFormProps) => {
-  const classes = useStyles();
-
-  const initialValues: NightAndFormProps = {
-    date: undefined,
-    sleepless: false,
-    startTime: undefined,
-    endTime: undefined,
-    breaks: undefined,
-    nightmares: false,
-    noise: false,
-    quality: 0,
-    notes: undefined,
-    conditions: {
-      temperature: undefined,
-      freshAir: false,
-      fed: false,
-      mentalStatus: 0,
-      noDrinks1HourBefore: false,
-      noCaffeine4HoursBefore: false,
-      noElectronicDevices: false,
-    },
-  };
-
+const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: FormComponentsProps) => {
   return (
     <div style={{ width: 1000, paddingLeft: 100, paddingRight: 200 }}>
-      <Typography variant="h3">Add</Typography>
+      <Typography variant="h3">{headline}</Typography>
       <Typography variant="h5" sx={{ mb: 5 }}>
         Conditions before going to bed
       </Typography>
@@ -87,15 +36,17 @@ const NightAddForm = (props: NightAddFormProps) => {
         validate={(values) => {
           try {
             validateYupSchema(values, validationSchema, true, values);
+            if (values.sleepless) {
+            }
           } catch (err: any) {
             return yupToFormErrors(err);
           }
         }}
         onSubmit={(values) => {
-          values.startTime && values.endTime && props.handleSubmit(values as DefiniteNightAndFormProps);
+          values.startTime && values.endTime && handleSubmit(values as DefiniteNightAndFormProps);
         }}
       >
-        {({ handleChange, values, errors, touched, setFieldValue, handleBlur, setFieldTouched, dirty, isValid }) => (
+        {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" label="How was your mental state?" />
@@ -112,80 +63,26 @@ const NightAddForm = (props: NightAddFormProps) => {
             <FormControlLabel
               control={
                 <Checkbox
-                  onChange={(): void => {
-                    setFieldValue('startTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('endTime', new Date(new Date().setHours(0, 0, 0, 0)));
-                    setFieldValue('breaks', undefined);
+                  checked={values.sleepless}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                    if (!values.date) {
+                      setFieldValue('date', new Date(new Date().setHours(0, 0, 0, 0)), false);
+                    }
+                    setFieldValue('startTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
+                    setFieldValue('endTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
+                    setFieldValue('breaks', undefined, false);
                     setFieldValue('sleepless', !values.sleepless);
+                    setTimeout(() => setFieldError('date', undefined));
+                    setTimeout(() => setFieldError('startTime', undefined));
+                    setTimeout(() => setFieldError('endTime', undefined));
                   }}
                 />
               }
               label="Sleepless night"
             />
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="date"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.date}
-                  placeholderText="Date"
-                  dateFormat="d MMMM yyyy"
-                  className={`form-control ${classes.calendar}`}
-                  name="date"
-                  onChange={(date) => setFieldValue('date', date)}
-                />
-              }
-              label="Date"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  id="startTime"
-                  disabled={values.sleepless}
-                  onBlur={handleBlur}
-                  selected={values.startTime}
-                  showTimeSelect
-                  placeholderText="Start of sleep"
-                  timeFormat="kk:mm"
-                  dateFormat="d MMMM yyyy, kk:mm"
-                  name="startTime"
-                  className={`form-control ${classes.calendar}`}
-                  onChange={(time) => setFieldValue('startTime', time)}
-                />
-              }
-              label="Start of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2 }}
-            />
-            {errors.startTime && touched.startTime && <Typography className={classes.calendarErrorMessage}>{errors.startTime}</Typography>}
-            <FormControlLabel
-              control={
-                <DatePicker
-                  disabled={values.sleepless}
-                  id="endTime"
-                  selected={values.endTime}
-                  onBlur={handleBlur}
-                  showTimeSelect
-                  placeholderText="End of sleep"
-                  timeFormat="kk:mm"
-                  dateFormat="d MMMM yyyy, kk:mm"
-                  className={`form-control ${classes.calendar}`}
-                  name="endTime"
-                  onChange={(time) => setFieldValue('endTime', time)}
-                />
-              }
-              label="End of sleep"
-              labelPlacement="top"
-              className={classes.formControlLabel}
-              sx={{ mt: 2, mb: 4 }}
-            />
-            {errors.endTime && touched.endTime && <Typography className={classes.calendarErrorMessage}>{errors.endTime}</Typography>}
+            <CustomDatePicker id="date" name="date" label="date" disabled={values.sleepless} />
+            <CustomDatePicker id="startTime" name="startTime" label="startTime" showTimeSelect disabled={values.sleepless} />
+            <CustomDatePicker id="endTime" name="endTime" label="endTime" showTimeSelect disabled={values.sleepless} />
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (
@@ -214,48 +111,15 @@ const NightAddForm = (props: NightAddFormProps) => {
                           </div>
                           <div style={{ display: 'flex' }}>
                             <div>
-                              <DatePicker
+                              <CustomDatePicker
                                 id={`${values.breaks && values.breaks[i].start}`}
-                                onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].start}
                                 showTimeSelect
-                                timeFormat="kk:mm"
-                                dateFormat="d MMMM yyyy, kk:mm"
-                                className={`form-control ${classes.calendar}`}
                                 name={`breaks.${i}.start`}
-                                onChange={(time) => {
-                                  setFieldTouched(values.breaks ? `breaks.${[i]}.start` : '');
-                                  setFieldValue(`breaks.${i}.start`, time);
-                                }}
+                                label="break start"
                               />
-                              {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<Break>) &&
-                                (errors.breaks[i] as FormikErrors<Break>).start &&
-                                touched.breaks &&
-                                (touched.breaks as unknown as Break[])[i] &&
-                                (touched.breaks as unknown as Break[])[i].start && <Typography>{(errors.breaks[i] as FormikErrors<Break>).start}</Typography>}
                             </div>
                             <div>
-                              <DatePicker
-                                id={`${values.breaks && values.breaks[i].end}`}
-                                onBlur={handleBlur}
-                                selected={values.breaks && values.breaks[i].end}
-                                showTimeSelect
-                                timeFormat="kk:mm"
-                                dateFormat="d MMMM yyyy, kk:mm"
-                                className={`form-control ${classes.calendar}`}
-                                name={`breaks.${i}.end`}
-                                onChange={(time) => {
-                                  setFieldTouched(values.breaks ? `breaks.${[i]}.end` : '');
-                                  setFieldValue(`breaks.${i}.end`, time);
-                                }}
-                              />
-                              {errors.breaks &&
-                                (errors.breaks[i] as FormikErrors<Break>) &&
-                                (errors.breaks[i] as FormikErrors<Break>).end &&
-                                touched.breaks &&
-                                (touched.breaks as unknown as Break[])[i] &&
-                                (touched.breaks as unknown as Break[])[i].end && <Typography>{(errors.breaks[i] as FormikErrors<Break>).end}</Typography>}
+                              <CustomDatePicker id={`${values.breaks && values.breaks[i].end}`} showTimeSelect name={`breaks.${i}.end`} label="break end" />
                             </div>
                           </div>
                         </div>
@@ -283,8 +147,8 @@ const NightAddForm = (props: NightAddFormProps) => {
               label="Calculated duration of sleep"
               name="duration"
             />
-            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid}>
-              Add
+            <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
+              {submitText}
             </Button>
             values:
             <pre>{JSON.stringify(values, null, 2)}</pre>
@@ -299,4 +163,4 @@ const NightAddForm = (props: NightAddFormProps) => {
   );
 };
 
-export default NightAddForm;
+export default FormComponents;

@@ -4,7 +4,7 @@ const initialState = {
   items: [],
   loading: false,
   success: false,
-  editSuccess: false,
+  // editSuccess: false,
 };
 
 export default function itemReducer(state = initialState, action) {
@@ -16,9 +16,9 @@ export default function itemReducer(state = initialState, action) {
     case ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case GET_ITEM:
-      return { ...state, items: action.payload, loading: false, success: true };
+      return { ...state, items: action.payload, loading: false, success: false };
     case EDIT_ITEM:
-      return { ...state, items: [action.payload, ...state.items], loading: false, editSuccess: true };
+      return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case ITEMS_LOADING:
       return {
         ...state,

@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInHours, isWithinInterval } from 'date-fns';
+import { addDays, differenceInDays, differenceInHours, isSameDay, isWithinInterval, subDays } from 'date-fns';
 import * as yup from 'yup';
 
 export const validationSchema = yup.object({
@@ -13,7 +13,7 @@ export const validationSchema = yup.object({
       noElectronicDevices: yup.bool().required(),
     })
     .required(),
-  date: yup.date().required('Enter a date'),
+  date: yup.date().required('Enter a date').nullable(),
   sleepless: yup.bool(),
   startTime: yup
     .date()

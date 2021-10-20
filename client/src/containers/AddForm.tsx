@@ -1,13 +1,13 @@
 // import custom react datepicker overrides
 import { FormikProps } from 'formik';
-import React, { useEffect } from 'react';
+import React from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { addItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
-import NightAddForm from '../components/Form';
 import { calculateDurationInMinutes } from '../helpers/date';
+import FormComponents from '../components/Form';
+import history from '../routes/history';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -42,6 +42,7 @@ export interface NightOptional {
   quality: number;
   notes?: string;
   conditions: Conditions;
+  sleepless: boolean;
 }
 
 export interface Night {
@@ -55,10 +56,11 @@ export interface Night {
   quality: number;
   notes?: string;
   conditions: Conditions;
+  sleepless: boolean;
 }
 
 export type FormProps = {
-  sleepless: boolean;
+  // sleepless: boolean;
 };
 
 export interface AddNightReduxProps extends PropsFromRedux {
@@ -71,32 +73,43 @@ export interface AddNightReduxProps extends PropsFromRedux {
 export type DefiniteNightAndFormProps = Night & FormProps;
 export type NightAndFormProps = NightOptional & FormProps;
 
-const ItemModal: React.FC<FormikProps<FormProps> & NightOptional & AddNightReduxProps> = (
-  props: FormikProps<FormProps> & NightOptional & AddNightReduxProps
-) => {
-  const history = useHistory();
-
-  console.log('props.addmodal', props);
-  console.log('success', props.itemSuccess);
-
-  const handleSubmit = (values: DefiniteNightAndFormProps) => {
-    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    const { sleepless, ...restValues } = values;
-    props.addItem({ ...restValues, duration });
+class FormContainer extends React.Component<FormikProps<FormProps> & NightOptional & AddNightReduxProps> {
+  initialValues: NightAndFormProps = {
+    date: undefined,
+    sleepless: false,
+    startTime: undefined,
+    endTime: undefined,
+    breaks: undefined,
+    nightmares: false,
+    noise: false,
+    quality: 0,
+    notes: undefined,
+    conditions: {
+      temperature: undefined,
+      freshAir: false,
+      fed: false,
+      mentalStatus: 0,
+      noDrinks1HourBefore: false,
+      noCaffeine4HoursBefore: false,
+      noElectronicDevices: false,
+    },
   };
 
-  if (props.itemLoading) {
-    console.log('ITEM LOADED');
-  }
+  handleSubmit = (values: DefiniteNightAndFormProps) => {
+    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
+    this.props.addItem({ ...values, duration });
+  };
 
-  useEffect(() => {
-    if (props.itemSuccess) {
+  componentDidUpdate() {
+    if (this.props.itemSuccess) {
       history.push(APP_ROUTES.diary);
     }
-  }, [props.itemSuccess, history]);
+  }
 
-  return <NightAddForm handleSubmit={handleSubmit} />;
-};
+  render() {
+    return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.initialValues} headline={'Add night'} submitText={'Add night'} />;
+  }
+}
 
 const mapStateToProps = (state: any) => ({
   itemLoading: state.item.loading,
@@ -106,4 +119,4 @@ const mapStateToProps = (state: any) => ({
 
 const connector = connect(mapStateToProps, { addItem });
 
-export default connector(ItemModal);
+export default connector(FormContainer);
