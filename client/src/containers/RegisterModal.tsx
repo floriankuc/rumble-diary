@@ -1,81 +1,50 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { clearErrors } from '../actions/errorActions';
-import { makeStyles } from '@mui/styles';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useHistory } from 'react-router';
-import { TextField, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
-import { APP_ROUTES } from '../routes';
+import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { register } from '../actions/authActions';
+import { clearErrors } from '../actions/errorActions';
 import Register from '../components/Register';
+import { APP_ROUTES } from '../routes';
+import history from '../routes/history';
 
-const useStyles = makeStyles({
-  textfield: {
-    marginBottom: 32,
-  },
-  errorMsg: {
-    marginBottom: 32,
-    color: 'red',
-  },
-  loginHeadline: {
-    marginBottom: 32,
-  },
-});
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-const validationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  email: yup.string().email('Enter a valid email').required('Email is required'),
-  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
-});
+export interface RegisterReduxProps extends PropsFromRedux {
+  isAuthenticated: boolean;
+  error: any;
+}
 
-const RegisterContainer = ({ isAuthenticated, error, register, clearErrors }: any) => {
-  // const classes = useStyles();
-  const history = useHistory();
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      handleSubmit(values);
-    },
-  });
+export interface RegisterModalProps {
+  clearErrors: () => { type: string };
+}
+class RegisterContainer extends React.Component<RegisterModalProps & RegisterReduxProps> {
+  state = { msg: null };
 
-  const [msg, setMsg] = useState(null);
+  handleSubmit = (values: any) => {
+    this.props.register({ name: values.name, email: values.email, password: values.password });
+    clearErrors();
+  };
 
-  const handleSubmit = useCallback(
-    (values) => {
-      register({ name: values.name, email: values.email, password: values.password });
-
-      clearErrors();
-    },
-    [clearErrors, register]
-  );
-
-  useEffect(() => {
-    if (isAuthenticated) {
+  componentDidMount() {
+    if (this.props.isAuthenticated) {
       history.push(APP_ROUTES.start);
     }
-  }, [isAuthenticated, history]);
-
-  useEffect(() => {
-    if (error.id === 'REGISTER_FAIL') {
-      setMsg(error.msg.msg);
+    if (this.props.error.id === 'LOGIN_FAIL') {
+      this.setState({ msg: this.props.error.msg.msg });
     } else {
-      setMsg(null);
+      this.setState({ msg: null });
     }
-  }, [error, isAuthenticated]);
+  }
 
-  return <Register handleSubmit={handleSubmit} msg={msg} />;
-};
+  render() {
+    return <Register handleSubmit={this.handleSubmit} msg={this.state.msg} />;
+  }
+}
 
 const mapStateToProps = (state: any) => ({
   isAuthenticated: state.auth.isAuthenticated,
   error: state.error,
 });
 
-export default connect(mapStateToProps, { register, clearErrors })(RegisterContainer);
+const connector = connect(mapStateToProps, { register, clearErrors });
+
+export default connector(RegisterContainer);

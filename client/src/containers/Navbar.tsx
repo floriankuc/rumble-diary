@@ -1,32 +1,42 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { connect, ConnectedProps } from 'react-redux';
 import { logout } from '../actions/authActions';
 import Navbar from '../components/Navbar';
 import { SidebarContext } from '../components/Sidebar/SidebarContext';
 import { APP_ROUTES } from '../routes';
+import history from '../routes/history';
 
-function NavbarContainer(props: any) {
-  const { isAuthenticated, isLoading } = props.auth;
-  const sidebarContext = React.useContext(SidebarContext);
-  const history = useHistory();
-  const navigateToLogin = () => history.push(APP_ROUTES.login);
-  const navigateToRegister = () => history.push(APP_ROUTES.register);
-  const toggleSidebar = () => sidebarContext.toggleSidebar(!sidebarContext.open);
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-  return (
-    <Navbar
-      isAuthenticated={isAuthenticated}
-      toggleSidebar={toggleSidebar}
-      navigateToLogin={navigateToLogin}
-      navigateToRegister={navigateToRegister}
-      logout={props.logout}
-    />
-  );
+interface NavbarContainerProps {}
+
+export interface NavbarReduxProps extends PropsFromRedux {
+  auth: any;
+}
+class NavbarContainer extends React.Component<NavbarContainerProps & NavbarReduxProps> {
+  static contextType = SidebarContext;
+
+  navigateToLogin = () => history.push(APP_ROUTES.login);
+  navigateToRegister = () => history.push(APP_ROUTES.register);
+  toggleSidebar = () => this.context.toggleSidebar(!this.context.open);
+
+  render() {
+    return (
+      <Navbar
+        isAuthenticated={this.props.auth.isAuthenticated}
+        toggleSidebar={this.toggleSidebar}
+        navigateToLogin={this.navigateToLogin}
+        navigateToRegister={this.navigateToRegister}
+        logout={this.props.logout}
+      />
+    );
+  }
 }
 
 const mapStateToProps = (state: any) => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps, { logout })(NavbarContainer);
+const connector = connect(mapStateToProps, { logout });
+
+export default connector(NavbarContainer);
