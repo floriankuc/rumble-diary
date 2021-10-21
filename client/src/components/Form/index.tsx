@@ -25,9 +25,11 @@ interface FormComponentsProps {
 
 const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: FormComponentsProps) => {
   return (
-    <div style={{ width: 1000, paddingLeft: 100, paddingRight: 200 }}>
-      <Typography variant="h3">{headline}</Typography>
-      <Typography variant="h5" sx={{ mb: 5 }}>
+    <div>
+      <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
+        {headline}
+      </Typography>
+      <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
         Conditions before going to bed
       </Typography>
       <Formik
@@ -57,7 +59,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
             <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" label="No caffeine 4 hours before bed" />
             <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" label="No electronic devices running" />
             <Divider />
-            <Typography variant="h5" sx={{ mt: 8, mb: 4 }}>
+            <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
               How the night went
             </Typography>
             <FormControlLabel

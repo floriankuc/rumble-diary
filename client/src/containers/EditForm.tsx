@@ -32,23 +32,22 @@ interface RouteParams {
 }
 
 class ShowContainer extends React.Component<EditFormProps & NightOptional & AddNightReduxProps & MatchParams> {
-  handleSubmit = (values: DefiniteNightAndFormProps) => {
-    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
-    this.props.editItem({ ...values, duration });
-  };
-
-  componentDidUpdate() {
-    if (this.props.success) {
-      history.push(APP_ROUTES.diary);
-    }
-  }
-
   componentDidMount() {
     if (this.props.user && this.props.user.id) {
       console.log('get item fires');
       this.props.getItem(this.props.match.params.id);
     }
   }
+  componentDidUpdate() {
+    if (this.props.success) {
+      history.push(APP_ROUTES.diary);
+    }
+  }
+
+  handleSubmit = (values: DefiniteNightAndFormProps) => {
+    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
+    this.props.editItem({ ...values, duration });
+  };
 
   render() {
     if (this.props.item && this.props.item.items && this.props.item.items.length === 1 && this.props.item.items[0]) {
