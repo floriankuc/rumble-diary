@@ -20,8 +20,8 @@ export interface ListContainerProps {
 }
 
 class ListContainer extends React.Component<ListContainerProps & ListContainerReduxProps> {
-  componentDidMount() {
-    if (this.props.user && this.props.user.id) {
+  componentDidUpdate(prevProps: any) {
+    if (this.props.user && this.props.user.id && prevProps.user !== this.props.user) {
       this.props.getItems();
     }
   }
@@ -62,15 +62,56 @@ const connector = connect(mapStateToProps, { getItems, deleteItem });
 
 export default connector(ListContainer);
 
+//WORKS
+// import { format } from 'date-fns';
+// import React, { useEffect, useRef } from 'react';
+// import { connect } from 'react-redux';
+// import { useHistory } from 'react-router';
+// import { getItems, deleteItem } from '../actions/itemActions';
+// import { APP_ROUTES } from '../routes';
+// import Chart from '../components/Chart';
+// import List from '../components/List';
+
+// export interface ListContainerProps {
+//   getItems: any;
+//   deleteItem: any;
+//   item: any;
+//   user: any;
+// }
+
 // const ListContainer = ({ getItems, deleteItem, item, user }: ListContainerProps) => {
+//   // const [localItem, setLocalItem] = React.useState(item);
+
 //   const history = useHistory();
+
+//   const prevItemRef = useRef();
+
 //   useEffect(() => {
-//     if (user && user.id) {
-//       getItems();
-//     }
+//     prevItemRef.current = item;
+//   });
+
+//   const prevItem = prevItemRef.current;
+
+//   useEffect(() => {
+//     // if (user && user.id) {
+//     getItems();
+//     // }
 //   }, [user, getItems]);
 
+//   console.log('props.item', item);
+//   // console.log('localItem', localItem);
+//   useEffect(() => {
+//     // if (localItem !== item) {
+//     // console.log('item', item);
+//     getItems();
+//     // console.log('props.item', item); //wenn ich lösche ist props.item schon auf 3, d. h. er ändert sich
+//     // console.log('localItem', localItem);
+//     // }
+//   }, []);
+//   //item in arr ist loop
+
 //   if (user && user.id) console.log('user.id', user.id);
+//   // if (item) console.log('item', item);
 
 //   const onDeleteClick = (id: string) => {
 //     deleteItem(id);
@@ -90,6 +131,8 @@ export default connector(ListContainer);
 
 //   return (
 //     <>
+//       {/* {localItem.items.length} */}
+//       <button onClick={(): void => getItems()}>get items</button>
 //       <Chart data={transformItemsForChartDisplay(item.items)} onBarClick={navigateToNightShow} />
 //       {user && item && renderList(item.items)}
 //     </>

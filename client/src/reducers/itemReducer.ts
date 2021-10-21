@@ -3,7 +3,7 @@ import { ItemActionTypes } from '../actions/itemActionTypes';
 
 export interface ItemAction {
   type: ItemActionTypes;
-  payload?: ItemState;
+  payload?: ItemState | string;
 }
 
 export interface ItemState {
@@ -21,9 +21,11 @@ const initialState: ItemState = {
 export default function itemReducer(state = initialState, action: ItemAction) {
   switch (action.type) {
     case ItemActionTypes.GET_ITEMS:
-      return { ...state, items: action.payload, loading: false, success: false };
+      return { ...state, items: action.payload, loading: false, success: true };
     case ItemActionTypes.DELETE_ITEM:
-      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload) };
+      console.log('delete item action ', action);
+      console.log({ ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: true, success: true });
+      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: true, success: true };
     case ItemActionTypes.ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case ItemActionTypes.GET_ITEM:
