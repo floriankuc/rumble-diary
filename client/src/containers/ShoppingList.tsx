@@ -20,6 +20,12 @@ export interface ListContainerProps {
 }
 
 class ListContainer extends React.Component<ListContainerProps & ListContainerReduxProps> {
+  componentDidMount() {
+    if (this.props.user && this.props.user.id) {
+      this.props.getItems();
+    }
+  }
+
   componentDidUpdate(prevProps: any) {
     if (this.props.user && this.props.user.id && prevProps.user !== this.props.user) {
       this.props.getItems();
