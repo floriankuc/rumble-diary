@@ -7,7 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ChangeEvent, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/AddForm';
+import { NightAndFormProps } from '../../containers/AddForm';
+import { Night } from '../../entities/Night';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
@@ -16,7 +17,7 @@ import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 
 interface FormComponentsProps {
-  handleSubmit: (values: DefiniteNightAndFormProps) => void;
+  handleSubmit: (values: Night) => void;
   initialValues: NightAndFormProps;
   headline: ReactNode;
   submitText: ReactNode;
@@ -45,7 +46,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
           }
         }}
         onSubmit={(values) => {
-          values.startTime && values.endTime && handleSubmit(values as DefiniteNightAndFormProps);
+          values.startTime && values.endTime && handleSubmit(values as Night);
         }}
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (

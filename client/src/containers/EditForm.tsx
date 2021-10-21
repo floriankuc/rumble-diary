@@ -4,10 +4,10 @@ import { match, withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/itemActions';
 import EditForm from '../components/EditForm';
+import { FormNight, Night } from '../entities/Night';
 import { calculateDurationInMinutes } from '../helpers/date';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
-import { DefiniteNightAndFormProps, NightOptional } from './AddForm';
 
 type PropsFromReduxEdit = ConnectedProps<typeof connector>;
 
@@ -31,7 +31,7 @@ interface RouteParams {
   id: string;
 }
 
-class ShowContainer extends React.Component<EditFormProps & NightOptional & AddNightReduxProps & MatchParams> {
+class ShowContainer extends React.Component<EditFormProps & FormNight & AddNightReduxProps & MatchParams> {
   componentDidMount() {
     if (this.props.user && this.props.user.id) {
       console.log('get item fires');
@@ -44,7 +44,7 @@ class ShowContainer extends React.Component<EditFormProps & NightOptional & AddN
     }
   }
 
-  handleSubmit = (values: DefiniteNightAndFormProps) => {
+  handleSubmit = (values: Night) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     this.props.editItem({ ...values, duration });
   };

@@ -13,6 +13,7 @@ const App = (): ReactElement => {
   useEffect(() => {
     //@ts-ignore
     store.dispatch(loadUser());
+    // loadUser();??
   }, []);
 
   return (

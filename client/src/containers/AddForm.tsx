@@ -8,60 +8,9 @@ import { APP_ROUTES } from '../routes';
 import { calculateDurationInMinutes } from '../helpers/date';
 import FormComponents from '../components/Form';
 import history from '../routes/history';
+import { FormNight, Night } from '../entities/Night';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export interface Conditions {
-  temperature?: number;
-  freshAir: boolean;
-  fed: boolean;
-  mentalStatus: number;
-  noDrinks1HourBefore: boolean;
-  noCaffeine4HoursBefore: boolean;
-  noElectronicDevices: boolean;
-}
-
-export interface Break {
-  start: Date;
-  end: Date;
-}
-
-export interface BreakOptional {
-  start?: Date;
-  end?: Date;
-}
-
-export interface NightOptional {
-  _id?: string;
-  date?: Date | null;
-  startTime?: Date;
-  endTime?: Date;
-  breaks?: BreakOptional[];
-  nightmares: boolean;
-  noise: boolean;
-  quality: number;
-  notes?: string;
-  conditions: Conditions;
-  sleepless: boolean;
-}
-
-export interface Night {
-  _id?: string;
-  date: Date;
-  startTime: Date;
-  endTime: Date;
-  breaks?: Break[];
-  nightmares: boolean;
-  noise: boolean;
-  quality: number;
-  notes?: string;
-  conditions: Conditions;
-  sleepless: boolean;
-}
-
-export type FormProps = {
-  // sleepless: boolean;
-};
 
 export interface AddNightReduxProps extends PropsFromRedux {
   isAuthenticated: boolean;
@@ -70,10 +19,9 @@ export interface AddNightReduxProps extends PropsFromRedux {
   itemSuccess: boolean;
 }
 
-export type DefiniteNightAndFormProps = Night & FormProps;
-export type NightAndFormProps = NightOptional & FormProps;
+export type NightAndFormProps = FormNight;
 
-class FormContainer extends React.Component<FormikProps<FormProps> & NightOptional & AddNightReduxProps> {
+class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNightReduxProps> {
   initialValues: NightAndFormProps = {
     date: undefined,
     sleepless: false,
@@ -95,7 +43,7 @@ class FormContainer extends React.Component<FormikProps<FormProps> & NightOption
     },
   };
 
-  handleSubmit = (values: DefiniteNightAndFormProps) => {
+  handleSubmit = (values: Night) => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     this.props.addItem({ ...values, duration });
   };

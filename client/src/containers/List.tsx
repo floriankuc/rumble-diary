@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { useHistory } from 'react-router';
 import { getItems, deleteItem } from '../actions/itemActions';
 import { APP_ROUTES } from '../routes';
 import Chart from '../components/Chart';
