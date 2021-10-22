@@ -26,6 +26,7 @@ class ListContainer extends React.Component<ListContainerProps & ListContainerRe
   }
 
   componentDidUpdate(prevProps: any) {
+    //user abgleich muss ggf raus, getItems wird nicht neugeholt wenn item delete
     if (this.props.user && this.props.user.id && prevProps.user !== this.props.user) {
       this.props.getItems();
     }

@@ -22,7 +22,7 @@ export default function itemReducer(state = initialState, action: ItemAction) {
     case ItemActionTypes.GET_ITEMS:
       return { ...state, items: action.payload, loading: false, success: false };
     case ItemActionTypes.DELETE_ITEM:
-      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: true, success: true };
+      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: false, success: true };
     case ItemActionTypes.ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case ItemActionTypes.GET_ITEM:

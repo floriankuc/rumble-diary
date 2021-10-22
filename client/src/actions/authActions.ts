@@ -3,6 +3,7 @@ import { returnErrors } from './errorActions';
 import { AuthActionTypes } from './authActionTypes';
 import { AppState } from '../reducers';
 import store from '../store';
+import { ErrorActionTypes } from './errorActionTypes';
 
 const config = {
   headers: {
@@ -26,17 +27,19 @@ export const loadUser = () => async (dispatch: StoreDispatch, getState: () => Ap
     dispatch({ type: AuthActionTypes.USER_LOADED, payload: response.data });
   } catch (error: any) {
     console.log('loadUser fails');
-    dispatch(returnErrors(error.response.data, error.response.status));
+    // dispatch(returnErrors(error.response.data, error.response.status, error.response.id));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: error.response.id },
+    });
     dispatch({
       type: AuthActionTypes.AUTH_ERROR,
     });
   }
 };
 
-export interface RegisterCredentials {
+export interface RegisterCredentials extends LoginCredentials {
   name: string;
-  email: string;
-  password: string;
 }
 
 export interface LoginCredentials {
@@ -57,7 +60,11 @@ export const register =
         payload: response.data,
       });
     } catch (error: any) {
-      dispatch(returnErrors(error.response.data, error.response.status, 'REGISTER_FAIL'));
+      // dispatch(returnErrors(error.response.data, error.response.status, 'REGISTER_FAIL'));
+      dispatch({
+        type: ErrorActionTypes.GET_ERRORS,
+        payload: { msg: error.response.data, status: error.response.status, id: 'REGISTER_FAIL' },
+      });
       dispatch({
         type: AuthActionTypes.REGISTER_FAIL,
       });
@@ -82,7 +89,11 @@ export const login =
       });
     } catch (error: any) {
       console.log('login fail fires');
-      dispatch(returnErrors(error.response.data, error.response.status, 'LOGIN_FAIL'));
+      // dispatch(returnErrors(error.response.data, error.response.status, 'LOGIN_FAIL'));
+      dispatch({
+        type: ErrorActionTypes.GET_ERRORS,
+        payload: { msg: error.response.data, status: error.response.status, id: 'LOGIN_FAIL' },
+      });
       dispatch({
         type: AuthActionTypes.LOGIN_FAIL,
       });

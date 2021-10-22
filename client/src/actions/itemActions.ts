@@ -1,9 +1,8 @@
-// import { GET_ITEMS, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING, GET_ITEM, EDIT_ITEM } from './types';
 import axios from 'axios';
 import { StoreDispatch, tokenConfig } from './authActions';
-import { returnErrors } from './errorActions';
 import { AppState } from '../reducers';
 import { ItemActionTypes } from './itemActionTypes';
+import { ErrorActionTypes } from './errorActionTypes';
 
 export const getItems = () => async (dispatch: StoreDispatch, getState: () => AppState) => {
   const userId = getState().auth.user?.id;
@@ -17,7 +16,10 @@ export const getItems = () => async (dispatch: StoreDispatch, getState: () => Ap
       payload: response.data,
     });
   } catch (error: any) {
-    dispatch(returnErrors(error.response.data, error.response.status));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: 'GET_ITEMS_FAIL' },
+    });
   }
 };
 
@@ -31,7 +33,10 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, ge
       payload: response.data.id,
     });
   } catch (error: any) {
-    dispatch(returnErrors(error.response.data, error.response.status));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: 'DELETE_ITEM_FAIL' },
+    });
   }
 };
 
@@ -46,7 +51,10 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch, getState: 
       payload: response.data,
     });
   } catch (error: any) {
-    dispatch(returnErrors(error.response.data, error.response.status));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: 'ADD_ITEM_FAIL' },
+    });
   }
 };
 
@@ -65,7 +73,10 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch, getSt
       payload: response.data,
     });
   } catch (error: any) {
-    dispatch(returnErrors(error.response.data, error.response.status));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: 'GET_ITEM_FAIL' },
+    });
   }
 };
 
@@ -81,6 +92,9 @@ export const editItem = (item: any) => async (dispatch: StoreDispatch, getState:
       payload: response.data,
     });
   } catch (error: any) {
-    dispatch(returnErrors(error.response.data, error.response.status));
+    dispatch({
+      type: ErrorActionTypes.GET_ERRORS,
+      payload: { msg: error.response.data, status: error.response.status, id: 'EDIT_ITEM_FAIL' },
+    });
   }
 };
