@@ -22,7 +22,7 @@ export const ActionItemC = (props: IActionItemC) => {
   const renderDefaultActionItem = (item: DefaultActionItem) => {
     return (
       <ListItem button key={item.id} onClick={item.action} disableRipple>
-        <ListItemIcon>{item.icon}</ListItemIcon>
+        <ListItemIcon key={item.id + '_item'}>{item.icon}</ListItemIcon>
         <ListItemText primary={item.text} />
       </ListItem>
     );

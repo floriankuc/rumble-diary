@@ -109,7 +109,6 @@ export default function authReducer(state = initialAuthState, action: AuthAction
         isLoading: false,
         user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
         // user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
-        // @ts-ignore //prüfen im state -> flow schauen
       } as AuthUserLoadedState;
     case AuthActionTypes.LOGIN_SUCCESS:
     case AuthActionTypes.REGISTER_SUCCESS:

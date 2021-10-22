@@ -3,17 +3,27 @@ import { StoreDispatch, tokenConfig } from './authActions';
 import { AppState } from '../reducers';
 import { ItemActionTypes } from './itemActionTypes';
 import { ErrorActionTypes } from './errorActionTypes';
+import { ItemLoadingAction } from '../reducers/itemReducer';
+
+export const setItemsLoading = (): ItemLoadingAction => {
+  return {
+    type: ItemActionTypes.ITEMS_LOADING,
+  };
+};
 
 export const getItems = () => async (dispatch: StoreDispatch, getState: () => AppState) => {
   const userId = getState().auth.user?.id;
-  dispatch(setItemsLoading());
+  // dispatch(setItemsLoading());
+  dispatch({
+    type: ItemActionTypes.ITEMS_LOADING,
+  });
 
   try {
     const response = await axios.get(`/api/items/${userId}`, tokenConfig(getState));
     console.log('response data get all items', response.data);
     dispatch({
       type: ItemActionTypes.GET_ITEMS,
-      payload: response.data,
+      payload: response.data, //array of Nights
     });
   } catch (error: any) {
     dispatch({
@@ -24,7 +34,10 @@ export const getItems = () => async (dispatch: StoreDispatch, getState: () => Ap
 };
 
 export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, getState: () => AppState) => {
-  dispatch(setItemsLoading());
+  // dispatch(setItemsLoading());
+  dispatch({
+    type: ItemActionTypes.ITEMS_LOADING,
+  });
 
   try {
     const response = await axios.delete(`/api/items/${itemId}`, tokenConfig(getState));
@@ -42,7 +55,10 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, ge
 
 export const addItem = (item: any) => async (dispatch: StoreDispatch, getState: () => AppState) => {
   const newItem = { ...item, user: getState().auth.user?.id };
-  dispatch(setItemsLoading());
+  // dispatch(setItemsLoading());
+  dispatch({
+    type: ItemActionTypes.ITEMS_LOADING,
+  });
 
   try {
     const response = await axios.post('/api/items/new', newItem, tokenConfig(getState));
@@ -58,13 +74,12 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch, getState: 
   }
 };
 
-export const setItemsLoading = () => ({
-  type: ItemActionTypes.ITEMS_LOADING,
-});
-
 export const getItem = (itemId: string) => async (dispatch: StoreDispatch, getState: () => AppState) => {
   const userId = getState().auth.user?.id;
-  dispatch(setItemsLoading());
+  // dispatch(setItemsLoading());
+  dispatch({
+    type: ItemActionTypes.ITEMS_LOADING,
+  });
   try {
     const response = await axios.get(`/api/items/${userId}/${itemId}`, tokenConfig(getState));
     console.log('get Item response', response.data);
@@ -83,7 +98,10 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch, getSt
 export const editItem = (item: any) => async (dispatch: StoreDispatch, getState: () => AppState) => {
   const newItem = { ...item, user: getState().auth.user?.id };
   const userId = getState().auth.user?.id;
-  dispatch(setItemsLoading());
+  // dispatch(setItemsLoading());
+  dispatch({
+    type: ItemActionTypes.ITEMS_LOADING,
+  });
 
   try {
     const response = await axios.patch(`/api/items/${userId}/${item._id}`, newItem, tokenConfig(getState));

@@ -40,7 +40,7 @@ export const Sidebar = (props: ISidebar): React.ReactElement => {
   };
 
   const renderItem = (item: ActionItem) => {
-    return <ActionItemC actionItem={item} />;
+    return <ActionItemC actionItem={item} key={item.id} />;
   };
 
   return (
