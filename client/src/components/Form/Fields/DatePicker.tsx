@@ -58,7 +58,6 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             id={props.id}
             disabled={props.disabled}
             onBlur={field.onBlur}
-            // selected={new Date()}
             selected={meta.value ? new Date(meta.value) : null}
             showTimeSelect={props.showTimeSelect}
             placeholderText={props.placeholder}
@@ -66,7 +65,6 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             dateFormat={`d MMMM yyyy${props.showTimeSelect ? ', kk:mm' : ''}`}
             name={props.id}
             className={`form-control ${classes.calendar}`}
-            // onChange={(time) => setFieldValue('startTime', time)}
             onChange={(time: Date | null) => {
               helpers.setValue(time);
               helpers.setTouched(true);
@@ -79,7 +77,6 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
         sx={{ mt: 2 }}
       />
       {meta.error && meta.touched && <Typography className={classes.calendarErrorMessage}>{meta.error}</Typography>}
-      {/* {errors.date && touched.date && <Typography className={classes.calendarErrorMessage}>Enter a date</Typography>} */}
     </>
   );
 };

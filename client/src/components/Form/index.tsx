@@ -7,7 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ChangeEvent, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { DefiniteNightAndFormProps, NightAndFormProps } from '../../containers/AddForm';
+import { NightAndFormProps } from '../../containers/AddForm';
+import { Night } from '../../entities/Night';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
@@ -16,7 +17,7 @@ import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 
 interface FormComponentsProps {
-  handleSubmit: (values: DefiniteNightAndFormProps) => void;
+  handleSubmit: (values: Night) => void;
   initialValues: NightAndFormProps;
   headline: ReactNode;
   submitText: ReactNode;
@@ -25,9 +26,11 @@ interface FormComponentsProps {
 
 const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: FormComponentsProps) => {
   return (
-    <div style={{ width: 1000, paddingLeft: 100, paddingRight: 200 }}>
-      <Typography variant="h3">{headline}</Typography>
-      <Typography variant="h5" sx={{ mb: 5 }}>
+    <div>
+      <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
+        {headline}
+      </Typography>
+      <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
         Conditions before going to bed
       </Typography>
       <Formik
@@ -43,7 +46,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
           }
         }}
         onSubmit={(values) => {
-          values.startTime && values.endTime && handleSubmit(values as DefiniteNightAndFormProps);
+          values.startTime && values.endTime && handleSubmit(values as Night);
         }}
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
@@ -57,7 +60,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
             <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" label="No caffeine 4 hours before bed" />
             <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" label="No electronic devices running" />
             <Divider />
-            <Typography variant="h5" sx={{ mt: 8, mb: 4 }}>
+            <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
               How the night went
             </Typography>
             <FormControlLabel

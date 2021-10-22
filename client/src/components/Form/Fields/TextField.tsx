@@ -1,7 +1,7 @@
 import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps } from '@mui/material';
 import React, { ReactNode } from 'react';
 import { makeStyles } from '@mui/styles';
-import { useField, Form, FormikProps, Formik, FieldHookConfig } from 'formik';
+import { useField, FieldHookConfig } from 'formik';
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -30,7 +30,7 @@ const CustomTextField = (props: TextFieldProps & FieldHookConfig<string>) => {
           type={props.type}
           id={props.id}
           name={props.id}
-          value={meta.value || props.value}
+          value={meta.value}
           onChange={field.onChange}
           onBlur={field.onBlur}
           error={meta.touched && Boolean(meta.error)}

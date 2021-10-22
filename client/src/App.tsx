@@ -1,7 +1,6 @@
 import { CssBaseline } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { Provider } from 'react-redux';
-// import { BrowserRouter as Router2 } from 'react-router-dom';
 import { Router } from 'react-router-dom';
 import { loadUser } from './actions/authActions';
 import ModalProvider from './components/Modal/ModalProvider';
@@ -10,9 +9,12 @@ import history from './routes/history';
 import MainScreen from './screens/Main';
 import store from './store';
 
-function App() {
+const App = (): ReactElement => {
   useEffect(() => {
+    //@ts-ignore
     store.dispatch(loadUser());
+    // console.log('loadUser in App fires');
+    // loadUser();??
   }, []);
 
   return (
@@ -27,6 +29,6 @@ function App() {
       </Router>
     </Provider>
   );
-}
+};
 
 export default App;

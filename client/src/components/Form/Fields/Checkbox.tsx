@@ -1,7 +1,6 @@
-import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps, Checkbox } from '@mui/material';
+import { BaseTextFieldProps, Checkbox, FormControlLabel } from '@mui/material';
+import { FieldHookConfig, useField } from 'formik';
 import React, { ReactNode } from 'react';
-import { makeStyles } from '@mui/styles';
-import { useField, Form, FormikProps, Formik, FieldHookConfig } from 'formik';
 
 export interface CheckboxProps {
   id: BaseTextFieldProps['id'];
@@ -9,8 +8,8 @@ export interface CheckboxProps {
   value?: string | number;
 }
 
-const CustomCheckbox = (props: CheckboxProps & FieldHookConfig<boolean>) => {
-  const [field, meta, helpers] = useField(props);
+const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>) => {
+  const [field, , helpers] = useField(restProps);
 
   return (
     <FormControlLabel
@@ -18,14 +17,14 @@ const CustomCheckbox = (props: CheckboxProps & FieldHookConfig<boolean>) => {
         <Checkbox
           {...field}
           value={field.value}
-          disabled={props.disabled}
+          disabled={disabled}
           checked={field.value}
-          id={props.id}
-          name={props.id}
+          id={id}
+          name={id}
           onChange={(): void => helpers.setValue(!field.value)}
         />
       }
-      label={props.label}
+      label={label}
     />
   );
 };

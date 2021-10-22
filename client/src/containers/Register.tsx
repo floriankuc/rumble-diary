@@ -5,7 +5,7 @@ import { clearErrors } from '../actions/errorActions';
 import Register from '../components/Register';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
-
+import { RegisterCredentials } from '../actions/authActions';
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export interface RegisterReduxProps extends PropsFromRedux {
@@ -19,7 +19,7 @@ export interface RegisterModalProps {
 class RegisterContainer extends React.Component<RegisterModalProps & RegisterReduxProps> {
   state = { msg: null };
 
-  handleSubmit = (values: any) => {
+  handleSubmit = (values: RegisterCredentials) => {
     this.props.register({ name: values.name, email: values.email, password: values.password });
     clearErrors();
   };
