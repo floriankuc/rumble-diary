@@ -31,9 +31,9 @@ class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNig
     nightmares: false,
     noise: false,
     quality: 0,
-    notes: undefined,
+    notes: '',
     conditions: {
-      temperature: undefined,
+      temperature: 0,
       freshAir: false,
       fed: false,
       mentalStatus: 0,

@@ -30,7 +30,7 @@ const CustomTextField = (props: TextFieldProps & FieldHookConfig<string>) => {
           type={props.type}
           id={props.id}
           name={props.id}
-          value={meta.value || props.value}
+          value={meta.value}
           onChange={field.onChange}
           onBlur={field.onBlur}
           error={meta.touched && Boolean(meta.error)}

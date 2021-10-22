@@ -7,7 +7,7 @@ export interface FormNight {
   nightmares: boolean;
   noise: boolean;
   quality: number;
-  notes?: string;
+  notes: string;
   conditions: Conditions;
   sleepless: boolean;
 }
@@ -21,13 +21,13 @@ export interface Night {
   readonly nightmares: boolean;
   readonly noise: boolean;
   readonly quality: number;
-  readonly notes?: string;
+  readonly notes: string;
   readonly conditions: Conditions;
   readonly sleepless: boolean;
 }
 
 export interface Conditions {
-  temperature?: number;
+  temperature: number;
   freshAir: boolean;
   fed: boolean;
   mentalStatus: number;
