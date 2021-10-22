@@ -30,12 +30,9 @@ const MainScreen = (props: IMain) => {
       <Sidebar actionItems={sidebarItems} />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Switch>
-          {!props.isAuthenticated &&
-            props.isAuthenticated !== null &&
-            !props.isLoading &&
-            location.pathname !== '/' &&
-            location.pathname !== '/login' &&
-            location.pathname !== '/register' && <Redirect to="/" />}
+          {!props.isLoading && !props.isAuthenticated && location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register' && (
+            <Redirect to="/" />
+          )}
           <Route path={APP_ROUTES.start} exact component={(): ReactElement => <div>start</div>} />
           <Route path={APP_ROUTES.add} exact component={ItemModal} />
           <Route path={APP_ROUTES.diary} exact component={List} />

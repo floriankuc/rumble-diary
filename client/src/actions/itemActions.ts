@@ -28,7 +28,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, ge
     const response = await axios.delete(`/api/items/${itemId}`, tokenConfig(getState));
     dispatch({
       type: ItemActionTypes.DELETE_ITEM,
-      payload: response.data._id,
+      payload: response.data.id,
     });
   } catch (error: any) {
     dispatch(returnErrors(error.response.data, error.response.status));

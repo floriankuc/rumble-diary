@@ -18,12 +18,14 @@ export const tokenConfig = (getState: () => AppState) => {
 };
 
 export const loadUser = () => async (dispatch: StoreDispatch, getState: () => AppState) => {
-  dispatch({ type: AuthActionTypes.USER_LOADING });
+  dispatch({ type: AuthActionTypes.USER_LOADING }); //1. versuche user zu laden
 
   try {
     const response = await axios.get('/api/auth/user', tokenConfig(getState));
+    console.log('loadUser response', response.data);
     dispatch({ type: AuthActionTypes.USER_LOADED, payload: response.data });
   } catch (error: any) {
+    console.log('loadUser fails');
     dispatch(returnErrors(error.response.data, error.response.status));
     dispatch({
       type: AuthActionTypes.AUTH_ERROR,
@@ -49,6 +51,7 @@ export const register =
 
     try {
       const response = await axios.post('/api/users', body, config);
+      console.log('register response', response.data);
       dispatch({
         type: AuthActionTypes.REGISTER_SUCCESS,
         payload: response.data,
@@ -72,11 +75,13 @@ export const login =
 
     try {
       const response = await axios.post('/api/auth', body, config);
+      console.log('login response', response.data);
       dispatch({
         type: AuthActionTypes.LOGIN_SUCCESS,
         payload: response.data,
       });
     } catch (error: any) {
+      console.log('login fail fires');
       dispatch(returnErrors(error.response.data, error.response.status, 'LOGIN_FAIL'));
       dispatch({
         type: AuthActionTypes.LOGIN_FAIL,

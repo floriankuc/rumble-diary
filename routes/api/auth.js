@@ -47,6 +47,7 @@ router.get('/user', authMiddleware, (req, res) => {
       res.json({
         id: user.id,
         email: user.email,
+        name: user.name,
       })
     );
 });

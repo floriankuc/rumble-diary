@@ -50,6 +50,7 @@ class ShowContainer extends React.Component<EditFormProps & FormNight & AddNight
   };
 
   render() {
+    console.log('edit props', this.props);
     if (this.props.item && this.props.item.items && this.props.item.items.length === 1 && this.props.item.items[0]) {
       return <EditForm item={this.props.item.items[0]} handleSubmit={this.handleSubmit} />;
     } else {
