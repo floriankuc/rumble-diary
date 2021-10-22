@@ -6,6 +6,7 @@ import { APP_ROUTES } from '../routes';
 import Chart from '../components/Chart';
 import List from '../components/List';
 import history from '../routes/history';
+import { ThirtyFpsSelect } from '@mui/icons-material';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -26,8 +27,7 @@ class ListContainer extends React.Component<ListContainerProps & ListContainerRe
   }
 
   componentDidUpdate(prevProps: any) {
-    //user abgleich muss ggf raus, getItems wird nicht neugeholt wenn item delete
-    if (this.props.user && this.props.user.id && prevProps.user !== this.props.user) {
+    if (this.props.user && this.props.user.id && (prevProps.user !== this.props.user || prevProps.item.success !== this.props.item.success)) {
       this.props.getItems();
     }
   }
@@ -49,11 +49,10 @@ class ListContainer extends React.Component<ListContainerProps & ListContainerRe
   };
 
   render() {
-    console.log(this.props);
     return (
       <>
         <Chart data={this.transformItemsForChartDisplay(this.props.item.items)} onBarClick={this.navigateToNightShow} />
-        {this.props.user && this.props.item && this.renderList(this.props.item.items)}
+        {this.renderList(this.props.item.items)}
       </>
     );
   }
