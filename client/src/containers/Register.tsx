@@ -17,26 +17,23 @@ export interface RegisterModalProps {
   clearErrors: () => { type: string };
 }
 class RegisterContainer extends React.Component<RegisterModalProps & RegisterReduxProps> {
-  state = { msg: null };
-
   handleSubmit = (values: RegisterCredentials) => {
     this.props.register({ name: values.name, email: values.email, password: values.password });
-    clearErrors();
   };
 
   componentDidMount() {
     if (this.props.isAuthenticated) {
-      history.push(APP_ROUTES.start);
-    }
-    if (this.props.error.id === 'LOGIN_FAIL') {
-      this.setState({ msg: this.props.error.msg.msg });
-    } else {
-      this.setState({ msg: null });
+      history.push(APP_ROUTES.diary);
     }
   }
 
+  componentWillUnmount() {
+    console.log('register unmounts');
+    clearErrors();
+  }
+
   render() {
-    return <Register handleSubmit={this.handleSubmit} msg={this.state.msg} />;
+    return <Register handleSubmit={this.handleSubmit} msg={this.props.error.id === 'REGISTER_FAIL' && this.props.error.msg.msg} />;
   }
 }
 

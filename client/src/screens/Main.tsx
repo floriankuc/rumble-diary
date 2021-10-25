@@ -11,6 +11,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { sidebarItems } from '../components/Sidebar/sidebarItems';
 import RegisterModal from '../containers/Register';
 import Show from '../containers/EditForm';
+import Root from '../components/Root';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -28,7 +29,7 @@ const MainScreen = (props: IMain) => {
     <div>
       <AppNavbar />
       <Sidebar actionItems={sidebarItems} />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', padding: '80px 0px', alignItems: 'center' }}>
         <Switch>
           {!props.isLoading && !props.isAuthenticated && location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register' && (
             <Redirect to="/" />
@@ -37,7 +38,7 @@ const MainScreen = (props: IMain) => {
           <Route path={APP_ROUTES.add} exact component={ItemModal} />
           <Route path={APP_ROUTES.diary} exact component={List} />
           <Route path={APP_ROUTES.show} exact component={Show} />
-          <Route path={APP_ROUTES.root} component={(): ReactElement => <div>root</div>} />
+          <Route path={APP_ROUTES.root} component={Root} />
         </Switch>
       </div>
       <Switch>

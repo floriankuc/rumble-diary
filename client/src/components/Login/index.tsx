@@ -6,6 +6,24 @@ import TextField from '@mui/material/TextField';
 import { makeStyles } from '@mui/styles';
 import { Typography } from '@mui/material';
 
+const useStyles = makeStyles({
+  formContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    '& .MuiFormControl-root': {
+      marginBottom: 20,
+    },
+  },
+  button: {
+    alignSelf: 'end',
+  },
+  errorMsg: {
+    color: '#DD0000',
+    marginBottom: 14,
+    fontSize: '.75rem',
+  },
+});
+
 export interface LoginProps {
   handleSubmit: (values: any) => void;
   msg: ReactNode;
@@ -17,6 +35,8 @@ const validationSchema = yup.object({
 });
 
 const Login = (props: LoginProps) => {
+  const classes = useStyles();
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -30,13 +50,10 @@ const Login = (props: LoginProps) => {
 
   return (
     <div>
-      <Typography
-        variant="h5"
-        // className={classes.loginHeadline}
-      >
+      <Typography variant="h5" sx={{ mb: 2 }}>
         Login
       </Typography>
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="email"
@@ -47,7 +64,6 @@ const Login = (props: LoginProps) => {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
           variant="outlined"
-          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -60,16 +76,10 @@ const Login = (props: LoginProps) => {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
           variant="outlined"
-          // className={classes.textfield}
         />
-        <Typography
-        // className={classes.errorMsg}
-        >
-          {props.msg}
-        </Typography>
-
-        <Button color="primary" variant="contained" fullWidth type="submit">
-          Submit
+        <Typography className={classes.errorMsg}>{props.msg}</Typography>
+        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!formik.isValid}>
+          Login
         </Button>
       </form>
     </div>

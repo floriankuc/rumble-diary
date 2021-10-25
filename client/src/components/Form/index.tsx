@@ -1,11 +1,10 @@
-import { validate } from '@material-ui/pickers';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, Typography } from '@mui/material';
 // import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
-import React, { ChangeEvent, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { NightAndFormProps } from '../../containers/AddForm';
 import { Night } from '../../entities/Night';

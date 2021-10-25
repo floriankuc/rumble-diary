@@ -3,7 +3,9 @@ import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
 import React from 'react';
-
+import LogoutIcon from '@mui/icons-material/Logout';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AddIcon from '@mui/icons-material/Add';
 export interface NavbarProps {
   isAuthenticated: boolean;
   toggleSidebar: () => void;
@@ -23,8 +25,18 @@ const Navbar = (props: NavbarProps) => {
             </IconButton>
           )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Sleep Tracker
+            Sleep Diary
           </Typography>
+          {props.isAuthenticated && (
+            <Button color="inherit" onClick={props.navigateToLogin} startIcon={<AddIcon />}>
+              New entry
+            </Button>
+          )}
+          {props.isAuthenticated && (
+            <Button color="inherit" onClick={props.navigateToLogin} startIcon={<BarChartIcon />}>
+              Diary
+            </Button>
+          )}
           {!props.isAuthenticated && (
             <Button color="inherit" onClick={props.navigateToRegister}>
               Register
@@ -36,7 +48,7 @@ const Navbar = (props: NavbarProps) => {
             </Button>
           )}
           {props.isAuthenticated && (
-            <Button color="inherit" onClick={props.logout}>
+            <Button color="inherit" onClick={props.logout} startIcon={<LogoutIcon />}>
               Logout
             </Button>
           )}
