@@ -1,61 +1,45 @@
 import React from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import { SidebarContext } from './SidebarContext';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
-import { ActionItemC } from './ActionItem';
+import { ActionItem, ActionItemC } from '../ActionItem';
+import { makeStyles } from '@mui/styles';
 
-export interface NavActionItem {
-  type: 'Nav';
-  id: string;
-  text?: string;
-  icon?: React.ReactNode;
-  navigatesTo: string;
+const useStyles = makeStyles({
+  paper: {
+    width: 200,
+  },
+});
+
+export interface SidebarProps {
+  actionItems: ActionItem[];
+  open: boolean;
+  toggleSidebar: (open: boolean) => void;
 }
 
-export interface DefaultActionItem {
-  type: 'Default';
-  id: string;
-  text?: string;
-  icon?: React.ReactNode;
-  action: () => void;
-}
-
-export type ActionItem = DefaultActionItem | NavActionItem;
-
-export interface ISidebar {
-  actionItems?: ActionItem[];
-}
-
-export const Sidebar = (props: ISidebar): React.ReactElement => {
-  const { open, toggleSidebar } = React.useContext(SidebarContext);
-
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
-      return;
-    }
-
-    toggleSidebar(!open);
-  };
+export const Sidebar = (props: SidebarProps): React.ReactElement => {
+  const classes = useStyles();
 
   const renderItem = (item: ActionItem) => {
     return <ActionItemC actionItem={item} key={item.id} />;
   };
 
   return (
-    <div>
-      <Box sx={{ width: 250 }} role="presentation" onClick={(): void => toggleSidebar(false)} onKeyDown={(): void => toggleSidebar(false)}>
-        <Drawer anchor="left" open={open} onClose={(): void => toggleSidebar(false)}>
-          <Typography variant="h4">Menu</Typography>
+    <Box role="presentation" onClick={(): void => props.toggleSidebar(false)} onKeyDown={(): void => props.toggleSidebar(false)}>
+      <Drawer anchor="left" open={props.open} onClose={(): void => props.toggleSidebar(false)} PaperProps={{ className: classes.paper }}>
+        <div style={{ background: 'pink' }}>
+          <Typography variant="h4" sx={{ padding: 2 }}>
+            Menu
+          </Typography>
           <List>
             {props.actionItems &&
               props.actionItems.map((item) => {
                 return renderItem(item);
               })}
           </List>
-        </Drawer>
-      </Box>
-    </div>
+        </div>
+      </Drawer>
+    </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { CssBaseline } from '@mui/material';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import React, { ReactElement, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
@@ -8,6 +8,20 @@ import SidebarProvider from './components/Sidebar/SidebarProvider';
 import history from './routes/history';
 import MainScreen from './screens/Main';
 import store from './store';
+
+const theme = createTheme({
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@global': {
+          html: {
+            overflowY: 'scroll',
+          },
+        },
+      },
+    },
+  },
+});
 
 const App = (): ReactElement => {
   useEffect(() => {
@@ -20,12 +34,14 @@ const App = (): ReactElement => {
   return (
     <Provider store={store}>
       <Router history={history}>
-        <ModalProvider>
-          <SidebarProvider>
-            <CssBaseline />
-            <MainScreen />
-          </SidebarProvider>
-        </ModalProvider>
+        <ThemeProvider theme={theme}>
+          <ModalProvider>
+            <SidebarProvider>
+              <CssBaseline />
+              <MainScreen />
+            </SidebarProvider>
+          </ModalProvider>
+        </ThemeProvider>
       </Router>
     </Provider>
   );

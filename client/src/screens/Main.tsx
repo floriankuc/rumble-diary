@@ -6,9 +6,10 @@ import List from '../containers/List';
 import Modal from '../components/Modal/Modal';
 import LoginModal from '../containers/Login';
 import { APP_ROUTES } from '../routes';
-import { Sidebar } from '../components/Sidebar/Sidebar';
+// import { Sidebar } from '../components/Sidebar/Sidebar';
+import SidebarContainer from '../containers/Sidebar';
+import { sidebarItems, sidebarItemsLoggedOut } from '../components/Sidebar/sidebarItems';
 import { connect, ConnectedProps } from 'react-redux';
-import { sidebarItems } from '../components/Sidebar/sidebarItems';
 import RegisterModal from '../containers/Register';
 import Show from '../containers/EditForm';
 import Root from '../components/Root';
@@ -28,7 +29,8 @@ const MainScreen = (props: IMain) => {
   return (
     <div>
       <AppNavbar />
-      <Sidebar actionItems={sidebarItems} />
+      {/* <Sidebar actionItems={sidebarItems} /> */}
+      <SidebarContainer />
       <div style={{ display: 'flex', flexDirection: 'column', padding: '80px 0px', alignItems: 'center' }}>
         <Switch>
           {!props.isLoading && !props.isAuthenticated && location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register' && (

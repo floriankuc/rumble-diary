@@ -67,7 +67,7 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             className={`form-control ${classes.calendar}`}
             onChange={(time: Date | null) => {
               helpers.setValue(time);
-              helpers.setTouched(true);
+              // helpers.setTouched(true);
             }}
           />
         }

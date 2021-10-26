@@ -1,25 +1,25 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
+import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
-import LogoutIcon from '@mui/icons-material/Logout';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import AddIcon from '@mui/icons-material/Add';
+import { ActionItem, ActionItemC } from '../ActionItem';
 export interface NavbarProps {
-  isAuthenticated: boolean;
+  actionItems?: ActionItem[];
   toggleSidebar: () => void;
-  navigateToRegister: () => void;
-  navigateToLogin: () => void;
-  logout: () => void;
 }
 
 const Navbar = (props: NavbarProps) => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const renderItem = (item: ActionItem) => {
+    return <ActionItemC actionItem={item} key={item.id} />;
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
         <Toolbar>
-          {props.isAuthenticated && (
+          {matches && (
             <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={props.toggleSidebar}>
               <MenuIcon />
             </IconButton>
@@ -27,31 +27,11 @@ const Navbar = (props: NavbarProps) => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Sleep Diary
           </Typography>
-          {props.isAuthenticated && (
-            <Button color="inherit" onClick={props.navigateToLogin} startIcon={<AddIcon />}>
-              New entry
-            </Button>
-          )}
-          {props.isAuthenticated && (
-            <Button color="inherit" onClick={props.navigateToLogin} startIcon={<BarChartIcon />}>
-              Diary
-            </Button>
-          )}
-          {!props.isAuthenticated && (
-            <Button color="inherit" onClick={props.navigateToRegister}>
-              Register
-            </Button>
-          )}
-          {!props.isAuthenticated && (
-            <Button color="inherit" onClick={props.navigateToLogin}>
-              Login
-            </Button>
-          )}
-          {props.isAuthenticated && (
-            <Button color="inherit" onClick={props.logout} startIcon={<LogoutIcon />}>
-              Logout
-            </Button>
-          )}
+          {!matches &&
+            props.actionItems &&
+            props.actionItems.map((item) => {
+              return renderItem(item);
+            })}
         </Toolbar>
       </AppBar>
     </Box>

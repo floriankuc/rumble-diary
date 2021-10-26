@@ -137,18 +137,12 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
             <CustomCheckbox id="noise" name="noise" label="noise" />
             <CustomRatingField id="quality" name="quality" label="Overall quality of the night?" />
             <CustomTextField id="notes" type="text" label="Notes" name="notes" />
-            <CustomTextField
-              id="duration"
-              disabled
-              value={
-                values.startTime && values.endTime && calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
-                  ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
-                  : 0
-              }
-              type="text"
-              label="Calculated duration of sleep"
-              name="duration"
-            />
+            <p>
+              you slept:{' '}
+              {values.startTime && values.endTime && calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
+                ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
+                : 0}
+            </p>
             <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
               {submitText}
             </Button>
