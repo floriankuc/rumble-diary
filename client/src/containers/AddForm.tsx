@@ -55,7 +55,7 @@ class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNig
   }
 
   render() {
-    return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.initialValues} headline={'Add night'} submitText={'Add night'} />;
+    return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.initialValues} headline={'Add night'} submitText={'Add'} />;
   }
 }
 

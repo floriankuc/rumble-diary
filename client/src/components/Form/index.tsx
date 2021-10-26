@@ -102,7 +102,7 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
                     </Button>
                   </div>
                   {values.breaks && values.breaks.length > 0 ? (
-                    values.breaks.map((f, i) => (
+                    values.breaks.map((f: any, i: any) => (
                       <div key={i}>
                         <div style={{ background: '#F6F6F6', padding: 10, borderRadius: 5, marginBottom: 30 }}>
                           <div style={{ width: '100%', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

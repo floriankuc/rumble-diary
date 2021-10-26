@@ -1,16 +1,25 @@
+import { FormikProps } from 'formik';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { match, withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/itemActions';
-import EditForm from '../components/EditForm';
+import FormComponents from '../components/Form';
 import { FormNight, Night } from '../entities/Night';
 import { calculateDurationInMinutes } from '../helpers/date';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
+import { NightAndFormProps } from './AddForm';
 
-type PropsFromReduxEdit = ConnectedProps<typeof connector>;
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
+export interface EditNightReduxProps extends PropsFromRedux {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  itemLoading: boolean;
+  success: boolean;
+  item: any;
+}
 export interface EditFormProps extends RouteComponentProps<RouteParams> {
   sleepless: boolean;
 }
@@ -20,21 +29,34 @@ interface MatchParams {
   match: match;
 }
 
-export interface AddNightReduxProps extends PropsFromReduxEdit {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  itemLoading: boolean;
-  itemSuccess: boolean;
-}
-
 interface RouteParams {
   id: string;
 }
+class EditFormContainer extends React.Component<EditFormProps & FormNight & EditNightReduxProps & MatchParams> {
+  getInitialValues = (item: Night): NightAndFormProps => ({
+    _id: item._id,
+    date: item.date ? new Date(item.date) : new Date(),
+    sleepless: item.sleepless,
+    startTime: item.startTime ? new Date(item.startTime) : undefined,
+    endTime: item.endTime ? new Date(item.endTime) : undefined,
+    breaks: item.breaks,
+    nightmares: item.nightmares,
+    noise: item.noise,
+    quality: item.quality,
+    notes: item.notes,
+    conditions: {
+      temperature: item.conditions.temperature,
+      freshAir: item.conditions.freshAir,
+      fed: item.conditions.fed,
+      mentalStatus: item.conditions.mentalStatus,
+      noDrinks1HourBefore: item.conditions.noDrinks1HourBefore,
+      noCaffeine4HoursBefore: item.conditions.noCaffeine4HoursBefore,
+      noElectronicDevices: item.conditions.noElectronicDevices,
+    },
+  });
 
-class ShowContainer extends React.Component<EditFormProps & FormNight & AddNightReduxProps & MatchParams> {
   componentDidMount() {
     if (this.props.user && this.props.user.id) {
-      console.log('get item fires');
       this.props.getItem(this.props.match.params.id);
     }
   }
@@ -50,9 +72,15 @@ class ShowContainer extends React.Component<EditFormProps & FormNight & AddNight
   };
 
   render() {
-    console.log('edit props', this.props);
     if (this.props.item && this.props.item.items && this.props.item.items.length === 1 && this.props.item.items[0]) {
-      return <EditForm item={this.props.item.items[0]} handleSubmit={this.handleSubmit} />;
+      return (
+        <FormComponents
+          handleSubmit={this.handleSubmit}
+          initialValues={this.getInitialValues(this.props.item.items[0])}
+          headline={'Edit night'}
+          submitText={'Save'}
+        />
+      );
     } else {
       return <></>;
     }
@@ -69,4 +97,4 @@ const mapStateToProps = (state: any) => ({
 
 const connector = connect(mapStateToProps, { getItem, editItem });
 
-export default connector(withRouter(ShowContainer));
+export default connector(EditFormContainer);
