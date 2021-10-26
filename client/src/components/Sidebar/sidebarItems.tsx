@@ -1,29 +1,47 @@
-import { ActionItem } from './Sidebar';
-import HomeIcon from '@mui/icons-material/Home';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { APP_ROUTES } from '../../routes';
+import { ActionItem } from '../ActionItem';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AddIcon from '@mui/icons-material/Add';
+import history from '../../routes/history';
+import store from '../../store';
+import { logout } from '../../actions/authActions';
 
 export const sidebarItems: ActionItem[] = [
   {
-    type: 'Nav',
-    id: 'start',
-    icon: <HomeIcon />,
-    text: 'Home',
-    navigatesTo: APP_ROUTES.start,
+    id: 'sidebarAdd',
+    icon: <AddIcon />,
+    text: 'New entry',
+    action: (): void => history.push(APP_ROUTES.add),
+    component: 'listItem',
   },
   {
-    type: 'Nav',
-    id: 'diary',
+    id: 'sidebardiary',
     icon: <MenuBookIcon />,
     text: 'Diary',
-    navigatesTo: APP_ROUTES.diary,
+    action: (): void => history.push(APP_ROUTES.diary),
+    component: 'listItem',
   },
   {
-    type: 'Nav',
-    id: 'add',
-    icon: <AddCircleIcon />,
-    text: 'Add',
-    navigatesTo: APP_ROUTES.add,
+    id: 'sidebaradd',
+    icon: <LogoutIcon />,
+    text: 'Logout',
+    //@ts-ignore
+    action: (): void => store.dispatch(logout()),
+    // action: (): void => alert('logout'),
+    component: 'listItem',
+  },
+];
+
+export const sidebarItemsLoggedOut: ActionItem[] = [
+  {
+    id: 'register',
+    text: 'Register',
+    action: (): void => history.push(APP_ROUTES.register),
+  },
+  {
+    id: 'login',
+    text: 'Login',
+    action: (): void => history.push(APP_ROUTES.login),
   },
 ];

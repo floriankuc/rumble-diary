@@ -1,11 +1,27 @@
-import React, { useState, useCallback, useEffect, ReactNode } from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@mui/styles';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useHistory } from 'react-router';
 import { TextField, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+import { useFormik } from 'formik';
+import React, { ReactNode } from 'react';
+import * as yup from 'yup';
+
+const useStyles = makeStyles({
+  formContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    '& .MuiFormControl-root': {
+      marginBottom: 20,
+    },
+  },
+  button: {
+    alignSelf: 'end',
+  },
+  errorMsg: {
+    color: '#DD0000',
+    marginBottom: 14,
+    fontSize: '.75rem',
+  },
+});
 
 export interface RegisterProps {
   handleSubmit: (values: any) => void;
@@ -19,6 +35,8 @@ const validationSchema = yup.object({
 });
 
 const Register = (props: RegisterProps) => {
+  const classes = useStyles();
+
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -33,13 +51,10 @@ const Register = (props: RegisterProps) => {
 
   return (
     <div>
-      <Typography
-        variant="h5"
-        // className={classes.loginHeadline}
-      >
+      <Typography variant="h5" sx={{ mb: 2 }}>
         Register
       </Typography>
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="name"
@@ -50,7 +65,6 @@ const Register = (props: RegisterProps) => {
           error={formik.touched.name && Boolean(formik.errors.name)}
           helperText={formik.touched.name && formik.errors.name}
           variant="outlined"
-          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -62,7 +76,6 @@ const Register = (props: RegisterProps) => {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
           variant="outlined"
-          // className={classes.textfield}
         />
         <TextField
           fullWidth
@@ -75,15 +88,10 @@ const Register = (props: RegisterProps) => {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
           variant="outlined"
-          // className={classes.textfield}
         />
-        <Typography
-        // className={classes.errorMsg}
-        >
-          {props.msg}
-        </Typography>
-        <Button color="primary" variant="contained" fullWidth type="submit">
-          Submit
+        <Typography className={classes.errorMsg}>{props.msg}</Typography>
+        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!formik.isValid}>
+          Register
         </Button>
       </form>
     </div>

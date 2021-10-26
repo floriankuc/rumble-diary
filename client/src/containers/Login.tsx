@@ -28,7 +28,7 @@ class LoginModal extends React.Component<LoginModalProps & LoginReduxProps> {
 
   componentDidMount() {
     if (this.props.isAuthenticated) {
-      history.push(APP_ROUTES.start);
+      history.push(APP_ROUTES.diary);
     }
     if (this.props.error.id === 'LOGIN_FAIL') {
       this.setState({ msg: this.props.error.msg.msg });
