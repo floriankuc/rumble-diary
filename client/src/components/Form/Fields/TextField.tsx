@@ -15,6 +15,7 @@ export interface TextFieldProps {
   id: BaseTextFieldProps['id'];
   label: ReactNode;
   value?: string | number;
+  multiline?: boolean;
 }
 
 const CustomTextField = (props: TextFieldProps & FieldHookConfig<string>) => {
@@ -36,6 +37,9 @@ const CustomTextField = (props: TextFieldProps & FieldHookConfig<string>) => {
           error={meta.touched && Boolean(meta.error)}
           helperText={meta.touched && meta.error}
           variant="outlined"
+          multiline={props.multiline}
+          minRows={props.multiline ? 3 : 0}
+          fullWidth
         />
       }
       label={props.label}

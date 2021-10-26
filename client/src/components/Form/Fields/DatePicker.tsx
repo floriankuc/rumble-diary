@@ -1,7 +1,7 @@
-import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps, Typography } from '@mui/material';
-import React, { ReactNode } from 'react';
+import { BaseTextFieldProps, FormControlLabel, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useField, Form, FormikProps, Formik, FieldHookConfig } from 'formik';
+import { FieldHookConfig, useField } from 'formik';
+import React, { ReactNode } from 'react';
 import DatePicker from 'react-datepicker';
 
 const useStyles = makeStyles({
@@ -48,10 +48,8 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
   const classes = useStyles();
   const [field, meta, helpers] = useField(props);
 
-  console.log();
-
   return (
-    <>
+    <div style={{ marginTop: 20 }}>
       <FormControlLabel
         control={
           <DatePicker
@@ -67,17 +65,16 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             className={`form-control ${classes.calendar}`}
             onChange={(time: Date | null) => {
               helpers.setValue(time);
-              // helpers.setTouched(true);
+              helpers.setTouched(true);
             }}
           />
         }
         label={props.label}
         labelPlacement="top"
         className={classes.formControlLabel}
-        sx={{ mt: 2 }}
       />
       {meta.error && meta.touched && <Typography className={classes.calendarErrorMessage}>{meta.error}</Typography>}
-    </>
+    </div>
   );
 };
 
