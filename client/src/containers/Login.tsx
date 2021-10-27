@@ -8,9 +8,14 @@ import history from '../routes/history';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
 export interface LoginModalProps {
   // login: ({ email, password }: { email: any; password: any }) => (dispatch: Promise<void>) => Promise<void>;
-  clearErrors: () => { type: string };
+  clearErrors: any;
 }
 
 export interface LoginReduxProps extends PropsFromRedux {
@@ -23,7 +28,7 @@ class LoginModal extends React.Component<LoginModalProps & LoginReduxProps> {
 
   handleSubmit = (values: any) => {
     this.props.login({ email: values.email, password: values.password });
-    clearErrors();
+    this.props.clearErrors();
   };
 
   componentDidMount() {
@@ -31,7 +36,7 @@ class LoginModal extends React.Component<LoginModalProps & LoginReduxProps> {
       history.push(APP_ROUTES.diary);
     }
     if (this.props.error.id === 'LOGIN_FAIL') {
-      this.setState({ msg: this.props.error.msg.msg });
+      this.setState({ msg: this.props.error.msg });
     } else {
       this.setState({ msg: null });
     }

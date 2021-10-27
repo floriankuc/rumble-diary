@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { StoreDispatch, tokenConfig } from './authActions';
 import { AppState } from '../reducers';
 import { ItemActionTypes } from './itemActionTypes';
 import { ErrorActionTypes } from './errorActionTypes';
 import { ItemLoadingAction } from '../reducers/itemReducer';
+import { StoreDispatch } from './types';
+import { tokenConfig } from './helpers';
 
 export const setItemsLoading = (): ItemLoadingAction => {
   return {
@@ -11,7 +12,7 @@ export const setItemsLoading = (): ItemLoadingAction => {
   };
 };
 
-export const getItems = () => async (dispatch: StoreDispatch, getState: () => AppState) => {
+export const getItems = () => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
   const userId = getState().auth.user?.id;
   // dispatch(setItemsLoading());
   dispatch({
@@ -33,7 +34,7 @@ export const getItems = () => async (dispatch: StoreDispatch, getState: () => Ap
   }
 };
 
-export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, getState: () => AppState) => {
+export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
   // dispatch(setItemsLoading());
   dispatch({
     type: ItemActionTypes.ITEMS_LOADING,
@@ -53,7 +54,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch, ge
   }
 };
 
-export const addItem = (item: any) => async (dispatch: StoreDispatch, getState: () => AppState) => {
+export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
   const newItem = { ...item, user: getState().auth.user?.id };
   // dispatch(setItemsLoading());
   dispatch({
@@ -74,7 +75,7 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch, getState: 
   }
 };
 
-export const getItem = (itemId: string) => async (dispatch: StoreDispatch, getState: () => AppState) => {
+export const getItem = (itemId: string) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
   const userId = getState().auth.user?.id;
   // dispatch(setItemsLoading());
   dispatch({
@@ -95,7 +96,7 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch, getSt
   }
 };
 
-export const editItem = (item: any) => async (dispatch: StoreDispatch, getState: () => AppState) => {
+export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
   const newItem = { ...item, user: getState().auth.user?.id };
   const userId = getState().auth.user?.id;
   // dispatch(setItemsLoading());

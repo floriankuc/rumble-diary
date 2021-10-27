@@ -6,7 +6,6 @@ import { APP_ROUTES } from '../routes';
 import Chart from '../components/Chart';
 import List from '../components/List';
 import history from '../routes/history';
-import { ThirtyFpsSelect } from '@mui/icons-material';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

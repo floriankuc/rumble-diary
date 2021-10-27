@@ -1,4 +1,5 @@
 import { AuthActionTypes } from '../actions/authActionTypes';
+import { TokenAndUser } from '../actions/types';
 import { User } from '../entities/User';
 
 export interface AuthErrorAction {
@@ -7,10 +8,7 @@ export interface AuthErrorAction {
 
 export interface RegisterSuccessAction {
   type: AuthActionTypes.REGISTER_SUCCESS;
-  payload: {
-    token: string;
-    user: User;
-  };
+  payload: TokenAndUser;
 }
 
 export interface AuthValidAction {
@@ -19,8 +17,13 @@ export interface AuthValidAction {
     token: null | string;
     isLoading: null | boolean;
     isAuthenticated: boolean;
-    user: null | User; //????
+    user: null | User;
   };
+}
+
+export interface LoginSuccessAction {
+  type: AuthActionTypes.LOGIN_SUCCESS;
+  payload: TokenAndUser;
 }
 
 export interface UserLoadedAction {
@@ -28,7 +31,22 @@ export interface UserLoadedAction {
   payload: User;
 }
 
-export type AuthAction = AuthErrorAction | AuthValidAction | RegisterSuccessAction | UserLoadedAction;
+export interface UserLoadingAction {
+  type: AuthActionTypes.USER_LOADING;
+}
+
+export interface UserLogoutSuccessAction {
+  type: AuthActionTypes.LOGOUT_SUCCESS;
+}
+
+export type AuthAction =
+  | AuthErrorAction
+  | AuthValidAction
+  | RegisterSuccessAction
+  | UserLoadedAction
+  | UserLoadingAction
+  | UserLogoutSuccessAction
+  | LoginSuccessAction;
 
 export interface AuthUserLoadedState {
   token: any;

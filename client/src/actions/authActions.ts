@@ -1,101 +1,65 @@
-import axios from 'axios';
-import { returnErrors } from './errorActions';
-import { AuthActionTypes } from './authActionTypes';
+import axios, { AxiosResponse } from 'axios';
+import { User } from '../entities/User';
 import { AppState } from '../reducers';
-import store from '../store';
-import { ErrorActionTypes } from './errorActionTypes';
+import { AuthAction } from '../reducers/authReducer';
+import { ErrorAction } from '../reducers/errorReducer';
+import { ApiRoutes } from './apiRoutes';
+import {
+  createAuthErrorAction,
+  createLoginAction,
+  createLogoutAction,
+  createRegisterSuccessAction,
+  createUserLoadedAction,
+  createUserLoadingAction,
+} from './authActionCreators';
+import { createErrorSetAction } from './errorActions';
+import { config, isApiError, tokenConfig } from './helpers';
+import { LoginCredentials, RegisterCredentials, StoreDispatch, TokenAndUser } from './types';
 
-const config = {
-  headers: {
-    'Content-type': 'application/json',
-  },
-};
-
-export type StoreDispatch = typeof store.dispatch;
-
-export const tokenConfig = (getState: () => AppState) => {
-  const token = getState().auth.token;
-  return { ...config, headers: { ...config.headers, 'x-auth-token': token } };
-};
-
-export const loadUser = () => async (dispatch: StoreDispatch, getState: () => AppState) => {
-  dispatch({ type: AuthActionTypes.USER_LOADING }); //1. versuche user zu laden
+export const loadUser = () => async (dispatch: StoreDispatch<ErrorAction | AuthAction>, getState: () => AppState) => {
+  dispatch(createUserLoadingAction());
 
   try {
-    const response = await axios.get('/api/auth/user', tokenConfig(getState));
-    console.log('loadUser response', response.data);
-    dispatch({ type: AuthActionTypes.USER_LOADED, payload: response.data });
+    const response: AxiosResponse<User> = await axios.get(ApiRoutes.LOAD_USER, tokenConfig(getState));
+    dispatch(createUserLoadedAction(response.data));
   } catch (error: any) {
-    console.log('loadUser fails');
-    // dispatch(returnErrors(error.response.data, error.response.status, error.response.id));
-    dispatch({
-      type: ErrorActionTypes.GET_ERRORS,
-      payload: { msg: error.response.data, status: error.response.status, id: error.response.id },
-    });
-    dispatch({
-      type: AuthActionTypes.AUTH_ERROR,
-    });
+    if (isApiError(error)) {
+      dispatch(createErrorSetAction(error.response));
+      dispatch(createAuthErrorAction());
+    }
   }
 };
 
-export interface RegisterCredentials extends LoginCredentials {
-  name: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
 export const register =
   ({ name, email, password }: RegisterCredentials) =>
-  async (dispatch: StoreDispatch) => {
+  async (dispatch: StoreDispatch<AuthAction | ErrorAction>) => {
     const body = JSON.stringify({ name, email, password });
 
     try {
-      const response = await axios.post('/api/users', body, config);
-      console.log('register response', response.data);
-      dispatch({
-        type: AuthActionTypes.REGISTER_SUCCESS,
-        payload: response.data,
-      });
+      const response: AxiosResponse<TokenAndUser> = await axios.post(ApiRoutes.REGISTER_USER, body, config);
+      dispatch(createRegisterSuccessAction(response.data.token, response.data.user));
     } catch (error: any) {
-      // dispatch(returnErrors(error.response.data, error.response.status, 'REGISTER_FAIL'));
-      dispatch({
-        type: ErrorActionTypes.GET_ERRORS,
-        payload: { msg: error.response.data, status: error.response.status, id: 'REGISTER_FAIL' },
-      });
-      dispatch({
-        type: AuthActionTypes.REGISTER_FAIL,
-      });
+      if (isApiError(error)) {
+        dispatch(createErrorSetAction(error.response));
+        dispatch(createAuthErrorAction());
+      }
     }
   };
-
-export const logout = () => ({
-  type: AuthActionTypes.LOGOUT_SUCCESS,
-});
 
 export const login =
   ({ email, password }: LoginCredentials) =>
-  async (dispatch: StoreDispatch) => {
+  async (dispatch: StoreDispatch<AuthAction | ErrorAction>) => {
     const body = JSON.stringify({ email, password });
 
     try {
-      const response = await axios.post('/api/auth', body, config);
-      console.log('login response', response.data);
-      dispatch({
-        type: AuthActionTypes.LOGIN_SUCCESS,
-        payload: response.data,
-      });
+      const response: AxiosResponse<TokenAndUser> = await axios.post(ApiRoutes.LOGIN_USER, body, config);
+      dispatch(createLoginAction(response.data.token, response.data.user));
     } catch (error: any) {
-      console.log('login fail fires');
-      // dispatch(returnErrors(error.response.data, error.response.status, 'LOGIN_FAIL'));
-      dispatch({
-        type: ErrorActionTypes.GET_ERRORS,
-        payload: { msg: error.response.data, status: error.response.status, id: 'LOGIN_FAIL' },
-      });
-      dispatch({
-        type: AuthActionTypes.LOGIN_FAIL,
-      });
+      if (isApiError(error)) {
+        dispatch(createErrorSetAction(error.response));
+        dispatch(createAuthErrorAction());
+      }
     }
   };
+
+export const logout = () => createLogoutAction();

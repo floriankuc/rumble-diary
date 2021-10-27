@@ -1,12 +1,8 @@
+import { ActionCreatorClearErrors, ActionCreatorSetError } from './errorActionCreators';
 import { ErrorActionTypes } from './errorActionTypes';
 
-export const returnErrors = (msg: string, status: string | number, id: string) => {
-  return {
-    type: ErrorActionTypes.GET_ERRORS,
-    payload: { msg, status, id },
-  };
+export const createErrorSetAction: ActionCreatorSetError = (error) => {
+  return { type: ErrorActionTypes.GET_ERRORS, payload: error };
 };
 
-export const clearErrors = () => ({
-  type: ErrorActionTypes.CLEAR_ERRORS,
-});
+export const clearErrors: ActionCreatorClearErrors = () => ({ type: ErrorActionTypes.CLEAR_ERRORS });

@@ -2,10 +2,11 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { register } from '../actions/authActions';
 import { clearErrors } from '../actions/errorActions';
+import { RegisterCredentials } from '../actions/types';
 import Register from '../components/Register';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
-import { RegisterCredentials } from '../actions/authActions';
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export interface RegisterReduxProps extends PropsFromRedux {
@@ -28,12 +29,11 @@ class RegisterContainer extends React.Component<RegisterModalProps & RegisterRed
   }
 
   componentWillUnmount() {
-    console.log('register unmounts');
-    clearErrors();
+    this.props.clearErrors();
   }
 
   render() {
-    return <Register handleSubmit={this.handleSubmit} msg={this.props.error.id === 'REGISTER_FAIL' && this.props.error.msg.msg} />;
+    return <Register handleSubmit={this.handleSubmit} msg={this.props.error.id === 'REGISTER_FAIL' && this.props.error.msg} />;
   }
 }
 
