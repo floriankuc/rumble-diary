@@ -6,7 +6,7 @@ export interface ActionItem {
   text?: string;
   icon?: React.ReactNode;
   component?: 'button' | 'listItem';
-  action: () => void;
+  action: (() => void) | (() => Promise<void>);
 }
 
 export interface ActionItemProps {

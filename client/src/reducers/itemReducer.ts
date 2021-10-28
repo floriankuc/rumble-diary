@@ -12,7 +12,7 @@ export interface ItemGetAllAction {
   payload: Night[];
 }
 
-export interface ItemLoadingAction {
+export interface ItemsLoadingAction {
   type: ItemActionTypes.ITEMS_LOADING;
 }
 
@@ -35,7 +35,7 @@ export interface ItemEditAction {
   payload: Night; //achtung, get single item gibt mir arra yzurück?
 }
 
-export type ItemAction = ItemLoadingAction | ItemGetAllAction | ItemDeleteAction | ItemAddAction | ItemGetAction | ItemEditAction;
+export type ItemAction = ItemsLoadingAction | ItemGetAllAction | ItemDeleteAction | ItemAddAction | ItemGetAction | ItemEditAction;
 
 export type ItemState = ItemNullState | ItemGeneralState;
 

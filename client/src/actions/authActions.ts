@@ -16,19 +16,21 @@ import { createErrorSetAction } from './errorActions';
 import { config, isApiError, tokenConfig } from './helpers';
 import { LoginCredentials, RegisterCredentials, StoreDispatch, TokenAndUser } from './types';
 
-export const loadUser = () => async (dispatch: StoreDispatch<ErrorAction | AuthAction>, getState: () => AppState) => {
-  dispatch(createUserLoadingAction());
+export const loadUser =
+  () =>
+  async (dispatch: StoreDispatch<ErrorAction | AuthAction>, getState: () => AppState): Promise<void> => {
+    dispatch(createUserLoadingAction());
 
-  try {
-    const response: AxiosResponse<User> = await axios.get(ApiRoutes.LOAD_USER, tokenConfig(getState));
-    dispatch(createUserLoadedAction(response.data));
-  } catch (error: any) {
-    if (isApiError(error)) {
-      dispatch(createErrorSetAction(error.response));
-      dispatch(createAuthErrorAction());
+    try {
+      const response: AxiosResponse<User> = await axios.get(ApiRoutes.LOAD_USER, tokenConfig(getState));
+      dispatch(createUserLoadedAction(response.data));
+    } catch (error: any) {
+      if (isApiError(error)) {
+        dispatch(createErrorSetAction(error.response));
+        dispatch(createAuthErrorAction());
+      }
     }
-  }
-};
+  };
 
 export const register =
   ({ name, email, password }: RegisterCredentials) =>
@@ -62,4 +64,6 @@ export const login =
     }
   };
 
-export const logout = () => createLogoutAction();
+export const logout = () => async (dispatch: StoreDispatch<AuthAction>) => {
+  dispatch(createLogoutAction());
+};

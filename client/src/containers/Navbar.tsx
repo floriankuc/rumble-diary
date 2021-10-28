@@ -41,7 +41,7 @@ class NavbarContainer extends React.Component<NavbarContainerProps & NavbarRedux
       id: 'logout',
       icon: <LogoutIcon />,
       text: 'Logout',
-      action: this.props.logout,
+      action: (): Promise<void> => this.props.logout(),
     },
   ];
 
