@@ -2,9 +2,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
-import { ActionItem, ActionItemC } from '../ActionItem';
+import { ActionItemType, ActionItem } from '../ActionItem';
 export interface NavbarProps {
-  actionItems?: ActionItem[];
+  actionItems?: ActionItemType[];
   toggleSidebar: () => void;
 }
 
@@ -12,8 +12,8 @@ const Navbar = (props: NavbarProps) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const renderItem = (item: ActionItem) => {
-    return <ActionItemC actionItem={item} key={item.id} />;
+  const renderItem = (item: ActionItemType) => {
+    return <ActionItem actionItem={item} key={item.id} />;
   };
   return (
     <Box sx={{ flexGrow: 1 }}>

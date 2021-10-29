@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { logout } from '../actions/auth/authActions';
-import { ActionItem } from '../components/ActionItem';
+import { ActionItemType } from '../components/ActionItem';
 import { SidebarContext } from '../components/Sidebar/SidebarContext';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
@@ -9,11 +9,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
 import { Sidebar } from '../components/Sidebar/Sidebar';
+import { AppState } from '../reducers';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 interface SidebarContainerProps {
-  actionItems?: ActionItem[];
+  actionItems?: ActionItemType[];
 }
 
 export interface NavbarReduxProps extends PropsFromRedux {
@@ -24,7 +25,7 @@ class SidebarContainer extends React.Component<SidebarContainerProps & NavbarRed
 
   toggleSidebar = (): void => this.context.toggleSidebar(!this.context.open);
 
-  sidebarItemsAuthenticated: ActionItem[] = [
+  sidebarItemsAuthenticated: ActionItemType[] = [
     {
       id: 'add',
       icon: <AddIcon />,
@@ -48,7 +49,7 @@ class SidebarContainer extends React.Component<SidebarContainerProps & NavbarRed
     },
   ];
 
-  sidebarItemsNotAuthenticated: ActionItem[] = [
+  sidebarItemsNotAuthenticated: ActionItemType[] = [
     {
       id: 'register',
       text: 'Register',
@@ -74,8 +75,8 @@ class SidebarContainer extends React.Component<SidebarContainerProps & NavbarRed
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  auth: state.auth,
+const mapStateToProps = (state: AppState) => ({
+  auth: state.authState,
 });
 
 const connector = connect(mapStateToProps, { logout });

@@ -1,8 +1,8 @@
 import { ListItem, ListItemIcon, ListItemText, Button } from '@mui/material';
 import React, { ReactElement } from 'react';
 
-export interface ActionItem {
-  id: string;
+export interface ActionItemType {
+  readonly id: string;
   text?: string;
   icon?: React.ReactNode;
   component?: 'button' | 'listItem';
@@ -10,20 +10,20 @@ export interface ActionItem {
 }
 
 export interface ActionItemProps {
-  actionItem: ActionItem;
+  actionItem: ActionItemType;
 }
 
-export const ActionItemC = ({ actionItem }: ActionItemProps): ReactElement => {
-  const renderListActionItem = (item: ActionItem) => (
-    <ListItem button key={item.id} onClick={item.action} disableRipple>
-      {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
-      <ListItemText primary={item.text} />
+export const ActionItem = ({ actionItem }: ActionItemProps): ReactElement => {
+  const renderListActionItem = ({ id, action, icon, text }: ActionItemType) => (
+    <ListItem button key={id} onClick={action} disableRipple>
+      {icon && <ListItemIcon>{icon}</ListItemIcon>}
+      <ListItemText primary={text} />
     </ListItem>
   );
 
-  const renderButtonActionItem = (item: ActionItem): ReactElement => (
-    <Button color="inherit" sx={{ mx: 1 }} onClick={item.action} startIcon={item.icon}>
-      {item.text}
+  const renderButtonActionItem = ({ icon, text, action }: ActionItemType): ReactElement => (
+    <Button color="inherit" sx={{ mx: 1 }} onClick={action} startIcon={icon}>
+      {text}
     </Button>
   );
 

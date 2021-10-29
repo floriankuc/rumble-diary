@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { login } from '../actions/auth/authActions';
 import { clearErrors } from '../actions/error/errorActions';
 import Login from '../components/Login';
+import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
 
@@ -47,9 +48,9 @@ class LoginModal extends React.Component<LoginModalProps & LoginReduxProps> {
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  error: state.error,
+const mapStateToProps = (state: AppState) => ({
+  isAuthenticated: state.authState.isAuthenticated,
+  error: state.errorState,
 });
 
 const connector = connect(mapStateToProps, { login, clearErrors });

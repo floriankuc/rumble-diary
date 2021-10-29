@@ -5,13 +5,13 @@ import errorReducer, { ErrorState } from './errorReducer';
 import authReducer from './authReducer';
 
 export interface AppState {
-  item: ItemState;
-  error: ErrorState;
-  auth: AuthState;
+  itemState: ItemState;
+  errorState: ErrorState;
+  authState: AuthState;
 }
 
 export default combineReducers({
-  item: itemReducer,
-  error: errorReducer,
-  auth: authReducer,
+  itemState: itemReducer,
+  errorState: errorReducer,
+  authState: authReducer,
 });

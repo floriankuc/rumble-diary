@@ -88,12 +88,12 @@ class EditFormContainer extends React.Component<EditFormProps & FormNight & Edit
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  itemLoading: state.item.loading,
-  success: state.item.success,
-  isAuthenticated: state.auth.isAuthenticated,
-  item: state.item,
-  user: state.auth.user,
+const mapStateToProps = (state: AppState) => ({
+  itemLoading: state.itemState.loading,
+  success: state.itemState.success,
+  isAuthenticated: state.authState.isAuthenticated,
+  item: state.itemState,
+  user: state.authState.user,
 });
 
 const connector = connect(mapStateToProps, { getItem, editItem });

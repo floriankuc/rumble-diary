@@ -1,13 +1,13 @@
 import { APP_ROUTES } from '../../routes';
-import { ActionItem } from '../ActionItem';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
 import history from '../../routes/history';
 import store from '../../store';
 import { logout } from '../../actions/auth/authActions';
+import { ActionItemType } from '../ActionItem';
 
-export const sidebarItems: ActionItem[] = [
+export const sidebarItems: ActionItemType[] = [
   {
     id: 'sidebarAdd',
     icon: <AddIcon />,
@@ -33,7 +33,7 @@ export const sidebarItems: ActionItem[] = [
   },
 ];
 
-export const sidebarItemsLoggedOut: ActionItem[] = [
+export const sidebarItemsLoggedOut: ActionItemType[] = [
   {
     id: 'register',
     text: 'Register',

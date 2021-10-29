@@ -1,14 +1,21 @@
 import axios from 'axios';
 import { AppState } from '../reducers';
 
-export const config = {
+export type Config = {
+  headers: {
+    [key: string]: string;
+  };
+  'x-auth-token'?: string;
+};
+
+export const config: Config = {
   headers: {
     'Content-type': 'application/json',
   },
 };
 
-export const tokenConfig = (getState: () => AppState) => {
-  const token: string = getState().auth.token;
+export const tokenConfig = (getState: () => AppState): Config => {
+  const token: string = getState().authState.token;
   return { ...config, headers: { ...config.headers, 'x-auth-token': token } };
 };
 

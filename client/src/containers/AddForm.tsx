@@ -9,6 +9,7 @@ import { calculateDurationInMinutes } from '../helpers/date';
 import FormComponents from '../components/Form';
 import history from '../routes/history';
 import { FormNight, Night } from '../entities/Night';
+import { AppState } from '../reducers';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -59,10 +60,10 @@ class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNig
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  itemLoading: state.item.loading,
-  itemSuccess: state.item.success,
-  isAuthenticated: state.auth.isAuthenticated,
+const mapStateToProps = (state: AppState) => ({
+  itemLoading: state.itemState.loading,
+  itemSuccess: state.itemState.success,
+  isAuthenticated: state.authState.isAuthenticated,
 });
 
 const connector = connect(mapStateToProps, { addItem });

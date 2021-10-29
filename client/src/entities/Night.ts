@@ -24,21 +24,22 @@ export interface Night {
   readonly notes: string;
   readonly conditions: Conditions;
   readonly sleepless: boolean;
+  readonly duration: number;
 }
 
 export interface Conditions {
-  temperature: number;
-  freshAir: boolean;
-  fed: boolean;
-  mentalStatus: number;
-  noDrinks1HourBefore: boolean;
-  noCaffeine4HoursBefore: boolean;
-  noElectronicDevices: boolean;
+  readonly temperature: number;
+  readonly freshAir: boolean;
+  readonly fed: boolean;
+  readonly mentalStatus: number;
+  readonly noDrinks1HourBefore: boolean;
+  readonly noCaffeine4HoursBefore: boolean;
+  readonly noElectronicDevices: boolean;
 }
 
 export interface Break {
-  start: Date;
-  end: Date;
+  readonly start: Date;
+  readonly end: Date;
 }
 
 export interface FormBreak {

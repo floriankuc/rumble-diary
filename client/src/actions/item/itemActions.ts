@@ -21,7 +21,7 @@ export const setItemsLoading = async (dispatch: StoreDispatch<ItemAction>): Prom
 };
 
 export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
-  const userId = getState().auth.user?.id;
+  const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 
   try {
@@ -48,7 +48,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
 };
 
 export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
-  const newItem = { ...item, user: getState().auth.user?.id };
+  const newItem = { ...item, user: getState().authState.user?.id };
   dispatch(createItemsLoadingAction());
 
   try {
@@ -62,8 +62,8 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getSt
 };
 
 export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
-  const newItem = { ...item, user: getState().auth.user?.id };
-  const userId = getState().auth.user?.id;
+  const newItem = { ...item, user: getState().authState.user?.id };
+  const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 
   try {
@@ -77,11 +77,12 @@ export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getS
 };
 
 export const getItem = (itemId: string) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
-  const userId = getState().auth.user?.id;
+  const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 
   try {
     const response = await axios.get(getItemRoute(itemId, userId), tokenConfig(getState));
+    console.log('item action get item response', response.data);
     dispatch(createGetItemAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {

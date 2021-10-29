@@ -17,3 +17,5 @@ export const getItemsRoute = (itemId: string): string => {
 export const getItemRoute = (itemId: string, userId?: string): string => {
   return `${ApiRoutes.ITEMS}/${userId}/${itemId}`;
 };
+
+//todo class?

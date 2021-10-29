@@ -3,7 +3,7 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
-import { ActionItem, ActionItemC } from '../ActionItem';
+import { ActionItemType, ActionItem } from '../ActionItem';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
 });
 
 export interface SidebarProps {
-  actionItems: ActionItem[];
+  actionItems: ActionItemType[];
   open: boolean;
   toggleSidebar: (open: boolean) => void;
 }
@@ -21,8 +21,8 @@ export interface SidebarProps {
 export const Sidebar = (props: SidebarProps): React.ReactElement => {
   const classes = useStyles();
 
-  const renderItem = (item: ActionItem) => {
-    return <ActionItemC actionItem={item} key={item.id} />;
+  const renderItem = (item: ActionItemType) => {
+    return <ActionItem actionItem={item} key={item.id} />;
   };
 
   return (

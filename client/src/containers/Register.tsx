@@ -4,6 +4,7 @@ import { register } from '../actions/auth/authActions';
 import { clearErrors } from '../actions/error/errorActions';
 import { RegisterCredentials } from '../actions/types';
 import Register from '../components/Register';
+import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
 
@@ -37,9 +38,9 @@ class RegisterContainer extends React.Component<RegisterModalProps & RegisterRed
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  error: state.error,
+const mapStateToProps = (state: AppState) => ({
+  isAuthenticated: state.authState.isAuthenticated,
+  error: state.errorState,
 });
 
 const connector = connect(mapStateToProps, { register, clearErrors });

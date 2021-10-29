@@ -6,6 +6,8 @@ import { APP_ROUTES } from '../routes';
 import Chart from '../components/Chart';
 import List from '../components/List';
 import history from '../routes/history';
+import { AppState } from '../reducers';
+import { Night } from '../entities/Night';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -37,9 +39,9 @@ class ListContainer extends React.Component<ListContainerProps & ListContainerRe
 
   navigateToNightShow = (id: string) => history.push(APP_ROUTES.show.replace(':id', id));
 
-  transformItemsForChartDisplay = (items: any) => {
-    return items.map((night: any) => {
-      return { ...night, duration: night.duration / 60, date: format(new Date(night.date), 'dd/MM/yy') };
+  transformItemsForChartDisplay = (items: Night[]) => {
+    return items.map((night: Night) => {
+      return { ...night, duration: night.duration / 60 };
     });
   };
 
@@ -49,17 +51,20 @@ class ListContainer extends React.Component<ListContainerProps & ListContainerRe
 
   render() {
     return (
-      <>
-        <Chart data={this.transformItemsForChartDisplay(this.props.item.items)} onBarClick={this.navigateToNightShow} />
-        {this.renderList(this.props.item.items)}
-      </>
+      this.props.item.items.length > 0 && (
+        <>
+          {/* <Chart data={this.props.item.items} onBarClick={this.navigateToNightShow} /> */}
+          <Chart data={this.transformItemsForChartDisplay(this.props.item.items)} onBarClick={this.navigateToNightShow} />
+          {this.renderList(this.props.item.items)}
+        </>
+      )
     );
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  item: state.item,
-  user: state.auth.user,
+const mapStateToProps = (state: AppState) => ({
+  item: state.itemState,
+  user: state.authState.user,
 });
 
 const connector = connect(mapStateToProps, { getItems, deleteItem });

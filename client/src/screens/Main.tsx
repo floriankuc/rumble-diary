@@ -13,6 +13,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import RegisterModal from '../containers/Register';
 import Show from '../containers/EditForm';
 import Root from '../components/Root';
+import { AppState } from '../reducers';
+import { NotFound404 } from '../components/404';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -29,7 +31,6 @@ const MainScreen = (props: IMain) => {
   return (
     <div>
       <AppNavbar />
-      {/* <Sidebar actionItems={sidebarItems} /> */}
       <SidebarContainer />
       <div style={{ display: 'flex', flexDirection: 'column', padding: '80px 0px', alignItems: 'center' }}>
         <Switch>
@@ -51,9 +52,9 @@ const MainScreen = (props: IMain) => {
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  isLoading: state.auth.isLoading,
+const mapStateToProps = (state: AppState) => ({
+  isAuthenticated: state.authState.isAuthenticated,
+  isLoading: state.authState.isLoading,
 });
 
 const connector = connect(mapStateToProps);
