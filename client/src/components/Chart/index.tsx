@@ -1,34 +1,13 @@
-import { Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { format } from 'date-fns';
 import React, { ReactElement } from 'react';
-import { Bar, BarChart, Brush, CartesianGrid, Cell, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, Brush, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from 'recharts';
 import { Night } from '../../entities/Night';
+import { ChartTooltip } from './Tooltip';
 
-const useStyles = makeStyles({
-  tooltip: {
-    padding: 10,
-    background: '#FFF9',
-  },
-});
 export interface ChartProps {
   readonly data: Night[];
   readonly onBarClick: (id: string) => void;
 }
-
-const CustomTooltip = ({ active, payload }: TooltipProps) => {
-  const classes = useStyles();
-  if (active && payload && payload[0] && payload[0].payload.date) {
-    return (
-      <div className={classes.tooltip}>
-        <Typography>{format(new Date(payload[0].payload.date), 'dd.MM.yyyy')}</Typography>
-        <Typography>{`${payload[0].value} hours`}</Typography>
-      </div>
-    );
-  }
-
-  return null;
-};
 
 const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
   return (
@@ -36,7 +15,7 @@ const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="duration" tickFormatter={() => ''} tickLine={false} />
       <YAxis />
-      <Tooltip content={<CustomTooltip />} />
+      <Tooltip content={<ChartTooltip />} />
       <Brush
         dataKey="date"
         //  x={80} width={200}
