@@ -1,6 +1,6 @@
 export enum ApiRoutes {
   LOAD_USER = '/api/auth/user',
-  REGISTER_USER = '/api/users',
+  REGISTER_USER = '/api/users/new',
   LOGIN_USER = '/api/auth',
   ITEMS = '/api/items',
   NEW_ITEM = '/api/items/new',
@@ -17,5 +17,3 @@ export const getItemsRoute = (itemId: string): string => {
 export const getItemRoute = (itemId: string, userId?: string): string => {
   return `${ApiRoutes.ITEMS}/${userId}/${itemId}`;
 };
-
-//todo class?

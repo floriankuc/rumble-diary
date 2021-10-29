@@ -7,7 +7,7 @@ const User = require('../../models/User');
 //@route POST api/users
 //@desc Registers new user
 //@access public
-router.post('/', async (req, res) => {
+router.post('/new', async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
