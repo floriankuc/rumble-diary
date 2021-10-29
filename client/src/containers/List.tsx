@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { getItems, deleteItem } from '../actions/itemActions';
+import { getItems, deleteItem } from '../actions/item/itemActions';
 import { APP_ROUTES } from '../routes';
 import Chart from '../components/Chart';
 import List from '../components/List';

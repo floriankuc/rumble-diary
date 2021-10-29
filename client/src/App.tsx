@@ -2,7 +2,7 @@ import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import React, { ReactElement, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-import { loadUser } from './actions/authActions';
+import { loadUser } from './actions/auth/authActions';
 import ModalProvider from './components/Modal/ModalProvider';
 import SidebarProvider from './components/Sidebar/SidebarProvider';
 import history from './routes/history';

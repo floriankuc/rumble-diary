@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { login } from '../actions/authActions';
-import { clearErrors } from '../actions/errorActions';
+import { login } from '../actions/auth/authActions';
+import { clearErrors } from '../actions/error/errorActions';
 import Login from '../components/Login';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';

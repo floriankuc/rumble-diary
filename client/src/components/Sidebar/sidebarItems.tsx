@@ -5,7 +5,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
 import history from '../../routes/history';
 import store from '../../store';
-import { logout } from '../../actions/authActions';
+import { logout } from '../../actions/auth/authActions';
 
 export const sidebarItems: ActionItem[] = [
   {

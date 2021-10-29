@@ -1,5 +1,5 @@
-import { ItemActionTypes } from '../actions/itemActionTypes';
-import { FormNight, Night } from '../entities/Night';
+import { ItemActionTypes } from '../actions/item/itemActionTypes';
+import { Night } from '../entities/Night';
 
 export interface ItemActionGeneral {
   //comment into ItemAction if problems
@@ -28,11 +28,11 @@ export interface ItemAddAction {
 
 export interface ItemGetAction {
   type: ItemActionTypes.GET_ITEM;
-  payload: Night[]; //achtung, get single item gibt mir arra yzurück?
+  payload: Night[];
 }
 export interface ItemEditAction {
   type: ItemActionTypes.EDIT_ITEM;
-  payload: Night; //achtung, get single item gibt mir arra yzurück?
+  payload: Night;
 }
 
 export type ItemAction = ItemsLoadingAction | ItemGetAllAction | ItemDeleteAction | ItemAddAction | ItemGetAction | ItemEditAction;
@@ -65,6 +65,7 @@ export default function itemReducer(state = initialState, action: ItemAction): I
     case ItemActionTypes.ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case ItemActionTypes.GET_ITEM:
+      console.log('get Item state', { ...state, items: action.payload, loading: false, success: false });
       return { ...state, items: action.payload, loading: false, success: false };
     case ItemActionTypes.EDIT_ITEM:
       return { ...state, items: [action.payload], loading: false, success: true };

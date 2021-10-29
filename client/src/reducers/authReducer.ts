@@ -1,4 +1,4 @@
-import { AuthActionTypes } from '../actions/authActionTypes';
+import { AuthActionTypes } from '../actions/auth/authActionTypes';
 import { TokenAndUser } from '../actions/types';
 import { User } from '../entities/User';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { logout } from '../actions/authActions';
+import { logout } from '../actions/auth/authActions';
 import { ActionItem } from '../components/ActionItem';
 import { SidebarContext } from '../components/Sidebar/SidebarContext';
 import { APP_ROUTES } from '../routes';

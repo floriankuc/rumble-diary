@@ -1,9 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import { User } from '../entities/User';
-import { AppState } from '../reducers';
-import { AuthAction } from '../reducers/authReducer';
-import { ErrorAction } from '../reducers/errorReducer';
-import { ApiRoutes } from './apiRoutes';
+import { User } from '../../entities/User';
+import { AppState } from '../../reducers';
+import { AuthAction } from '../../reducers/authReducer';
+import { ErrorAction } from '../../reducers/errorReducer';
+import { ApiRoutes } from '../apiRoutes';
+import { createErrorSetAction } from '../error/errorActions';
+import { config, isApiError, tokenConfig } from '../helpers';
+import { LoginCredentials, RegisterCredentials, StoreDispatch, TokenAndUser } from '../types';
 import {
   createAuthErrorAction,
   createLoginAction,
@@ -12,9 +15,6 @@ import {
   createUserLoadedAction,
   createUserLoadingAction,
 } from './authActionCreators';
-import { createErrorSetAction } from './errorActions';
-import { config, isApiError, tokenConfig } from './helpers';
-import { LoginCredentials, RegisterCredentials, StoreDispatch, TokenAndUser } from './types';
 
 export const loadUser =
   () =>

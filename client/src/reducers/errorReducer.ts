@@ -1,4 +1,4 @@
-import { ErrorActionTypes } from '../actions/errorActionTypes';
+import { ErrorActionTypes } from '../actions/error/errorActionTypes';
 
 export interface ErrorAnyState {
   msg: string;

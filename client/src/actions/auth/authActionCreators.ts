@@ -1,4 +1,4 @@
-import { User } from '../entities/User';
+import { User } from '../../entities/User';
 import {
   AuthErrorAction,
   LoginSuccessAction,
@@ -6,7 +6,7 @@ import {
   UserLoadedAction,
   UserLoadingAction,
   UserLogoutSuccessAction,
-} from '../reducers/authReducer';
+} from '../../reducers/authReducer';
 import { AuthActionTypes } from './authActionTypes';
 
 export type ActionCreatorUserLoaded = (user: User) => UserLoadedAction;

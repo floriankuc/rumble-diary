@@ -1,14 +1,20 @@
 import axios, { AxiosResponse } from 'axios';
-import { AppState } from '../reducers';
-import { ItemActionTypes } from './itemActionTypes';
-import { ErrorActionTypes } from './errorActionTypes';
-import { ItemAction } from '../reducers/itemReducer';
-import { StoreDispatch } from './types';
-import { isApiError, tokenConfig } from './helpers';
-import { createEditItemAction, createItemAddAction, createItemDeleteAction, createItemsGetAction, createItemsLoadingAction } from './itemActionCreators';
-import { Night } from '../entities/Night';
-import { createErrorSetAction } from './errorActions';
-import { ErrorAction } from '../reducers/errorReducer';
+import {
+  createEditItemAction,
+  createGetItemAction,
+  createItemAddAction,
+  createItemDeleteAction,
+  createItemsGetAction,
+  createItemsLoadingAction,
+} from './itemActionCreators';
+import { AppState } from '../../reducers';
+import { ItemAction } from '../../reducers/itemReducer';
+import { StoreDispatch } from '../types';
+import { isApiError, tokenConfig } from '../helpers';
+import { Night } from '../../entities/Night';
+import { createErrorSetAction } from '../error/errorActions';
+import { ErrorAction } from '../../reducers/errorReducer';
+import { ApiRoutes, getAuthRoute, getItemRoute, getItemsRoute } from '../apiRoutes';
 
 export const setItemsLoading = async (dispatch: StoreDispatch<ItemAction>): Promise<void> => {
   dispatch(createItemsLoadingAction());
@@ -19,7 +25,7 @@ export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorA
   dispatch(createItemsLoadingAction());
 
   try {
-    const response: AxiosResponse<Night[]> = await axios.get(`/api/items/${userId}`, tokenConfig(getState));
+    const response: AxiosResponse<Night[]> = await axios.get(getAuthRoute(userId), tokenConfig(getState));
     dispatch(createItemsGetAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -32,7 +38,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
   dispatch(createItemsLoadingAction());
 
   try {
-    const response: AxiosResponse<Night> = await axios.delete(`/api/items/${itemId}`, tokenConfig(getState));
+    const response: AxiosResponse<Night> = await axios.delete(getItemsRoute(itemId), tokenConfig(getState));
     dispatch(createItemDeleteAction(response.data._id));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -46,7 +52,7 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getSt
   dispatch(createItemsLoadingAction());
 
   try {
-    const response = await axios.post('/api/items/new', newItem, tokenConfig(getState));
+    const response = await axios.post(ApiRoutes.NEW_ITEM, newItem, tokenConfig(getState));
     dispatch(createItemAddAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -61,7 +67,7 @@ export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getS
   dispatch(createItemsLoadingAction());
 
   try {
-    const response = await axios.patch(`/api/items/${userId}/${item._id}`, newItem, tokenConfig(getState));
+    const response = await axios.patch(getItemRoute(item._id, userId), newItem, tokenConfig(getState));
     dispatch(createEditItemAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -75,16 +81,11 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch<any>, 
   dispatch(createItemsLoadingAction());
 
   try {
-    const response = await axios.get(`/api/items/${userId}/${itemId}`, tokenConfig(getState));
-    console.log('get Item response', response.data);
-    dispatch({
-      type: ItemActionTypes.GET_ITEM,
-      payload: response.data,
-    });
+    const response = await axios.get(getItemRoute(itemId, userId), tokenConfig(getState));
+    dispatch(createGetItemAction(response.data));
   } catch (error: any) {
-    dispatch({
-      type: ErrorActionTypes.GET_ERRORS,
-      payload: { msg: error.response.data, status: error.response.status, id: 'GET_ITEM_FAIL' },
-    });
+    if (isApiError(error)) {
+      dispatch(createErrorSetAction(error.response));
+    }
   }
 };

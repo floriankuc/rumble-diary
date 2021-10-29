@@ -3,7 +3,7 @@ import { FormikProps } from 'formik';
 import React from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
-import { addItem } from '../actions/itemActions';
+import { addItem } from '../actions/item/itemActions';
 import { APP_ROUTES } from '../routes';
 import { calculateDurationInMinutes } from '../helpers/date';
 import FormComponents from '../components/Form';

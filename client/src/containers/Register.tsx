@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { register } from '../actions/authActions';
-import { clearErrors } from '../actions/errorActions';
+import { register } from '../actions/auth/authActions';
+import { clearErrors } from '../actions/error/errorActions';
 import { RegisterCredentials } from '../actions/types';
 import Register from '../components/Register';
 import { APP_ROUTES } from '../routes';

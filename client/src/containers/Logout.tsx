@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'reactstrap';
-import { logout } from '../actions/authActions';
+import { logout } from '../actions/auth/authActions';
 
 interface LogoutProps {
   logout: any;
