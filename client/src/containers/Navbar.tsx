@@ -13,17 +13,10 @@ import { AppState } from '../reducers';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-interface NavbarContainerProps {
-  actionItems?: ActionItemType[];
-}
-
-export interface NavbarReduxProps extends PropsFromRedux {
-  auth: any;
-}
-class NavbarContainer extends React.Component<NavbarContainerProps & NavbarReduxProps> {
+class NavbarContainer extends React.Component<PropsFromRedux> {
   static contextType = SidebarContext;
 
-  toggleSidebar = (): void => this.context.toggleSidebar(!this.context.open);
+  handleToggle = (): void => this.context.toggleSidebar(!this.context.open);
 
   navbarItemsAuthenticated: ActionItemType[] = [
     {
@@ -62,15 +55,15 @@ class NavbarContainer extends React.Component<NavbarContainerProps & NavbarRedux
   render() {
     return (
       <Navbar
-        actionItems={this.props.auth.isAuthenticated ? this.navbarItemsAuthenticated : this.navbarItemsNotAuthenticated}
-        toggleSidebar={this.toggleSidebar}
+        actionItems={this.props.authState.isAuthenticated ? this.navbarItemsAuthenticated : this.navbarItemsNotAuthenticated}
+        toggleSidebar={this.handleToggle}
       />
     );
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  auth: state.authState,
+const mapStateToProps = ({ authState }: AppState) => ({
+  authState,
 });
 
 const connector = connect(mapStateToProps, { logout });

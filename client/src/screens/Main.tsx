@@ -8,13 +8,12 @@ import LoginModal from '../containers/Login';
 import { APP_ROUTES } from '../routes';
 // import { Sidebar } from '../components/Sidebar/Sidebar';
 import SidebarContainer from '../containers/Sidebar';
-import { sidebarItems, sidebarItemsLoggedOut } from '../components/Sidebar/sidebarItems';
 import { connect, ConnectedProps } from 'react-redux';
 import RegisterModal from '../containers/Register';
 import Show from '../containers/EditForm';
 import Root from '../components/Root';
 import { AppState } from '../reducers';
-import { NotFound404 } from '../components/404';
+// import { NotFound404 } from '../components/404';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

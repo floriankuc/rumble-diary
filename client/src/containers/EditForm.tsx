@@ -1,7 +1,6 @@
 import { FormikProps } from 'formik';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { match, withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/item/itemActions';
 import FormComponents from '../components/Form';
@@ -10,31 +9,14 @@ import { calculateDurationInMinutes } from '../helpers/date';
 import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
-import { NightAndFormProps } from './AddForm';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export interface EditNightReduxProps extends PropsFromRedux {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  itemLoading: boolean;
-  success: boolean;
-  item: any;
-}
-export interface EditFormProps extends RouteComponentProps<RouteParams> {
-  sleepless: boolean;
-}
-
-interface MatchParams {
-  id: string;
-  match: match;
-}
 
 interface RouteParams {
   id: string;
 }
-class EditFormContainer extends React.Component<EditFormProps & FormNight & EditNightReduxProps & MatchParams> {
-  getInitialValues = (item: Night): NightAndFormProps => ({
+class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux & RouteComponentProps<RouteParams>> {
+  getInitialValues = (item: Night): FormNight => ({
     _id: item._id,
     date: item.date ? new Date(item.date) : new Date(),
     sleepless: item.sleepless,
@@ -56,44 +38,36 @@ class EditFormContainer extends React.Component<EditFormProps & FormNight & Edit
     },
   });
 
-  componentDidMount() {
-    if (this.props.user && this.props.user.id) {
+  componentDidMount(): void {
+    if (this.props.authState.user && this.props.authState.user.id) {
       this.props.getItem(this.props.match.params.id);
     }
   }
-  componentDidUpdate() {
-    if (this.props.success) {
+  componentDidUpdate(): void {
+    if (this.props.itemState.success) {
       history.push(APP_ROUTES.diary);
     }
   }
 
-  handleSubmit = (values: Night) => {
+  handleSubmit = (values: Night): void => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     this.props.editItem({ ...values, duration });
   };
 
   render() {
-    if (this.props.item && this.props.item.items && this.props.item.items.length === 1 && this.props.item.items[0]) {
-      return (
-        <FormComponents
-          handleSubmit={this.handleSubmit}
-          initialValues={this.getInitialValues(this.props.item.items[0])}
-          headline={'Edit night'}
-          submitText={'Save'}
-        />
-      );
+    const { items } = this.props.itemState;
+
+    if (items && items.length === 1 && items[0]) {
+      return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.getInitialValues(items[0])} headline={'Edit night'} submitText={'Save'} />;
     } else {
       return <></>;
     }
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  itemLoading: state.itemState.loading,
-  success: state.itemState.success,
-  isAuthenticated: state.authState.isAuthenticated,
-  item: state.itemState,
-  user: state.authState.user,
+const mapStateToProps = ({ itemState, authState }: AppState) => ({
+  itemState,
+  authState,
 });
 
 const connector = connect(mapStateToProps, { getItem, editItem });

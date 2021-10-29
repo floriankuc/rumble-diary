@@ -114,23 +114,19 @@ const initialAuthState: AuthState = {
 export default function authReducer(state = initialAuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case AuthActionTypes.USER_LOADING:
-      console.log('user loading runs');
       return {
         ...state,
         isLoading: true,
       };
     case AuthActionTypes.USER_LOADED:
-      console.log('user loaded runs');
       return {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
-        // user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
+        user: action.payload,
       } as AuthUserLoadedState;
     case AuthActionTypes.LOGIN_SUCCESS:
     case AuthActionTypes.REGISTER_SUCCESS:
-      console.log('login user', action.payload.user);
       if (action.payload) {
         localStorage.setItem('token', action.payload.token as string);
       }
@@ -145,7 +141,6 @@ export default function authReducer(state = initialAuthState, action: AuthAction
     case AuthActionTypes.LOGIN_FAIL:
     case AuthActionTypes.LOGOUT_SUCCESS:
     case AuthActionTypes.REGISTER_FAIL:
-      console.log('case mit removeToken action fires');
       localStorage.removeItem('token');
       return {
         ...state,

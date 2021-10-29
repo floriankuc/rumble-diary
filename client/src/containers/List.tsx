@@ -1,5 +1,4 @@
-import { format } from 'date-fns';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { getItems, deleteItem } from '../actions/item/itemActions';
 import { APP_ROUTES } from '../routes';
@@ -11,146 +10,54 @@ import { Night } from '../entities/Night';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export interface ListContainerReduxProps extends PropsFromRedux {
-  item: any;
-  user: any;
-}
-export interface ListContainerProps {
-  getItems: any;
-  deleteItem: any;
-}
-
-class ListContainer extends React.Component<ListContainerProps & ListContainerReduxProps> {
-  componentDidMount() {
-    if (this.props.user && this.props.user.id) {
+class ListContainer extends React.Component<PropsFromRedux> {
+  componentDidMount(): void {
+    if (this.props.authState.user && this.props.authState.user.id) {
       this.props.getItems();
     }
   }
 
-  componentDidUpdate(prevProps: any) {
-    if (this.props.user && this.props.user.id && (prevProps.user !== this.props.user || prevProps.item.success !== this.props.item.success)) {
+  componentDidUpdate(prevProps: PropsFromRedux): void {
+    if (
+      this.props.authState.user &&
+      this.props.authState.user.id &&
+      (prevProps.authState.user !== this.props.authState.user || prevProps.itemState.success !== this.props.itemState.success)
+    ) {
       this.props.getItems();
     }
   }
 
-  onDeleteClick = (id: string) => {
+  onDeleteClick = (id: string): void => {
     this.props.deleteItem(id);
   };
 
-  navigateToNightShow = (id: string) => history.push(APP_ROUTES.show.replace(':id', id));
+  navigateToNightShow = (id: string): void => history.push(APP_ROUTES.show.replace(':id', id));
 
-  transformItemsForChartDisplay = (items: Night[]) => {
-    return items.map((night: Night) => {
-      return { ...night, duration: night.duration / 60 };
-    });
+  transformItemsForChartDisplay = (items: Night[]): Night[] => {
+    return items.map((night) => ({ ...night, duration: night.duration / 60 }));
   };
 
-  renderList = (items: any) => {
+  renderList = (items: Night[]): ReactElement => {
     return <List onDeleteClick={this.onDeleteClick} onItemClick={this.navigateToNightShow} items={items} />;
   };
 
   render() {
     return (
-      this.props.item.items.length > 0 && (
+      this.props.itemState.items.length > 0 && (
         <>
-          {/* <Chart data={this.props.item.items} onBarClick={this.navigateToNightShow} /> */}
-          <Chart data={this.transformItemsForChartDisplay(this.props.item.items)} onBarClick={this.navigateToNightShow} />
-          {this.renderList(this.props.item.items)}
+          <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
+          {this.renderList(this.props.itemState.items)}
         </>
       )
     );
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  item: state.itemState,
-  user: state.authState.user,
+const mapStateToProps = ({ itemState, authState }: AppState) => ({
+  itemState,
+  authState,
 });
 
 const connector = connect(mapStateToProps, { getItems, deleteItem });
 
 export default connector(ListContainer);
-
-//WORKS
-// import { format } from 'date-fns';
-// import React, { useEffect, useRef } from 'react';
-// import { connect } from 'react-redux';
-// import { useHistory } from 'react-router';
-// import { getItems, deleteItem } from '../actions/itemActions';
-// import { APP_ROUTES } from '../routes';
-// import Chart from '../components/Chart';
-// import List from '../components/List';
-
-// export interface ListContainerProps {
-//   getItems: any;
-//   deleteItem: any;
-//   item: any;
-//   user: any;
-// }
-
-// const ListContainer = ({ getItems, deleteItem, item, user }: ListContainerProps) => {
-//   // const [localItem, setLocalItem] = React.useState(item);
-
-//   const history = useHistory();
-
-//   const prevItemRef = useRef();
-
-//   useEffect(() => {
-//     prevItemRef.current = item;
-//   });
-
-//   const prevItem = prevItemRef.current;
-
-//   useEffect(() => {
-//     // if (user && user.id) {
-//     getItems();
-//     // }
-//   }, [user, getItems]);
-
-//   console.log('props.item', item);
-//   // console.log('localItem', localItem);
-//   useEffect(() => {
-//     // if (localItem !== item) {
-//     // console.log('item', item);
-//     getItems();
-//     // console.log('props.item', item); //wenn ich lösche ist props.item schon auf 3, d. h. er ändert sich
-//     // console.log('localItem', localItem);
-//     // }
-//   }, []);
-//   //item in arr ist loop
-
-//   if (user && user.id) console.log('user.id', user.id);
-//   // if (item) console.log('item', item);
-
-//   const onDeleteClick = (id: string) => {
-//     deleteItem(id);
-//   };
-
-//   const navigateToNightShow = (id: string) => history.push(APP_ROUTES.show.replace(':id', id));
-
-//   const transformItemsForChartDisplay = (items: any) => {
-//     return items.map((night: any) => {
-//       return { ...night, duration: night.duration / 60, date: format(new Date(night.date), 'dd/MM/yy') };
-//     });
-//   };
-
-//   const renderList = (items: any) => {
-//     return <List onDeleteClick={onDeleteClick} onItemClick={navigateToNightShow} items={items} />;
-//   };
-
-//   return (
-//     <>
-//       {/* {localItem.items.length} */}
-//       <button onClick={(): void => getItems()}>get items</button>
-//       <Chart data={transformItemsForChartDisplay(item.items)} onBarClick={navigateToNightShow} />
-//       {user && item && renderList(item.items)}
-//     </>
-//   );
-// };
-
-// const mapStateToProps = (state: any) => ({
-//   item: state.item,
-//   user: state.auth.user,
-// });
-
-// export default connect(mapStateToProps, { getItems, deleteItem })(ListContainer);

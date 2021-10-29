@@ -15,8 +15,8 @@ const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement =>
     <MuiList>
       {items.map((item: Night) => {
         return (
-          <ListItem button key={item._id + 'listitem'} style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography onClick={() => onItemClick(item._id)}>{format(new Date(item.date), 'PPPP')}</Typography>
+          <ListItem onClick={() => onItemClick(item._id)} button key={item._id + 'listitem'} style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography>{format(new Date(item.date), 'PPPP')}</Typography>
             <IconButton onClick={(): void => onDeleteClick(item._id)}>
               <DeleteIcon />
             </IconButton>

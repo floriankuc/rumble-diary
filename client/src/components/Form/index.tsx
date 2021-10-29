@@ -6,8 +6,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { NightAndFormProps } from '../../containers/AddForm';
-import { Night } from '../../entities/Night';
+// import { NightAndFormProps } from '../../containers/AddForm';
+import { FormNight, Night } from '../../entities/Night';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
@@ -17,7 +17,7 @@ import CustomTextField from '../Form/Fields/TextField';
 
 interface FormComponentsProps {
   handleSubmit: (values: Night) => void;
-  initialValues: NightAndFormProps;
+  initialValues: FormNight;
   headline: ReactNode;
   submitText: ReactNode;
   item?: any;

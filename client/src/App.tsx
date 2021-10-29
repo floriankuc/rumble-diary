@@ -25,10 +25,8 @@ const theme = createTheme({
 
 const App = (): ReactElement => {
   useEffect(() => {
-    //@ts-ignore
-    store.dispatch(loadUser());
-    // console.log('loadUser in App fires');
-    // loadUser();??
+    loadUser();
+    // store.dispatch(loadUser);
   }, []);
 
   return (

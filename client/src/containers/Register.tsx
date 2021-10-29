@@ -10,21 +10,13 @@ import history from '../routes/history';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export interface RegisterReduxProps extends PropsFromRedux {
-  isAuthenticated: boolean;
-  error: any;
-}
-
-export interface RegisterModalProps {
-  clearErrors: () => { type: string };
-}
-class RegisterContainer extends React.Component<RegisterModalProps & RegisterReduxProps> {
+class RegisterContainer extends React.Component<PropsFromRedux> {
   handleSubmit = (values: RegisterCredentials) => {
-    this.props.register({ name: values.name, email: values.email, password: values.password });
+    this.props.register(values);
   };
 
   componentDidMount() {
-    if (this.props.isAuthenticated) {
+    if (this.props.authState.isAuthenticated) {
       history.push(APP_ROUTES.diary);
     }
   }
@@ -34,13 +26,13 @@ class RegisterContainer extends React.Component<RegisterModalProps & RegisterRed
   }
 
   render() {
-    return <Register handleSubmit={this.handleSubmit} msg={this.props.error.id === 'REGISTER_FAIL' && this.props.error.msg} />;
+    return <Register handleSubmit={this.handleSubmit} msg={this.props.errorState.id === 'REGISTER_FAIL' && this.props.errorState.msg} />;
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  isAuthenticated: state.authState.isAuthenticated,
-  error: state.errorState,
+const mapStateToProps = ({ authState, errorState }: AppState) => ({
+  authState,
+  errorState,
 });
 
 const connector = connect(mapStateToProps, { register, clearErrors });

@@ -13,17 +13,8 @@ import { AppState } from '../reducers';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export interface AddNightReduxProps extends PropsFromRedux {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  itemLoading: boolean;
-  itemSuccess: boolean;
-}
-
-export type NightAndFormProps = FormNight;
-
-class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNightReduxProps> {
-  initialValues: NightAndFormProps = {
+class AddFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux> {
+  initialValues: FormNight = {
     date: undefined,
     sleepless: false,
     startTime: undefined,
@@ -44,13 +35,13 @@ class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNig
     },
   };
 
-  handleSubmit = (values: Night) => {
+  handleSubmit = (values: Night): void => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     this.props.addItem({ ...values, duration });
   };
 
-  componentDidUpdate() {
-    if (this.props.itemSuccess) {
+  componentDidUpdate(): void {
+    if (this.props.itemState.success) {
       history.push(APP_ROUTES.diary);
     }
   }
@@ -60,12 +51,11 @@ class FormContainer extends React.Component<FormikProps<{}> & FormNight & AddNig
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  itemLoading: state.itemState.loading,
-  itemSuccess: state.itemState.success,
-  isAuthenticated: state.authState.isAuthenticated,
+const mapStateToProps = ({ itemState, authState }: AppState) => ({
+  itemState,
+  authState,
 });
 
 const connector = connect(mapStateToProps, { addItem });
 
-export default connector(FormContainer);
+export default connector(AddFormContainer);
