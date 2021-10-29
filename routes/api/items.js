@@ -6,7 +6,7 @@ const Item = require('../../models/Item');
 //@route GET api/items
 //@desc Get all items
 //@access private
-router.get('/:userId', authMiddleware, (req, res) => {
+router.get('/:userId/items', authMiddleware, (req, res) => {
   Item.find({ user: req.params.userId }).then((items) => res.json(items));
 });
 
@@ -21,8 +21,8 @@ router.post('/new', authMiddleware, (req, res) => {
 //@route DELETE api/items/:id
 //@desc Delete item
 //@access private
-router.delete('/:id', authMiddleware, (req, res) => {
-  Item.findById(req.params.id)
+router.delete('/:itemId', authMiddleware, (req, res) => {
+  Item.findById(req.params.itemId)
     .then((item) => item.remove().then((item) => res.json(item)))
     .catch((err) => res.status(404).json({ success: false }));
 });
@@ -30,8 +30,8 @@ router.delete('/:id', authMiddleware, (req, res) => {
 //@route GET api/items/:userId/:id
 //@desc Get item
 //@access private
-router.get('/:userId/:id', authMiddleware, (req, res) => {
-  Item.find({ user: req.params.userId, _id: req.params.id }).then((item) => {
+router.get('/:userId/items/:itemId', authMiddleware, (req, res) => {
+  Item.find({ user: req.params.userId, _id: req.params.itemId }).then((item) => {
     res.json(item);
   });
 });
@@ -39,8 +39,8 @@ router.get('/:userId/:id', authMiddleware, (req, res) => {
 //@route PATCH api/items/:userId/:id
 //@desc Edit item
 //@access private
-router.patch('/:userId/:id', authMiddleware, (req, res) => {
-  Item.findByIdAndUpdate({ user: req.params.userId, _id: req.params.id }, { ...req.body })
+router.patch('/:userId/items/:itemId', authMiddleware, (req, res) => {
+  Item.findByIdAndUpdate({ user: req.params.userId, _id: req.params.itemId }, { ...req.body })
     .then((item) => res.json(item))
     .catch(() => res.status(500).json({ success: false }));
 });

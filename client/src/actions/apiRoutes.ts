@@ -7,7 +7,7 @@ export enum ApiRoutes {
 }
 
 export const getAuthRoute = (userId?: string): string => {
-  return `${ApiRoutes.ITEMS}/${userId}`;
+  return `${ApiRoutes.ITEMS}/${userId}/items`;
 };
 
 export const getItemsRoute = (itemId: string): string => {
@@ -15,5 +15,5 @@ export const getItemsRoute = (itemId: string): string => {
 };
 
 export const getItemRoute = (itemId: string, userId?: string): string => {
-  return `${ApiRoutes.ITEMS}/${userId}/${itemId}`;
+  return `${ApiRoutes.ITEMS}/${userId}/items/${itemId}`;
 };

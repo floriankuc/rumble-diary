@@ -47,7 +47,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
   }
 };
 
-export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
+export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
   const newItem = { ...item, user: getState().authState.user?.id };
   dispatch(createItemsLoadingAction());
 
@@ -61,7 +61,7 @@ export const addItem = (item: any) => async (dispatch: StoreDispatch<any>, getSt
   }
 };
 
-export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
+export const editItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
   const newItem = { ...item, user: getState().authState.user?.id };
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
@@ -76,7 +76,7 @@ export const editItem = (item: any) => async (dispatch: StoreDispatch<any>, getS
   }
 };
 
-export const getItem = (itemId: string) => async (dispatch: StoreDispatch<any>, getState: () => AppState) => {
+export const getItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 
