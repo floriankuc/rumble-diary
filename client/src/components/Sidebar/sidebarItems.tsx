@@ -3,9 +3,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AddIcon from '@mui/icons-material/Add';
 import history from '../../routes/history';
-import store from '../../store';
-import { logout } from '../../actions/auth/authActions';
 import { ActionItemType } from '../ActionItem';
+import { createLogoutAction } from '../../actions/auth/authActionCreators';
+
+const handleLogout = (): void => {
+  createLogoutAction();
+};
 
 export const sidebarItems: ActionItemType[] = [
   {
@@ -26,9 +29,7 @@ export const sidebarItems: ActionItemType[] = [
     id: 'sidebaradd',
     icon: <LogoutIcon />,
     text: 'Logout',
-    //@ts-ignore
-    action: (): void => store.dispatch(logout()),
-    // action: (): void => alert('logout'),
+    action: handleLogout,
     component: 'listItem',
   },
 ];

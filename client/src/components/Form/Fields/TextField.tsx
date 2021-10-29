@@ -1,5 +1,5 @@
 import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps } from '@mui/material';
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useField, FieldHookConfig } from 'formik';
 
@@ -18,31 +18,31 @@ export interface TextFieldProps {
   multiline?: boolean;
 }
 
-const CustomTextField = (props: TextFieldProps & FieldHookConfig<string>) => {
+const CustomTextField = ({ disabled, type, id, multiline, label, ...restProps }: TextFieldProps & FieldHookConfig<string>): ReactElement => {
   const classes = useStyles();
-  const [field, meta] = useField(props);
+  const [field, meta] = useField(restProps);
 
   return (
     <FormControlLabel
       control={
         <MuiTextField
           {...field}
-          disabled={props.disabled}
-          type={props.type}
-          id={props.id}
-          name={props.id}
+          disabled={disabled}
+          type={type}
+          id={id}
+          name={id}
           value={meta.value}
           onChange={field.onChange}
           onBlur={field.onBlur}
           error={meta.touched && Boolean(meta.error)}
           helperText={meta.touched && meta.error}
           variant="outlined"
-          multiline={props.multiline}
-          minRows={props.multiline ? 3 : 0}
+          multiline={multiline}
+          minRows={multiline ? 3 : 0}
           fullWidth
         />
       }
-      label={props.label}
+      label={label}
       labelPlacement="top"
       className={classes.formControlLabel}
     />

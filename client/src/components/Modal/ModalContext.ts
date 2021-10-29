@@ -1,4 +1,9 @@
 import { createContext } from 'react';
 
-export const defaultValue = { open: false, toggleModal: (open: boolean): void => {} };
-export const ModalContext = createContext<{ open: boolean; toggleModal: (open: boolean) => void }>(defaultValue);
+export interface ModalValues {
+  open: boolean;
+  toggleModal: (open: boolean) => void;
+}
+
+export const defaultValue: ModalValues = { open: false, toggleModal: (): void => {} };
+export const ModalContext = createContext<ModalValues>(defaultValue);

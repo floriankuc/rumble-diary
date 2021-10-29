@@ -1,7 +1,7 @@
 import { BaseTextFieldProps, FormControlLabel, Rating } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 const useStyles = makeStyles({
   formControlLabel: {
@@ -11,20 +11,19 @@ const useStyles = makeStyles({
 });
 
 export interface RatingFieldProps {
-  // type: BaseTextFieldProps['type'];
   id: BaseTextFieldProps['id'];
   label: ReactNode;
   value?: string | number;
 }
 
-const CustomRatingField = (props: RatingFieldProps & FieldHookConfig<string>) => {
+const CustomRatingField = ({ id, disabled, label, ...restProps }: RatingFieldProps & FieldHookConfig<string>): ReactElement => {
   const classes = useStyles();
-  const [field, meta] = useField(props);
+  const [field, meta] = useField(restProps);
 
   return (
     <FormControlLabel
-      control={<Rating name={props.id} id={props.id} value={+meta.value} onChange={field.onChange} onBlur={field.onBlur} disabled={props.disabled} />}
-      label={props.label}
+      control={<Rating name={id} id={id} value={+meta.value} onChange={field.onChange} onBlur={field.onBlur} disabled={disabled} />}
+      label={label}
       labelPlacement="top"
       sx={{ my: 3 }}
       className={classes.formControlLabel}

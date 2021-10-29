@@ -1,10 +1,13 @@
 import { BaseTextFieldProps, FormControlLabel, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import DatePicker from 'react-datepicker';
 
 const useStyles = makeStyles({
+  calendarWrapper: {
+    marginTop: 20,
+  },
   formControlLabel: {
     alignItems: 'flex-start',
     marginLeft: 0,
@@ -44,24 +47,24 @@ export interface DatePickerProps {
   showTimeSelect?: boolean;
 }
 
-const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>) => {
+const CustomDatePicker = ({ id, disabled, showTimeSelect, label, placeholder, ...restProps }: DatePickerProps & FieldHookConfig<Date | null>): ReactElement => {
   const classes = useStyles();
-  const [field, meta, helpers] = useField(props);
+  const [field, meta, helpers] = useField(restProps);
 
   return (
-    <div style={{ marginTop: 20 }}>
+    <div className={classes.calendarWrapper}>
       <FormControlLabel
         control={
           <DatePicker
-            id={props.id}
-            disabled={props.disabled}
+            id={id}
+            disabled={disabled}
             onBlur={field.onBlur}
             selected={meta.value ? new Date(meta.value) : null}
-            showTimeSelect={props.showTimeSelect}
-            placeholderText={props.placeholder}
-            timeFormat={props.showTimeSelect ? 'kk:mm' : ''}
-            dateFormat={`d MMMM yyyy${props.showTimeSelect ? ', kk:mm' : ''}`}
-            name={props.id}
+            showTimeSelect={showTimeSelect}
+            placeholderText={placeholder}
+            timeFormat={showTimeSelect ? 'kk:mm' : ''}
+            dateFormat={`d MMMM yyyy${showTimeSelect ? ', kk:mm' : ''}`}
+            name={id}
             className={`form-control ${classes.calendar}`}
             onChange={(time: Date | null) => {
               helpers.setValue(time);
@@ -69,7 +72,8 @@ const CustomDatePicker = (props: DatePickerProps & FieldHookConfig<Date | null>)
             }}
           />
         }
-        label={props.label}
+        label={label}
+        aria-label={label?.toString()}
         labelPlacement="top"
         className={classes.formControlLabel}
       />

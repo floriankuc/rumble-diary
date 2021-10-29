@@ -1,10 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { makeStyles } from '@mui/styles';
 import { Typography } from '@mui/material';
+import { LoginCredentials } from '../../actions/types';
 
 const useStyles = makeStyles({
   formContainer: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 export interface LoginProps {
-  handleSubmit: (values: any) => void;
+  handleSubmit: (values: LoginCredentials) => void;
   msg: ReactNode;
 }
 
@@ -34,35 +35,37 @@ const validationSchema = yup.object({
   password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const Login = (props: LoginProps) => {
+const Login = ({ handleSubmit, msg }: LoginProps): ReactElement => {
   const classes = useStyles();
 
-  const formik = useFormik({
+  const formik = useFormik<LoginCredentials>({
     initialValues: {
       email: '',
       password: '',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      props.handleSubmit(values);
+      handleSubmit(values);
     },
   });
+
+  const { handleSubmit: formikSubmit, errors, touched, values, handleChange, isValid } = formik;
 
   return (
     <div>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Login
       </Typography>
-      <form onSubmit={formik.handleSubmit} className={classes.formContainer}>
+      <form onSubmit={formikSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="email"
           name="email"
           label="Email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          error={formik.touched.email && Boolean(formik.errors.email)}
-          helperText={formik.touched.email && formik.errors.email}
+          value={values.email}
+          onChange={handleChange}
+          error={touched.email && Boolean(errors.email)}
+          helperText={touched.email && errors.email}
           variant="outlined"
         />
         <TextField
@@ -71,14 +74,14 @@ const Login = (props: LoginProps) => {
           name="password"
           label="Password"
           type="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={formik.touched.password && formik.errors.password}
+          value={values.password}
+          onChange={handleChange}
+          error={touched.password && Boolean(errors.password)}
+          helperText={touched.password && errors.password}
           variant="outlined"
         />
-        <Typography className={classes.errorMsg}>{props.msg}</Typography>
-        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!formik.isValid}>
+        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
           Login
         </Button>
       </form>

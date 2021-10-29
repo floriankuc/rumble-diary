@@ -18,26 +18,19 @@ export interface SidebarProps {
   toggleSidebar: (open: boolean) => void;
 }
 
-export const Sidebar = (props: SidebarProps): React.ReactElement => {
+export const Sidebar = ({ toggleSidebar, open, actionItems }: SidebarProps): React.ReactElement => {
   const classes = useStyles();
 
-  const renderItem = (item: ActionItemType) => {
-    return <ActionItem actionItem={item} key={item.id} />;
-  };
+  const renderItem = (item: ActionItemType) => <ActionItem actionItem={item} key={item.id} />;
 
   return (
-    <Box role="presentation" onClick={(): void => props.toggleSidebar(false)} onKeyDown={(): void => props.toggleSidebar(false)}>
-      <Drawer anchor="left" open={props.open} onClose={(): void => props.toggleSidebar(false)} PaperProps={{ className: classes.paper }}>
-        <div style={{ background: 'pink' }}>
+    <Box role="presentation" onClick={(): void => toggleSidebar(false)} onKeyDown={(): void => toggleSidebar(false)}>
+      <Drawer anchor="left" open={open} onClose={(): void => toggleSidebar(false)} PaperProps={{ className: classes.paper }}>
+        <div>
           <Typography variant="h4" sx={{ padding: 2 }}>
             Menu
           </Typography>
-          <List>
-            {props.actionItems &&
-              props.actionItems.map((item) => {
-                return renderItem(item);
-              })}
-          </List>
+          <List>{actionItems && actionItems.map((item) => renderItem(item))}</List>
         </div>
       </Drawer>
     </Box>

@@ -1,6 +1,6 @@
 import { BaseTextFieldProps, Checkbox, FormControlLabel } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 export interface CheckboxProps {
   id: BaseTextFieldProps['id'];
@@ -8,7 +8,7 @@ export interface CheckboxProps {
   value?: string | number;
 }
 
-const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>) => {
+const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
   const [field, , helpers] = useField(restProps);
 
   return (
@@ -25,6 +25,7 @@ const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxPr
         />
       }
       label={label}
+      aria-label={label?.toString()}
     />
   );
 };

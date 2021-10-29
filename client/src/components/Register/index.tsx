@@ -4,6 +4,7 @@ import { makeStyles } from '@mui/styles';
 import { useFormik } from 'formik';
 import React, { ReactNode } from 'react';
 import * as yup from 'yup';
+import { RegisterCredentials } from '../../actions/types';
 
 const useStyles = makeStyles({
   formContainer: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles({
 });
 
 export interface RegisterProps {
-  handleSubmit: (values: any) => void;
+  handleSubmit: (values: RegisterCredentials) => void;
   msg: ReactNode;
 }
 
@@ -34,10 +35,10 @@ const validationSchema = yup.object({
   password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const Register = (props: RegisterProps) => {
+const Register = ({ handleSubmit, msg }: RegisterProps) => {
   const classes = useStyles();
 
-  const formik = useFormik({
+  const formik = useFormik<RegisterCredentials>({
     initialValues: {
       name: '',
       email: '',
@@ -45,25 +46,27 @@ const Register = (props: RegisterProps) => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      props.handleSubmit(values);
+      handleSubmit(values);
     },
   });
+
+  const { handleSubmit: formikSubmit, errors, touched, values, handleChange, isValid } = formik;
 
   return (
     <div>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Register
       </Typography>
-      <form onSubmit={formik.handleSubmit} className={classes.formContainer}>
+      <form onSubmit={formikSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="name"
           name="name"
           label="Name"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
+          value={values.name}
+          onChange={handleChange}
+          error={touched.name && Boolean(errors.name)}
+          helperText={touched.name && errors.name}
           variant="outlined"
         />
         <TextField
@@ -71,10 +74,10 @@ const Register = (props: RegisterProps) => {
           id="email"
           name="email"
           label="Email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          error={formik.touched.email && Boolean(formik.errors.email)}
-          helperText={formik.touched.email && formik.errors.email}
+          value={values.email}
+          onChange={handleChange}
+          error={touched.email && Boolean(errors.email)}
+          helperText={touched.email && errors.email}
           variant="outlined"
         />
         <TextField
@@ -83,14 +86,14 @@ const Register = (props: RegisterProps) => {
           name="password"
           label="Password"
           type="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={formik.touched.password && formik.errors.password}
+          value={values.password}
+          onChange={handleChange}
+          error={touched.password && Boolean(errors.password)}
+          helperText={touched.password && errors.password}
           variant="outlined"
         />
-        <Typography className={classes.errorMsg}>{props.msg}</Typography>
-        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!formik.isValid}>
+        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
           Register
         </Button>
       </form>

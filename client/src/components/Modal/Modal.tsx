@@ -13,11 +13,11 @@ const useStyles = makeStyles({
   },
 });
 
-interface IModal {
+interface ModalProps {
   component: ReactElement;
 }
 
-const Modal = (props: IModal) => {
+const Modal = ({ component }: ModalProps): ReactElement => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -25,7 +25,7 @@ const Modal = (props: IModal) => {
 
   return (
     <Dialog open onClose={handleClose} className={classes.root}>
-      {props.component}
+      {component}
     </Dialog>
   );
 };
