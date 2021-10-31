@@ -1,12 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, Checkbox, Divider, Paper, Typography } from '@mui/material';
-// import custom react datepicker overrides
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { FieldArray, Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
+import { FieldArray, Form as FormikForm, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { NightAndFormProps } from '../../containers/AddForm';
 import { FormNight, Night } from '../../entities/Night';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
@@ -15,15 +13,16 @@ import CustomDatePicker from '../Form/Fields/DatePicker';
 import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 
-interface FormComponentsProps {
+interface FormProps {
   handleSubmit: (values: Night) => void;
   initialValues: FormNight;
   headline: ReactNode;
   submitText: ReactNode;
-  item?: any;
+  isSubmitting: boolean;
+  item?: FormNight;
 }
 
-const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: FormComponentsProps) => {
+const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) => {
   return (
     <div>
       <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
@@ -45,11 +44,13 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
           }
         }}
         onSubmit={(values) => {
-          values.startTime && values.endTime && handleSubmit(values as Night);
+          if (values.startTime && values.endTime) {
+            handleSubmit(values as Night);
+          }
         }}
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
-          <Form style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <FormikForm style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" label="How was your mental state?" />
             <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
@@ -149,11 +150,11 @@ const FormComponents = ({ handleSubmit, initialValues, headline, submitText }: F
             <pre>{JSON.stringify(errors, null, 2)}</pre>
             touched:
             <pre>{JSON.stringify(touched, null, 2)}</pre>
-          </Form>
+          </FormikForm>
         )}
       </Formik>
     </div>
   );
 };
 
-export default FormComponents;
+export default Form;

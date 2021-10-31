@@ -65,5 +65,6 @@ export const login =
   };
 
 export const logout = () => async (dispatch: StoreDispatch<AuthAction>) => {
+  dispatch(createUserLoadingAction());
   dispatch(createLogoutAction());
 };

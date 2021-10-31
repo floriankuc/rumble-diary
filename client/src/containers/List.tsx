@@ -7,9 +7,9 @@ import List from '../components/List';
 import history from '../routes/history';
 import { AppState } from '../reducers';
 import { Night } from '../entities/Night';
+import { CircularProgress } from '@mui/material';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
-
 class ListContainer extends React.Component<PropsFromRedux> {
   componentDidMount(): void {
     if (this.props.authState.user && this.props.authState.user.id) {
@@ -42,14 +42,18 @@ class ListContainer extends React.Component<PropsFromRedux> {
   };
 
   render() {
-    return (
-      this.props.itemState.items.length > 0 && (
-        <>
-          <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
-          {this.renderList(this.props.itemState.items)}
-        </>
-      )
-    );
+    if (this.props.itemState.loading) {
+      return <CircularProgress />;
+    } else {
+      return (
+        this.props.itemState.items && (
+          <>
+            <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
+            {this.renderList(this.props.itemState.items)}
+          </>
+        )
+      );
+    }
   }
 }
 

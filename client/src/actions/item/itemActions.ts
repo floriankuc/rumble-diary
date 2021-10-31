@@ -82,7 +82,6 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAc
 
   try {
     const response = await axios.get(getItemRoute(itemId, userId), tokenConfig(getState));
-    console.log('item action get item response', response.data);
     dispatch(createGetItemAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {

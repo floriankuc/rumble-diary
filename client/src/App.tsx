@@ -25,8 +25,7 @@ const theme = createTheme({
 
 const App = (): ReactElement => {
   useEffect(() => {
-    loadUser();
-    // store.dispatch(loadUser);
+    store.dispatch(loadUser() as any);
   }, []);
 
   return (

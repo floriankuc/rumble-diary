@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import { FormikProps } from 'formik';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -15,7 +16,14 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 interface RouteParams {
   id: string;
 }
-class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux & RouteComponentProps<RouteParams>> {
+
+type EditFormContainerState = {
+  isSubmitting: boolean;
+};
+
+class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux & RouteComponentProps<RouteParams>, EditFormContainerState> {
+  state = { isSubmitting: false };
+
   getInitialValues = (item: Night): FormNight => ({
     _id: item._id,
     date: item.date ? new Date(item.date) : new Date(),
@@ -43,22 +51,36 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
       this.props.getItem(this.props.match.params.id);
     }
   }
-  componentDidUpdate(): void {
-    if (this.props.itemState.success) {
+
+  componentDidUpdate(_: any, prevState: EditFormContainerState): void {
+    if (!this.props.itemState.loading && this.props.itemState.success && this.state.isSubmitting) {
+      this.setState({ isSubmitting: false });
+    }
+    if (prevState.isSubmitting !== this.state.isSubmitting) {
       history.push(APP_ROUTES.diary);
     }
   }
 
   handleSubmit = (values: Night): void => {
     const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
+    this.setState({ isSubmitting: true });
     this.props.editItem({ ...values, duration });
   };
 
   render() {
     const { items } = this.props.itemState;
-
-    if (items && items.length === 1 && items[0]) {
-      return <FormComponents handleSubmit={this.handleSubmit} initialValues={this.getInitialValues(items[0])} headline={'Edit night'} submitText={'Save'} />;
+    if (this.props.itemState.loading) {
+      return <CircularProgress />;
+    } else if (items && items.length === 1 && items[0] && !this.props.itemState.loading) {
+      return (
+        <FormComponents
+          isSubmitting={this.state.isSubmitting}
+          handleSubmit={this.handleSubmit}
+          initialValues={this.getInitialValues(items[0])}
+          headline={'Edit night'}
+          submitText={'Save'}
+        />
+      );
     } else {
       return <></>;
     }

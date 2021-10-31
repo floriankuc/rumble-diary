@@ -65,7 +65,7 @@ export default function itemReducer(state = initialState, action: ItemAction): I
     case ItemActionTypes.ADD_ITEM:
       return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
     case ItemActionTypes.GET_ITEM:
-      console.log('get Item state', { ...state, items: action.payload, loading: false, success: false });
+      // console.log('get Item state', { ...state, items: action.payload, loading: false, success: false });
       return { ...state, items: action.payload, loading: false, success: false };
     case ItemActionTypes.EDIT_ITEM:
       return { ...state, items: [action.payload], loading: false, success: true };
