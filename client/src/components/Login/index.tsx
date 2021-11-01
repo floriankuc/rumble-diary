@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import { makeStyles } from '@mui/styles';
 import { Typography } from '@mui/material';
 import { LoginCredentials } from '../../actions/types';
+import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
 
 const useStyles = makeStyles({
   formContainer: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface LoginProps {
+export interface LoginProps extends WrappedComponentProps {
   handleSubmit: (values: LoginCredentials) => void;
   msg: ReactNode;
 }
@@ -35,7 +36,7 @@ const validationSchema = yup.object({
   password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const Login = ({ handleSubmit, msg }: LoginProps): ReactElement => {
+const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
   const classes = useStyles();
 
   const formik = useFormik<LoginCredentials>({
@@ -54,14 +55,15 @@ const Login = ({ handleSubmit, msg }: LoginProps): ReactElement => {
   return (
     <div>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Login
+        <FormattedMessage id="form.login.headline" />
       </Typography>
       <form onSubmit={formikSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="email"
           name="email"
-          label="Email"
+          label={<FormattedMessage id="form.login.label.email" />}
+          InputLabelProps={{ 'aria-label': intl.formatMessage({ id: 'form.login.label.email' }) }}
           value={values.email}
           onChange={handleChange}
           error={touched.email && Boolean(errors.email)}
@@ -72,7 +74,8 @@ const Login = ({ handleSubmit, msg }: LoginProps): ReactElement => {
           fullWidth
           id="password"
           name="password"
-          label="Password"
+          label={<FormattedMessage id="form.login.label.password" />}
+          InputLabelProps={{ 'aria-label': intl.formatMessage({ id: 'form.login.label.password' }) }}
           type="password"
           value={values.password}
           onChange={handleChange}
@@ -82,11 +85,11 @@ const Login = ({ handleSubmit, msg }: LoginProps): ReactElement => {
         />
         <Typography className={classes.errorMsg}>{msg}</Typography>
         <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
-          Login
+          <FormattedMessage id="form.login.btn.submit" />
         </Button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default injectIntl(Login);

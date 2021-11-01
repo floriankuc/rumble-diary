@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { ActionItemType, ActionItem } from '../ActionItem';
 import { makeStyles } from '@mui/styles';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles({
   paper: {
@@ -21,14 +22,14 @@ export interface SidebarProps {
 export const Sidebar = ({ toggleSidebar, open, actionItems }: SidebarProps): React.ReactElement => {
   const classes = useStyles();
 
-  const renderItem = (item: ActionItemType) => <ActionItem actionItem={item} key={item.id} />;
+  const renderItem = (item: ActionItemType): ReactElement => <ActionItem actionItem={item} key={item.id} />;
 
   return (
     <Box role="presentation" onClick={(): void => toggleSidebar(false)} onKeyDown={(): void => toggleSidebar(false)}>
       <Drawer anchor="left" open={open} onClose={(): void => toggleSidebar(false)} PaperProps={{ className: classes.paper }}>
         <div>
           <Typography variant="h4" sx={{ padding: 2 }}>
-            Menu
+            <FormattedMessage id="sidebar.headline" />
           </Typography>
           <List>{actionItems && actionItems.map((item) => renderItem(item))}</List>
         </div>

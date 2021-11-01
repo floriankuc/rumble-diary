@@ -1,14 +1,15 @@
 import { BaseTextFieldProps, Checkbox, FormControlLabel } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export interface CheckboxProps {
   id: BaseTextFieldProps['id'];
-  label: ReactNode;
   value?: string | number;
 }
 
-const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
+const CustomCheckbox = ({ id, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
+  const intl = useIntl();
   const [field, , helpers] = useField(restProps);
 
   return (
@@ -24,8 +25,8 @@ const CustomCheckbox = ({ id, label, value, disabled, ...restProps }: CheckboxPr
           onChange={(): void => helpers.setValue(!field.value)}
         />
       }
-      label={label}
-      aria-label={label?.toString()}
+      label={<FormattedMessage id={`form.label.${id}`} />}
+      aria-label={intl.formatMessage({ id: `form.label.${id}` })}
     />
   );
 };

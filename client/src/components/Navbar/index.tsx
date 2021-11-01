@@ -3,6 +3,7 @@ import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from
 import { Box } from '@mui/system';
 import React, { ReactElement } from 'react';
 import { ActionItemType, ActionItem } from '../ActionItem';
+import { FormattedMessage } from 'react-intl';
 
 export interface NavbarProps {
   actionItems?: ActionItemType[];
@@ -25,7 +26,7 @@ const Navbar = ({ actionItems, toggleSidebar }: NavbarProps): ReactElement => {
             </IconButton>
           )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Sleep Diary
+            <FormattedMessage id="app.title" />
           </Typography>
           {!matches &&
             actionItems &&

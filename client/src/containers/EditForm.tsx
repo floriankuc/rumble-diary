@@ -1,6 +1,7 @@
 import { CircularProgress } from '@mui/material';
 import { FormikProps } from 'formik';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/item/itemActions';
@@ -77,8 +78,10 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
           isSubmitting={this.state.isSubmitting}
           handleSubmit={this.handleSubmit}
           initialValues={this.getInitialValues(items[0])}
-          headline={'Edit night'}
-          submitText={'Save'}
+          headline={<FormattedMessage id="form.edit.headline" />}
+          subTitles={{ subtitle1: <FormattedMessage id="form.subtitle1" />, subTitle2: <FormattedMessage id="form.subtitle2" /> }}
+          submitText={<FormattedMessage id="form.edit.submitText" />}
+          summary={<FormattedMessage id="form.summary" />}
         />
       );
     } else {

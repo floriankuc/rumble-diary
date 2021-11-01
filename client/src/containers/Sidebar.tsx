@@ -2,13 +2,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { logout } from '../actions/auth/authActions';
 import { ActionItemType } from '../components/ActionItem';
-import { SidebarContext } from '../components/Sidebar/SidebarContext';
-import { APP_ROUTES } from '../routes';
-import history from '../routes/history';
-import LogoutIcon from '@mui/icons-material/Logout';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import AddIcon from '@mui/icons-material/Add';
+import { navbarItemsAuthenticated, navbarItemsNotAuthenticated } from '../components/Navbar/navigationItems';
 import { Sidebar } from '../components/Sidebar/Sidebar';
+import { SidebarContext } from '../components/Sidebar/SidebarContext';
 import { AppState } from '../reducers';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -18,44 +14,8 @@ class SidebarContainer extends React.Component<PropsFromRedux> {
 
   handleToggle = (): void => this.context.toggleSidebar(!this.context.open);
 
-  sidebarItemsAuthenticated: ActionItemType[] = [
-    {
-      id: 'add',
-      icon: <AddIcon />,
-      text: 'New entry',
-      action: (): void => history.push(APP_ROUTES.add),
-      component: 'listItem',
-    },
-    {
-      id: 'diary',
-      icon: <MenuBookIcon />,
-      text: 'Diary',
-      action: (): void => history.push(APP_ROUTES.diary),
-      component: 'listItem',
-    },
-    {
-      id: 'logout',
-      icon: <LogoutIcon />,
-      text: 'Logout',
-      action: this.props.logout,
-      component: 'listItem',
-    },
-  ];
-
-  sidebarItemsNotAuthenticated: ActionItemType[] = [
-    {
-      id: 'register',
-      text: 'Register',
-      action: (): void => history.push(APP_ROUTES.register),
-      component: 'listItem',
-    },
-    {
-      id: 'login',
-      text: 'Login',
-      action: (): void => history.push(APP_ROUTES.login),
-      component: 'listItem',
-    },
-  ];
+  sidebarItemsAuthenticated: ActionItemType[] = navbarItemsAuthenticated.map((item) => ({ ...item, component: 'listItem' }));
+  sidebarItemsNotAuthenticated: ActionItemType[] = navbarItemsNotAuthenticated.map((item) => ({ ...item, component: 'listItem' }));
 
   render() {
     return (

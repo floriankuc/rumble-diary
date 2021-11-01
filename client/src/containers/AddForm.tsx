@@ -10,6 +10,7 @@ import history from '../routes/history';
 import { FormNight, Night } from '../entities/Night';
 import { AppState } from '../reducers';
 import CircularProgress from '@mui/material/CircularProgress';
+import { FormattedMessage } from 'react-intl';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -63,8 +64,10 @@ class AddFormContainer extends React.Component<FormikProps<FormNight> & PropsFro
         <Form
           handleSubmit={this.handleSubmit}
           initialValues={this.initialValues}
-          headline={'Add night'}
-          submitText={'Add'}
+          headline={<FormattedMessage id="form.add.headline" />}
+          submitText={<FormattedMessage id="form.add.submitText" />}
+          subTitles={{ subtitle1: <FormattedMessage id="form.subtitle1" />, subTitle2: <FormattedMessage id="form.subtitle2" /> }}
+          summary={<FormattedMessage id="form.summary" />}
           isSubmitting={this.state.isSubmitting}
         />
       </>

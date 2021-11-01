@@ -1,10 +1,10 @@
 import { ListItem, ListItemIcon, ListItemText, Button } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 export interface ActionItemType {
   readonly id: string;
-  text?: string;
-  icon?: React.ReactNode;
+  text?: ReactNode;
+  icon?: ReactNode;
   component?: 'button' | 'listItem';
   action: (() => void) | (() => Promise<void>);
 }

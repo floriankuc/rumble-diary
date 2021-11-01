@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { format } from 'date-fns';
 import React, { ReactElement } from 'react';
 import { TooltipProps } from 'recharts';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles({
   tooltip: {
@@ -17,7 +18,9 @@ export const ChartTooltip = ({ active, payload }: TooltipProps): ReactElement | 
     return (
       <div className={classes.tooltip}>
         <Typography>{format(new Date(payload[0].payload.date), 'dd.MM.yyyy')}</Typography>
-        <Typography>{`${payload[0].value} hours`}</Typography>
+        <Typography>
+          <FormattedMessage id="chart.tooltip.duration" values={{ hours: payload[0].value }} />
+        </Typography>
       </div>
     );
   }

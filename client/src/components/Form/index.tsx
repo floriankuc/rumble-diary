@@ -12,6 +12,7 @@ import CustomCheckbox from '../Form/Fields/Checkbox';
 import CustomDatePicker from '../Form/Fields/DatePicker';
 import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface FormProps {
   handleSubmit: (values: Night) => void;
@@ -19,17 +20,22 @@ interface FormProps {
   headline: ReactNode;
   submitText: ReactNode;
   isSubmitting: boolean;
+  summary: ReactNode;
+  subTitles: {
+    subtitle1: ReactNode;
+    subTitle2: ReactNode;
+  };
   item?: FormNight;
 }
 
-const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) => {
+const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps) => {
   return (
     <div>
       <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
         {headline}
       </Typography>
       <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
-        Conditions before going to bed
+        {subTitles.subtitle1}
       </Typography>
       <Formik
         initialValues={initialValues}
@@ -51,17 +57,17 @@ const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) 
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
           <FormikForm style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <CustomTextField label="Room temperature" type="number" id="conditions.temperature" name="conditions.temperature" />
-            <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" label="How was your mental state?" />
+            <CustomTextField type="number" id="conditions.temperature" name="conditions.temperature" />
+            <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" />
             <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
-            <CustomCheckbox id="conditions.freshAir" label="Fresh air" name="conditions.freshAir" />
-            <CustomCheckbox id="conditions.fed" name="conditions.fed" label="Eaten enough" />
-            <CustomCheckbox id="conditions.noDrinks1HourBefore" name="conditions.noDrinks1HourBefore" label="No drinks 1 hour before bed" />
-            <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" label="No caffeine 4 hours before bed" />
-            <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" label="No electronic devices running" />
+            <CustomCheckbox id="conditions.freshAir" name="conditions.freshAir" />
+            <CustomCheckbox id="conditions.fed" name="conditions.fed" />
+            <CustomCheckbox id="conditions.noDrinks1HourBefore" name="conditions.noDrinks1HourBefore" />
+            <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" />
+            <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" />
             <Divider />
             <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
-              How the night went
+              {subTitles.subTitle2}
             </Typography>
             <FormControlLabel
               control={
@@ -83,15 +89,15 @@ const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) 
               }
               label="Sleepless night"
             />
-            <CustomDatePicker id="date" name="date" label="Date" disabled={values.sleepless} />
-            <CustomDatePicker id="startTime" name="startTime" label="Start of sleep" showTimeSelect disabled={values.sleepless} />
-            <CustomDatePicker id="endTime" name="endTime" label="End of sleep" showTimeSelect disabled={values.sleepless} />
+            <CustomDatePicker id="date" name="date" disabled={values.sleepless} />
+            <CustomDatePicker id="startTime" name="startTime" showTimeSelect disabled={values.sleepless} />
+            <CustomDatePicker id="endTime" name="endTime" showTimeSelect disabled={values.sleepless} />
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (
                 <div style={{ width: '100%', margin: '24px 0' }}>
                   <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>
-                    Breaks {values.breaks && values.breaks.length > 0 && `(${values.breaks.length})`}
+                    <FormattedMessage id="form.label.breaks" /> {values.breaks && values.breaks.length > 0 && `(${values.breaks.length})`}
                   </Typography>
                   <Button
                     sx={{ mt: 1 }}
@@ -100,14 +106,14 @@ const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) 
                     disabled={values.sleepless}
                     onClick={() => arrayHelpers.push({ start: undefined, end: undefined })}
                   >
-                    Add a break
+                    <FormattedMessage id="form.btn.breaks.add" />
                   </Button>
                   {values.breaks && values.breaks.length > 0 ? (
                     values.breaks.map((f: any, i: any) => (
                       <div key={i}>
                         <Paper sx={{ padding: 2, my: 2 }}>
                           <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
-                            Remove break
+                            <FormattedMessage id="form.btn.breaks.remove" />
                           </Button>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <div>
@@ -119,7 +125,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) 
                               />
                             </div>
                             <div>
-                              <CustomDatePicker id={`${values.breaks && values.breaks[i].end}`} showTimeSelect name={`breaks.${i}.end`} label="reak end" />
+                              <CustomDatePicker id={`${values.breaks && values.breaks[i].end}`} showTimeSelect name={`breaks.${i}.end`} label="Break end" />
                             </div>
                           </div>
                         </Paper>
@@ -131,12 +137,12 @@ const Form = ({ handleSubmit, initialValues, headline, submitText }: FormProps) 
                 </div>
               )}
             />
-            <CustomCheckbox id="nightmares" name="nightmares" label="Nightmares" />
-            <CustomCheckbox id="noise" name="noise" label="Noise" />
-            <CustomRatingField id="quality" name="quality" label="Overall quality of the night?" />
-            <CustomTextField multiline id="notes" type="text" label="Notes" name="notes" />
+            <CustomCheckbox id="nightmares" name="nightmares" />
+            <CustomCheckbox id="noise" name="noise" />
+            <CustomRatingField id="quality" name="quality" />
+            <CustomTextField multiline id="notes" type="text" name="notes" />
             <Typography variant="h6" sx={{ my: 6 }}>
-              You slept for{' '}
+              {summary}
               {values.startTime && values.endTime && calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
                 ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
                 : 0}

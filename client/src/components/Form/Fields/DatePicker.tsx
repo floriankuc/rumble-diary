@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
 import DatePicker from 'react-datepicker';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const useStyles = makeStyles({
   calendarWrapper: {
@@ -41,14 +42,15 @@ const useStyles = makeStyles({
 
 export interface DatePickerProps {
   id: BaseTextFieldProps['id'];
-  label: ReactNode;
+  label?: ReactNode;
   error?: ReactNode;
   value?: string | number;
   showTimeSelect?: boolean;
 }
 
-const CustomDatePicker = ({ id, disabled, showTimeSelect, label, placeholder, ...restProps }: DatePickerProps & FieldHookConfig<Date | null>): ReactElement => {
+const CustomDatePicker = ({ id, disabled, showTimeSelect, placeholder, label, ...restProps }: DatePickerProps & FieldHookConfig<Date | null>): ReactElement => {
   const classes = useStyles();
+  const intl = useIntl();
   const [field, meta, helpers] = useField(restProps);
 
   return (
@@ -72,8 +74,8 @@ const CustomDatePicker = ({ id, disabled, showTimeSelect, label, placeholder, ..
             }}
           />
         }
-        label={label}
-        aria-label={label?.toString()}
+        label={label || <FormattedMessage id={`form.label.${id}`} />}
+        aria-label={label?.toString() || intl.formatMessage({ id: `form.label.${id}` })}
         labelPlacement="top"
         className={classes.formControlLabel}
       />

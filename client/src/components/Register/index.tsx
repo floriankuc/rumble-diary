@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import React, { ReactNode } from 'react';
 import * as yup from 'yup';
 import { RegisterCredentials } from '../../actions/types';
+import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
 
 const useStyles = makeStyles({
   formContainer: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface RegisterProps {
+export interface RegisterProps extends WrappedComponentProps {
   handleSubmit: (values: RegisterCredentials) => void;
   msg: ReactNode;
 }
@@ -35,7 +36,7 @@ const validationSchema = yup.object({
   password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
 });
 
-const Register = ({ handleSubmit, msg }: RegisterProps) => {
+const Register = ({ handleSubmit, msg, intl }: RegisterProps) => {
   const classes = useStyles();
 
   const formik = useFormik<RegisterCredentials>({
@@ -55,14 +56,15 @@ const Register = ({ handleSubmit, msg }: RegisterProps) => {
   return (
     <div>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Register
+        <FormattedMessage id="form.register.headline" />
       </Typography>
       <form onSubmit={formikSubmit} className={classes.formContainer}>
         <TextField
           fullWidth
           id="name"
           name="name"
-          label="Name"
+          label={<FormattedMessage id="form.register.label.name" />}
+          InputLabelProps={{ 'aria-label': intl.formatMessage({ id: 'form.register.label.name' }) }}
           value={values.name}
           onChange={handleChange}
           error={touched.name && Boolean(errors.name)}
@@ -73,7 +75,8 @@ const Register = ({ handleSubmit, msg }: RegisterProps) => {
           fullWidth
           id="email"
           name="email"
-          label="Email"
+          label={<FormattedMessage id="form.register.label.email" />}
+          InputLabelProps={{ 'aria-label': intl.formatMessage({ id: 'form.register.label.email' }) }}
           value={values.email}
           onChange={handleChange}
           error={touched.email && Boolean(errors.email)}
@@ -84,7 +87,8 @@ const Register = ({ handleSubmit, msg }: RegisterProps) => {
           fullWidth
           id="password"
           name="password"
-          label="Password"
+          label={<FormattedMessage id="form.register.label.password" />}
+          InputLabelProps={{ 'aria-label': intl.formatMessage({ id: 'form.register.label.password' }) }}
           type="password"
           value={values.password}
           onChange={handleChange}
@@ -94,11 +98,11 @@ const Register = ({ handleSubmit, msg }: RegisterProps) => {
         />
         <Typography className={classes.errorMsg}>{msg}</Typography>
         <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
-          Register
+          <FormattedMessage id="form.register.btn.submit" />
         </Button>
       </form>
     </div>
   );
 };
 
-export default Register;
+export default injectIntl(Register);
