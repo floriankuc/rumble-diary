@@ -24,9 +24,9 @@ const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
       <Bar dataKey="duration">
         {data.map((entry: Night, index: number) =>
           entry.duration === 0 ? (
-            <Cell key={`cell-${index}`} onClick={(item): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
+            <Cell key={`cell-${index}`} onClick={(): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
           ) : (
-            <Cell key={`cell-${index}`} onClick={(item): void => onBarClick(entry._id)} fill="#8884d8" />
+            <Cell key={`cell-${index}`} onClick={(): void => onBarClick(entry._id)} fill="#8884d8" />
           )
         )}
       </Bar>

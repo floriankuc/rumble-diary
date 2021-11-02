@@ -33,8 +33,6 @@ const App = (): ReactElement => {
 
   const localeShort = (l: string): string => l.slice(0, 2);
 
-  console.log(content);
-
   return (
     <IntlProvider locale={localeShort(getUserLocale())} messages={content['en']}>
       <Provider store={store}>

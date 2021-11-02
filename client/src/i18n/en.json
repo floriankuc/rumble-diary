@@ -44,5 +44,8 @@
   "form.subtitle2": "Conditions after",
   "form.summary": "You slept for ",
   "form.edit.headline": "Edit night",
-  "form.edit.submitText": "Save"
+  "form.edit.submitText": "Save",
+  "emptyState.headline": "No data",
+  "emptyState.body": "There is no data to display. Start by making new entries.",
+  "emptyState.btn": "New entry"
 }

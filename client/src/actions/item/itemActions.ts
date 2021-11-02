@@ -4,6 +4,7 @@ import {
   createGetItemAction,
   createItemAddAction,
   createItemDeleteAction,
+  createItemsErrorAction,
   createItemsGetAction,
   createItemsLoadingAction,
 } from './itemActionCreators';
@@ -86,6 +87,7 @@ export const getItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAc
   } catch (error: any) {
     if (isApiError(error)) {
       dispatch(createErrorSetAction(error.response));
+      dispatch(createItemsErrorAction());
     }
   }
 };

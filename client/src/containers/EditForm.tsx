@@ -53,12 +53,15 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
     }
   }
 
-  componentDidUpdate(_: any, prevState: EditFormContainerState): void {
+  componentDidUpdate(prevProps: PropsFromRedux, prevState: EditFormContainerState): void {
     if (!this.props.itemState.loading && this.props.itemState.success && this.state.isSubmitting) {
       this.setState({ isSubmitting: false });
     }
     if (prevState.isSubmitting !== this.state.isSubmitting) {
       history.push(APP_ROUTES.diary);
+    }
+    if (!prevProps.authState.user && this.props.authState.user) {
+      this.props.getItem(this.props.match.params.id);
     }
   }
 
@@ -84,15 +87,18 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
           summary={<FormattedMessage id="form.summary" />}
         />
       );
+    } else if (this.props.errorState.status) {
+      return <>?</>;
     } else {
-      return <></>;
+      return <p>ok</p>;
     }
   }
 }
 
-const mapStateToProps = ({ itemState, authState }: AppState) => ({
+const mapStateToProps = ({ itemState, authState, errorState }: AppState) => ({
   itemState,
   authState,
+  errorState,
 });
 
 const connector = connect(mapStateToProps, { getItem, editItem });

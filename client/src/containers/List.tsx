@@ -8,6 +8,7 @@ import history from '../routes/history';
 import { AppState } from '../reducers';
 import { Night } from '../entities/Night';
 import { CircularProgress } from '@mui/material';
+import EmptyState from '../components/EmptyState';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 class ListContainer extends React.Component<PropsFromRedux> {
@@ -44,6 +45,8 @@ class ListContainer extends React.Component<PropsFromRedux> {
   render() {
     if (this.props.itemState.loading) {
       return <CircularProgress />;
+    } else if (this.props.itemState.items.length === 0 && !this.props.itemState.loading) {
+      return <EmptyState />;
     } else {
       return (
         this.props.itemState.items && (

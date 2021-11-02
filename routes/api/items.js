@@ -1,4 +1,5 @@
 const express = require('express');
+const { isValidObjectId } = require('mongoose');
 const router = express.Router();
 const authMiddleware = require('../../middleware/auth');
 const Item = require('../../models/Item');
@@ -31,9 +32,14 @@ router.delete('/:itemId', authMiddleware, (req, res) => {
 //@desc Get item
 //@access private
 router.get('/:userId/items/:itemId', authMiddleware, (req, res) => {
-  Item.find({ user: req.params.userId, _id: req.params.itemId }).then((item) => {
-    res.json(item);
-  });
+  // if(!isValidObjectId(req.params.userId)){
+  //   res.status(404)
+  // }
+  Item.find({ user: req.params.userId, _id: req.params.itemId })
+    .then((item) => {
+      res.json(item);
+    })
+    .catch((err) => res.status(404).json({ success: false }));
 });
 
 //@route PATCH api/items/:userId/:id

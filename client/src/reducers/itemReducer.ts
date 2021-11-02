@@ -35,7 +35,10 @@ export interface ItemEditAction {
   payload: Night;
 }
 
-export type ItemAction = ItemsLoadingAction | ItemGetAllAction | ItemDeleteAction | ItemAddAction | ItemGetAction | ItemEditAction;
+export interface ItemErrorAction {
+  type: ItemActionTypes.ITEMS_ERROR;
+}
+export type ItemAction = ItemsLoadingAction | ItemGetAllAction | ItemDeleteAction | ItemAddAction | ItemGetAction | ItemEditAction | ItemErrorAction;
 
 export type ItemState = ItemNullState | ItemGeneralState;
 
@@ -52,7 +55,7 @@ export interface ItemNullState {
 
 const initialState: ItemNullState = {
   items: [],
-  loading: false,
+  loading: true,
   success: false,
 };
 
@@ -61,18 +64,23 @@ export default function itemReducer(state = initialState, action: ItemAction): I
     case ItemActionTypes.GET_ITEMS:
       return { ...state, items: action.payload, loading: false, success: false };
     case ItemActionTypes.DELETE_ITEM:
-      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: false, success: true };
+      return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: false, success: false };
     case ItemActionTypes.ADD_ITEM:
-      return { ...state, items: [action.payload, ...state.items], loading: false, success: true };
+      return { ...state, items: [action.payload, ...state.items], loading: false, success: false };
     case ItemActionTypes.GET_ITEM:
-      // console.log('get Item state', { ...state, items: action.payload, loading: false, success: false });
       return { ...state, items: action.payload, loading: false, success: false };
     case ItemActionTypes.EDIT_ITEM:
-      return { ...state, items: [action.payload], loading: false, success: true };
+      return { ...state, items: [action.payload], loading: false, success: false };
     case ItemActionTypes.ITEMS_LOADING:
       return {
         ...state,
         loading: true,
+      };
+    case ItemActionTypes.ITEMS_ERROR:
+      return {
+        ...state,
+        loading: false,
+        success: false,
       };
     default:
       return state;
