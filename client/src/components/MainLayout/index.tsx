@@ -12,7 +12,7 @@ const useStyles = makeStyles<Theme, MainLayoutStyleProps>({
   mainLayout: {
     display: 'flex',
     flexDirection: 'column',
-    padding: ({ match }): string | number => (match ? 0 : '80px 0px'),
+    padding: ({ match }): string | number => (match ? '12px 0px' : '80px 0px'),
     alignItems: 'center',
   },
 });

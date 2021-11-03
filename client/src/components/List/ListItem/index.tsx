@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
 import { Night } from '../../../entities/Night';
 import { makeStyles } from '@mui/styles';
+import { outputMinutes } from '../../../helpers/date';
 
 const useStyles = makeStyles({
   listItem: {
@@ -23,7 +24,7 @@ export const ListItem = ({ onItemClick, item, onDeleteClick }: ListItemProps) =>
 
   return (
     <MuiListItem onClick={() => onItemClick(item._id)} button key={`${item._id}-listitem`} className={classes.listItem}>
-      <Typography>{format(new Date(item.date), 'PPPP')}</Typography>
+      <Typography>{`${format(new Date(item.date), 'do MMMM yyyy (iiii)')} - ${outputMinutes(item.duration)}`}</Typography>
       <IconButton
         onClick={(e: MouseEvent): void => {
           e.stopPropagation();
