@@ -12,7 +12,29 @@ import { IntlProvider } from 'react-intl';
 import { getUserLocale } from 'get-user-locale';
 import content from './i18n';
 
+declare module '@mui/material/styles' {
+  interface Theme {
+    colors: {
+      error: string;
+      borderActive: string;
+      borderDefault: string;
+    };
+  }
+  interface ThemeOptions {
+    colors?: {
+      error?: string;
+      borderActive?: string;
+      borderDefault?: string;
+    };
+  }
+}
+
 const theme = createTheme({
+  colors: {
+    error: '#D32F2F',
+    borderActive: '#1976D2',
+    borderDefault: '#C4C4C4',
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {

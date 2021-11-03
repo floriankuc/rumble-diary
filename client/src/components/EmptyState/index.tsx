@@ -8,7 +8,7 @@ const EmptyState = (): ReactElement => {
   const navigateToAdd = (): void => history.push(APP_ROUTES.add);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div className="flexColumn">
       <Typography variant="h2">
         <FormattedMessage id="emptyState.headline" />
       </Typography>

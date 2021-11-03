@@ -9,14 +9,12 @@ export interface ListProps {
   items: Night[];
 }
 
-const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement => {
-  return (
-    <MuiList>
-      {items.map((item: Night) => {
-        return <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />;
-      })}
-    </MuiList>
-  );
-};
+const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement => (
+  <MuiList>
+    {items.map((item: Night) => {
+      return <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />;
+    })}
+  </MuiList>
+);
 
 export default List;

@@ -29,6 +29,7 @@ interface FormProps {
 }
 
 const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps) => {
+  const intl = useIntl();
   return (
     <div>
       <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
@@ -42,7 +43,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
         validateOnBlur
         validate={(values) => {
           try {
-            validateYupSchema(values, validationSchema, true, values);
+            validateYupSchema(values, validationSchema(intl), true, values);
             if (values.sleepless) {
             }
           } catch (err: any) {

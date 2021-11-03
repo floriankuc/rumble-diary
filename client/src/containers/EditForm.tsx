@@ -11,6 +11,7 @@ import { calculateDurationInMinutes } from '../helpers/date';
 import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
+import { NotFound404 } from '../components/404';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -88,9 +89,9 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
         />
       );
     } else if (this.props.errorState.status) {
-      return <>?</>;
+      return <NotFound404 />;
     } else {
-      return <p>ok</p>;
+      return <p>ok</p>; //todo
     }
   }
 }

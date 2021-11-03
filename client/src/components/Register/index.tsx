@@ -5,7 +5,8 @@ import { useFormik } from 'formik';
 import React, { ReactNode } from 'react';
 import * as yup from 'yup';
 import { RegisterCredentials } from '../../actions/types';
-import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, injectIntl, IntlShape, WrappedComponentProps } from 'react-intl';
+import { MixedSchema } from 'yup/lib/mixed';
 
 const useStyles = makeStyles({
   formContainer: {
@@ -30,11 +31,18 @@ export interface RegisterProps extends WrappedComponentProps {
   msg: ReactNode;
 }
 
-const validationSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  email: yup.string().email('Enter a valid email').required('Email is required'),
-  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
-});
+const validationSchema = (intl: IntlShape) =>
+  yup.object({
+    name: yup.string().required(intl.formatMessage({ id: 'form.login.validation.name.required' })),
+    email: yup
+      .string()
+      .email(intl.formatMessage({ id: 'form.login.validation.email.help' }))
+      .required(intl.formatMessage({ id: 'form.login.validation.email.required' })),
+    password: yup
+      .string()
+      .min(3, intl.formatMessage({ id: 'form.login.validation.password.help' }))
+      .required(intl.formatMessage({ id: 'form.login.validation.password.required' })),
+  });
 
 const Register = ({ handleSubmit, msg, intl }: RegisterProps) => {
   const classes = useStyles();
@@ -45,7 +53,7 @@ const Register = ({ handleSubmit, msg, intl }: RegisterProps) => {
       email: '',
       password: '',
     },
-    validationSchema: validationSchema,
+    validationSchema: (): MixedSchema => validationSchema(intl),
     onSubmit: (values) => {
       handleSubmit(values);
     },

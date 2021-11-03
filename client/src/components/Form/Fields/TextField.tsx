@@ -1,5 +1,5 @@
 import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps } from '@mui/material';
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useField, FieldHookConfig } from 'formik';
 import { FormattedMessage } from 'react-intl';

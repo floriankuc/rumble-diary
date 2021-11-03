@@ -2,7 +2,7 @@ import en from './en.json';
 
 type Locales = 'en';
 
-type Messages = {
+export type Messages = {
   en: typeof en;
 };
 

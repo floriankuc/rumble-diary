@@ -55,14 +55,14 @@ export interface ItemNullState {
 
 const initialState: ItemNullState = {
   items: [],
-  loading: true,
+  loading: false,
   success: false,
 };
 
 export default function itemReducer(state = initialState, action: ItemAction): ItemState {
   switch (action.type) {
     case ItemActionTypes.GET_ITEMS:
-      return { ...state, items: action.payload, loading: false, success: false };
+      return { ...state, items: action.payload, loading: false, success: true };
     case ItemActionTypes.DELETE_ITEM:
       return { ...state, items: state.items.filter((i: any) => i._id !== action.payload), loading: false, success: false };
     case ItemActionTypes.ADD_ITEM:

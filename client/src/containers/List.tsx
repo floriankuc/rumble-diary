@@ -45,10 +45,11 @@ class ListContainer extends React.Component<PropsFromRedux> {
   render() {
     if (this.props.itemState.loading) {
       return <CircularProgress />;
-    } else if (this.props.itemState.items.length === 0 && !this.props.itemState.loading) {
+    } else if (this.props.itemState.items.length === 0 && !this.props.itemState.loading && this.props.itemState.success) {
       return <EmptyState />;
     } else {
       return (
+        this.props.itemState.success &&
         this.props.itemState.items && (
           <>
             <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />

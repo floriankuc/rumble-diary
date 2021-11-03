@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 export const NotFound404 = (): ReactElement => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  <div className="flexColumn">
     <Typography variant="h1">
       <FormattedMessage id={'404.headline'} />
     </Typography>

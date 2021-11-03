@@ -1,8 +1,8 @@
 import { BaseTextFieldProps, FormControlLabel, Rating } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactElement, ReactNode } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { ReactElement } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles({
   formControlLabel: {

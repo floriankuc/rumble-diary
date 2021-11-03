@@ -4,11 +4,12 @@ import * as yup from 'yup';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { makeStyles } from '@mui/styles';
-import { Typography } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 import { LoginCredentials } from '../../actions/types';
-import { FormattedMessage, injectIntl, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, injectIntl, IntlShape, WrappedComponentProps } from 'react-intl';
+import { MixedSchema } from 'yup/lib/mixed';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -20,21 +21,28 @@ const useStyles = makeStyles({
     alignSelf: 'end',
   },
   errorMsg: {
-    color: '#DD0000',
+    color: theme.colors.error,
     marginBottom: 14,
     fontSize: '.75rem',
   },
-});
+}));
 
 export interface LoginProps extends WrappedComponentProps {
   handleSubmit: (values: LoginCredentials) => void;
   msg: ReactNode;
 }
 
-const validationSchema = yup.object({
-  email: yup.string().email('Enter a valid email').required('Email is required'),
-  password: yup.string().min(3, 'Password should be of minimum 3 characters length').required('Password is required'),
-});
+const validationSchema = (intl: IntlShape) =>
+  yup.object({
+    email: yup
+      .string()
+      .email(intl.formatMessage({ id: 'form.login.validation.email.help' }))
+      .required(intl.formatMessage({ id: 'form.login.validation.email.required' })),
+    password: yup
+      .string()
+      .min(3, intl.formatMessage({ id: 'form.login.validation.password.help' }))
+      .required(intl.formatMessage({ id: 'form.login.validation.password.required' })),
+  });
 
 const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
   const classes = useStyles();
@@ -44,7 +52,7 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
       email: '',
       password: '',
     },
-    validationSchema: validationSchema,
+    validationSchema: (): MixedSchema => validationSchema(intl),
     onSubmit: (values) => {
       handleSubmit(values);
     },

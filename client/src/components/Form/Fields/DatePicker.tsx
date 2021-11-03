@@ -1,11 +1,11 @@
-import { BaseTextFieldProps, FormControlLabel, Typography } from '@mui/material';
+import { BaseTextFieldProps, FormControlLabel, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
 import DatePicker from 'react-datepicker';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   calendarWrapper: {
     marginTop: 20,
   },
@@ -14,14 +14,14 @@ const useStyles = makeStyles({
     marginLeft: 0,
   },
   calendarErrorMessage: {
-    color: '#D32F2F',
+    color: theme.colors.error,
     fontWeight: 400,
     fontSize: '.75rem',
     marginLeft: 14,
   },
   calendar: {
     transitionDuration: '0s',
-    border: '1px solid #C4C4C4',
+    border: `1px solid ${theme.colors.borderDefault}`,
     borderRadius: 5,
     height: 40,
     padding: 14,
@@ -29,16 +29,16 @@ const useStyles = makeStyles({
     fontSize: 16,
     fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
     '&:hover:enabled': {
-      border: '1px solid black',
+      border: '1px solid #000000',
     },
     '&:focus:enabled': {
       outline: 'none',
       padding: 13,
       boxShadow: 'none',
-      border: '2px solid #1976D2',
+      border: `2px solid ${theme.colors.borderActive}`,
     },
   },
-});
+}));
 
 export interface DatePickerProps {
   id: BaseTextFieldProps['id'];
