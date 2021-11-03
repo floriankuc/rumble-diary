@@ -13,6 +13,7 @@ import Show from '../containers/EditForm';
 import Root from '../components/Root';
 import { AppState } from '../reducers';
 import { NotFound404 } from '../components/404';
+import MainLayout from '../components/MainLayout';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -33,7 +34,7 @@ const MainScreen = (props: IMain) => {
     <div>
       <AppNavbar />
       <SidebarContainer />
-      <div style={{ display: 'flex', flexDirection: 'column', padding: '80px 0px', alignItems: 'center' }}>
+      <MainLayout>
         <Switch>
           {matchAuth && <Redirect to="/" />}
           <Route path={APP_ROUTES.add} exact component={ItemModal} />
@@ -42,7 +43,7 @@ const MainScreen = (props: IMain) => {
           <Route path={APP_ROUTES.root} exact={match404} component={Root} />
           {match404 && <Route component={NotFound404} />}
         </Switch>
-      </div>
+      </MainLayout>
       <Switch>
         <Route path={APP_ROUTES.login} component={renderLoginModal} />
         <Route path={APP_ROUTES.register} component={renderRegisterModal} />

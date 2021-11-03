@@ -91,7 +91,7 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
           helperText={touched.password && errors.password}
           variant="outlined"
         />
-        <Typography className={classes.errorMsg}>{msg}</Typography>
+        <Typography className={classes.errorMsg}>{msg !== 'jwt malformed' && msg}</Typography>
         <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
           <FormattedMessage id="form.login.btn.submit" />
         </Button>

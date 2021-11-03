@@ -16,15 +16,15 @@ declare module '@mui/material/styles' {
   interface Theme {
     colors: {
       error: string;
-      borderActive: string;
-      borderDefault: string;
+      primary: string;
+      default: string;
     };
   }
   interface ThemeOptions {
     colors?: {
       error?: string;
-      borderActive?: string;
-      borderDefault?: string;
+      primary?: string;
+      default?: string;
     };
   }
 }
@@ -32,8 +32,8 @@ declare module '@mui/material/styles' {
 const theme = createTheme({
   colors: {
     error: '#D32F2F',
-    borderActive: '#1976D2',
-    borderDefault: '#C4C4C4',
+    primary: '#1976D2',
+    default: '#C4C4C4',
   },
   components: {
     MuiCssBaseline: {

@@ -1,4 +1,4 @@
-import { TextField, Typography } from '@mui/material';
+import { TextField, Theme, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { makeStyles } from '@mui/styles';
 import { useFormik } from 'formik';
@@ -8,7 +8,7 @@ import { RegisterCredentials } from '../../actions/types';
 import { FormattedMessage, injectIntl, IntlShape, WrappedComponentProps } from 'react-intl';
 import { MixedSchema } from 'yup/lib/mixed';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -20,11 +20,11 @@ const useStyles = makeStyles({
     alignSelf: 'end',
   },
   errorMsg: {
-    color: '#DD0000',
+    color: theme.colors.error,
     marginBottom: 14,
     fontSize: '.75rem',
   },
-});
+}));
 
 export interface RegisterProps extends WrappedComponentProps {
   handleSubmit: (values: RegisterCredentials) => void;

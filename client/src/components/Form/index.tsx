@@ -1,8 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Checkbox, Divider, Paper, Typography } from '@mui/material';
+import { Button, Checkbox, Divider, Paper, Theme, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { FieldArray, Form as FormikForm, Formik, validateYupSchema, yupToFormErrors } from 'formik';
+import { FieldArray, Form as FormikForm, Formik, useFormikContext, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormNight, Night } from '../../entities/Night';
@@ -13,6 +13,18 @@ import CustomDatePicker from '../Form/Fields/DatePicker';
 import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  breakWrapper: {
+    width: '100%',
+    margin: '24px 0',
+  },
+  breakFieldsWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
 
 interface FormProps {
   handleSubmit: (values: Night) => void;
@@ -29,6 +41,7 @@ interface FormProps {
 }
 
 const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps) => {
+  const classes = useStyles();
   const intl = useIntl();
   return (
     <div>
@@ -57,7 +70,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
         }}
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
-          <FormikForm style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <FormikForm className="flexColumnStart">
             <CustomTextField type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" />
             <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
@@ -96,7 +109,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
             <FieldArray
               name="breaks"
               render={(arrayHelpers) => (
-                <div style={{ width: '100%', margin: '24px 0' }}>
+                <div className={classes.breakWrapper}>
                   <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>
                     <FormattedMessage id="form.label.breaks" /> {values.breaks && values.breaks.length > 0 && `(${values.breaks.length})`}
                   </Typography>
@@ -116,7 +129,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
                           <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
                             <FormattedMessage id="form.btn.breaks.remove" />
                           </Button>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <div className={classes.breakFieldsWrapper}>
                             <div>
                               <CustomDatePicker
                                 id={`${values.breaks && values.breaks[i].start}`}

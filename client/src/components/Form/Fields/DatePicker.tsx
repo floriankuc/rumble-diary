@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   calendar: {
     transitionDuration: '0s',
-    border: `1px solid ${theme.colors.borderDefault}`,
+    border: `1px solid ${theme.colors.default}`,
     borderRadius: 5,
     height: 40,
     padding: 14,
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       outline: 'none',
       padding: 13,
       boxShadow: 'none',
-      border: `2px solid ${theme.colors.borderActive}`,
+      border: `2px solid ${theme.colors.primary}`,
     },
   },
 }));
