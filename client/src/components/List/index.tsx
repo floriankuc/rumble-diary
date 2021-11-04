@@ -1,31 +1,20 @@
-import { format } from 'date-fns';
-import React from 'react';
+import { List as MuiList } from '@mui/material';
+import React, { ReactElement } from 'react';
 import { Night } from '../../entities/Night';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton, List as MuiList, ListItem, Typography } from '@mui/material';
+import { ListItem } from './ListItem';
 
 export interface ListProps {
-  onItemClick: (id: any) => void;
-  onDeleteClick: (id: any) => void;
+  onItemClick: (id: string) => void;
+  onDeleteClick: (id: string) => void;
   items: Night[];
 }
 
-const List = (props: ListProps) => {
-  console.log('all items from list component', props.items);
-  return (
-    <MuiList>
-      {props.items.map((item) => {
-        return (
-          <ListItem button key={item._id + 'listitem'} style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography onClick={() => props.onItemClick(item._id)}>{format(new Date(item.date), 'PPPP')}</Typography>
-            <IconButton onClick={(): void => props.onDeleteClick(item._id)}>
-              <DeleteIcon />
-            </IconButton>
-          </ListItem>
-        );
-      })}
-    </MuiList>
-  );
-};
+const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement => (
+  <MuiList>
+    {items.map((item: Night) => (
+      <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />
+    ))}
+  </MuiList>
+);
 
 export default List;

@@ -1,58 +1,47 @@
+import { makeStyles } from '@mui/styles';
+import { format } from 'date-fns';
 import React, { ReactElement } from 'react';
-import { Bar, BarChart, Brush, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, Brush, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Night } from '../../entities/Night';
+import { ChartTooltip } from './Tooltip';
+
+const useStyles = makeStyles({
+  chartWrapper: {
+    width: '80%',
+    minWidth: 500,
+    height: 300,
+  },
+});
 export interface ChartProps {
-  data: any;
-  onBarClick: (id: any) => void;
+  readonly data: Night[];
+  readonly onBarClick: (id: string) => void;
 }
 
-function CustomLabel({ x, y, stroke, value, width }: any) {
-  if (value) {
-    return null;
-  }
+const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
+  const classes = useStyles();
 
   return (
-    <text x={x} y={y} dy={-20} dx={width / 2} textAnchor="middle" fill="#888">
-      X
-    </text>
-  );
-}
-
-const CustomTick = (props: any) => {
-  const { x, y, stroke, payload } = props;
-
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={0}
-        dy={16}
-        textAnchor="middle"
-        // fill="#666"
-        // transform="rotate(-35)"
-      >
-        {Math.floor(payload.value)}
-      </text>
-    </g>
+    <div className={classes.chartWrapper}>
+      <ResponsiveContainer>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="duration" tickFormatter={(): string => ''} tickLine={false} />
+          <YAxis />
+          <Tooltip content={<ChartTooltip />} />
+          <Brush dataKey="date" tickFormatter={(val): string => format(new Date(val), 'dd.MM.yyyy')} />
+          <Bar dataKey="duration">
+            {data.map((entry: Night) =>
+              entry.duration === 0 ? (
+                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
+              ) : (
+                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} fill="#8884d8" />
+              )
+            )}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
-
-const Chart = ({ data, onBarClick }: ChartProps): ReactElement => (
-  <BarChart width={400} height={400} data={data}>
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey="duration" />
-    <YAxis />
-    <Tooltip />
-    <Brush dataKey="date" height={30} stroke="#8884d8" />
-    <Bar dataKey="duration" label={<CustomLabel />}>
-      {data.map((entry: any, index: number) =>
-        entry.duration === 0 ? (
-          <Cell key={`cell-${index}`} onClick={(item): void => onBarClick(entry._id)} height={-50} fill="#eee" />
-        ) : (
-          <Cell key={`cell-${index}`} onClick={(item): void => onBarClick(entry._id)} />
-        )
-      )}
-    </Bar>
-  </BarChart>
-);
 
 export default Chart;

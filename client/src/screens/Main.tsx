@@ -6,54 +6,49 @@ import List from '../containers/List';
 import Modal from '../components/Modal/Modal';
 import LoginModal from '../containers/Login';
 import { APP_ROUTES } from '../routes';
-// import { Sidebar } from '../components/Sidebar/Sidebar';
 import SidebarContainer from '../containers/Sidebar';
-import { sidebarItems, sidebarItemsLoggedOut } from '../components/Sidebar/sidebarItems';
 import { connect, ConnectedProps } from 'react-redux';
 import RegisterModal from '../containers/Register';
 import Show from '../containers/EditForm';
 import Root from '../components/Root';
+import { AppState } from '../reducers';
+import { NotFound404 } from '../components/404';
+import MainLayout from '../components/MainLayout';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-interface IMain extends PropsFromRedux {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-const MainScreen = (props: IMain) => {
+const MainScreen = ({ authState }: PropsFromRedux): ReactElement => {
   const renderLoginModal = (): ReactElement => <Modal component={<LoginModal />} />;
   const renderRegisterModal = (): ReactElement => <Modal component={<RegisterModal />} />;
   const location = useLocation();
 
+  const match404 = location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register';
+  const matchAuth = !authState.isLoading && !authState.isAuthenticated && match404;
+
   return (
-    <div>
+    <>
       <AppNavbar />
-      {/* <Sidebar actionItems={sidebarItems} /> */}
       <SidebarContainer />
-      <div style={{ display: 'flex', flexDirection: 'column', padding: '80px 0px', alignItems: 'center' }}>
+      <MainLayout>
         <Switch>
-          {!props.isLoading && !props.isAuthenticated && location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register' && (
-            <Redirect to="/" />
-          )}
-          <Route path={APP_ROUTES.start} exact component={(): ReactElement => <div>start</div>} />
+          {matchAuth && <Redirect to="/" />}
           <Route path={APP_ROUTES.add} exact component={ItemModal} />
           <Route path={APP_ROUTES.diary} exact component={List} />
           <Route path={APP_ROUTES.show} exact component={Show} />
-          <Route path={APP_ROUTES.root} component={Root} />
+          <Route path={APP_ROUTES.root} exact={match404} component={Root} />
+          {match404 && <Route component={NotFound404} />}
         </Switch>
-      </div>
+      </MainLayout>
       <Switch>
         <Route path={APP_ROUTES.login} component={renderLoginModal} />
         <Route path={APP_ROUTES.register} component={renderRegisterModal} />
       </Switch>
-    </div>
+    </>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  isLoading: state.auth.isLoading,
+const mapStateToProps = ({ authState }: AppState): Pick<AppState, 'authState'> => ({
+  authState,
 });
 
 const connector = connect(mapStateToProps);

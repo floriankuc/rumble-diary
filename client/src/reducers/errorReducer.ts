@@ -1,11 +1,5 @@
-import { ErrorActionTypes } from '../actions/errorActionTypes';
+import { ErrorActionTypes } from '../actions/error/errorActionTypes';
 
-// export interface ErrorAction {
-//   type: ErrorActionTypes;
-//   payload: ErrorState;
-// }
-
-//HIER SCHAUEN TODO ACHTUNG CHECKEN
 export interface ErrorAnyState {
   msg: string;
   status: string | number;
@@ -20,19 +14,16 @@ export interface ErrorNullState {
 
 export interface ErrorClearAction {
   type: ErrorActionTypes.CLEAR_ERRORS;
-  payload: {
-    msg: null;
-    status: null;
-    id: null;
-  };
 }
 
 export interface ErrorSetAction {
   type: ErrorActionTypes.GET_ERRORS;
   payload: {
-    msg: string;
+    data: {
+      msg: string;
+      id: string;
+    };
     status: string | number;
-    id: string;
   };
 }
 
@@ -50,9 +41,9 @@ export default function errorReducer(state = initialErrorState, action: ErrorAct
   switch (action.type) {
     case ErrorActionTypes.GET_ERRORS:
       return {
-        msg: action.payload.msg,
+        msg: action.payload.data.msg,
         status: action.payload.status,
-        id: action.payload.id,
+        id: action.payload.data.id,
       };
     case ErrorActionTypes.CLEAR_ERRORS:
       return {

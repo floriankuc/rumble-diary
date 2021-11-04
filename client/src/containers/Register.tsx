@@ -1,45 +1,38 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { register } from '../actions/authActions';
-import { clearErrors } from '../actions/errorActions';
+import { register } from '../actions/auth/authActions';
+import { clearErrors } from '../actions/error/errorActions';
+import { RegisterCredentials } from '../actions/types';
 import Register from '../components/Register';
+import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
-import { RegisterCredentials } from '../actions/authActions';
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export interface RegisterReduxProps extends PropsFromRedux {
-  isAuthenticated: boolean;
-  error: any;
-}
-
-export interface RegisterModalProps {
-  clearErrors: () => { type: string };
-}
-class RegisterContainer extends React.Component<RegisterModalProps & RegisterReduxProps> {
-  handleSubmit = (values: RegisterCredentials) => {
-    this.props.register({ name: values.name, email: values.email, password: values.password });
+class RegisterContainer extends React.Component<PropsFromRedux> {
+  handleSubmit = (values: RegisterCredentials): void => {
+    this.props.register(values);
   };
 
-  componentDidMount() {
-    if (this.props.isAuthenticated) {
+  componentDidMount(): void {
+    if (this.props.authState.isAuthenticated) {
       history.push(APP_ROUTES.diary);
     }
   }
 
-  componentWillUnmount() {
-    console.log('register unmounts');
-    clearErrors();
+  componentWillUnmount(): void {
+    this.props.clearErrors();
   }
 
-  render() {
-    return <Register handleSubmit={this.handleSubmit} msg={this.props.error.id === 'REGISTER_FAIL' && this.props.error.msg.msg} />;
+  render(): ReactElement {
+    return <Register handleSubmit={this.handleSubmit} msg={this.props.errorState.id === 'REGISTER_FAIL' && this.props.errorState.msg} />;
   }
 }
 
-const mapStateToProps = (state: any) => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  error: state.error,
+const mapStateToProps = ({ authState, errorState }: AppState): Omit<AppState, 'itemState'> => ({
+  authState,
+  errorState,
 });
 
 const connector = connect(mapStateToProps, { register, clearErrors });

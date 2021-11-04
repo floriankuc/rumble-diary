@@ -1,4 +1,5 @@
-import { AuthActionTypes } from '../actions/authActionTypes';
+import { AuthActionTypes } from '../actions/auth/authActionTypes';
+import { TokenAndUser } from '../actions/types';
 import { User } from '../entities/User';
 
 export interface AuthErrorAction {
@@ -7,10 +8,7 @@ export interface AuthErrorAction {
 
 export interface RegisterSuccessAction {
   type: AuthActionTypes.REGISTER_SUCCESS;
-  payload: {
-    token: string;
-    user: User;
-  };
+  payload: TokenAndUser;
 }
 
 export interface AuthValidAction {
@@ -19,8 +17,13 @@ export interface AuthValidAction {
     token: null | string;
     isLoading: null | boolean;
     isAuthenticated: boolean;
-    user: null | User; //????
+    user: null | User;
   };
+}
+
+export interface LoginSuccessAction {
+  type: AuthActionTypes.LOGIN_SUCCESS;
+  payload: TokenAndUser;
 }
 
 export interface UserLoadedAction {
@@ -28,12 +31,27 @@ export interface UserLoadedAction {
   payload: User;
 }
 
-export type AuthAction = AuthErrorAction | AuthValidAction | RegisterSuccessAction | UserLoadedAction;
+export interface UserLoadingAction {
+  type: AuthActionTypes.USER_LOADING;
+}
+
+export interface UserLogoutSuccessAction {
+  type: AuthActionTypes.LOGOUT_SUCCESS;
+}
+
+export type AuthAction =
+  | AuthErrorAction
+  | AuthValidAction
+  | RegisterSuccessAction
+  | UserLoadedAction
+  | UserLoadingAction
+  | UserLogoutSuccessAction
+  | LoginSuccessAction;
 
 export interface AuthUserLoadedState {
   token: any;
-  isAuthenticated: any;
-  isLoading: any;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   user: User;
 }
 export interface AuthUserNotLoadingState {
@@ -70,7 +88,7 @@ export interface AuthValidState {
   user: null;
 }
 
-export interface WHATEVER {
+export interface AuthPendingState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -84,7 +102,7 @@ export type AuthState =
   | AuthUserLoadingState
   | AuthUserNotLoadingState
   | AuthUserLoadingFalseState
-  | WHATEVER;
+  | AuthPendingState;
 
 const initialAuthState: AuthState = {
   token: localStorage.getItem('token'),
@@ -96,23 +114,19 @@ const initialAuthState: AuthState = {
 export default function authReducer(state = initialAuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case AuthActionTypes.USER_LOADING:
-      console.log('user loading runs');
       return {
         ...state,
         isLoading: true,
       };
     case AuthActionTypes.USER_LOADED:
-      console.log('user loaded runs');
       return {
         ...state,
         isAuthenticated: true,
         isLoading: false,
-        user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
-        // user: action.payload, //user wird hier durch id gesetzt weil ich nur id brauche?
+        user: action.payload,
       } as AuthUserLoadedState;
     case AuthActionTypes.LOGIN_SUCCESS:
     case AuthActionTypes.REGISTER_SUCCESS:
-      console.log('login user', action.payload.user);
       if (action.payload) {
         localStorage.setItem('token', action.payload.token as string);
       }
@@ -127,7 +141,6 @@ export default function authReducer(state = initialAuthState, action: AuthAction
     case AuthActionTypes.LOGIN_FAIL:
     case AuthActionTypes.LOGOUT_SUCCESS:
     case AuthActionTypes.REGISTER_FAIL:
-      console.log('case mit removeToken action fires');
       localStorage.removeItem('token');
       return {
         ...state,
