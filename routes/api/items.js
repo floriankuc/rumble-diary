@@ -32,9 +32,6 @@ router.delete('/:itemId', authMiddleware, (req, res) => {
 //@desc Get item
 //@access private
 router.get('/:userId/items/:itemId', authMiddleware, (req, res) => {
-  // if(!isValidObjectId(req.params.userId)){
-  //   res.status(404)
-  // }
   Item.find({ user: req.params.userId, _id: req.params.itemId })
     .then((item) => {
       res.json(item);
