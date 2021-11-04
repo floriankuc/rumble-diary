@@ -63,13 +63,13 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
     },
   });
 
-  const getLoginErrorMessage = (message: string): ReactNode => {
-    if (message !== jwtErrors.JWT_MALFORMED) {
-      return message;
+  const getLoginErrorMessage = (message: string | ReactNode): ReactNode => {
+    if (message === jwtErrors.JWT_MALFORMED) {
+      return '';
     } else if (message === jwtErrors.JWT_EXPIRED) {
       return <FormattedMessage id="jwt.expired" />;
     } else {
-      return msg;
+      return message;
     }
   };
 
@@ -106,7 +106,7 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
           helperText={touched.password && errors.password}
           variant="outlined"
         />
-        <Typography className={classes.errorMsg}>{msg && getLoginErrorMessage(msg.toString())}</Typography>
+        <Typography className={classes.errorMsg}>{getLoginErrorMessage(msg)}</Typography>
         <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
           <FormattedMessage id="form.login.btn.submit" />
         </Button>
