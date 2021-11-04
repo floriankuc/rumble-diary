@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { register } from '../actions/auth/authActions';
 import { clearErrors } from '../actions/error/errorActions';
@@ -11,26 +11,26 @@ import history from '../routes/history';
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 class RegisterContainer extends React.Component<PropsFromRedux> {
-  handleSubmit = (values: RegisterCredentials) => {
+  handleSubmit = (values: RegisterCredentials): void => {
     this.props.register(values);
   };
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (this.props.authState.isAuthenticated) {
       history.push(APP_ROUTES.diary);
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.props.clearErrors();
   }
 
-  render() {
+  render(): ReactElement {
     return <Register handleSubmit={this.handleSubmit} msg={this.props.errorState.id === 'REGISTER_FAIL' && this.props.errorState.msg} />;
   }
 }
 
-const mapStateToProps = ({ authState, errorState }: AppState) => ({
+const mapStateToProps = ({ authState, errorState }: AppState): Omit<AppState, 'itemState'> => ({
   authState,
   errorState,
 });

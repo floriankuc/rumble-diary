@@ -1,11 +1,11 @@
 import { CircularProgress } from '@mui/material';
 import { FormikProps } from 'formik';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/item/itemActions';
-import FormComponents from '../components/Form';
+import Form from '../components/Form';
 import { FormNight, Night } from '../entities/Night';
 import { calculateDurationInMinutes } from '../helpers/date';
 import { AppState } from '../reducers';
@@ -72,13 +72,13 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
     this.props.editItem({ ...values, duration });
   };
 
-  render() {
+  render(): ReactElement {
     const { items } = this.props.itemState;
     if (this.props.itemState.loading) {
       return <CircularProgress />;
     } else if (items && items.length === 1 && items[0] && !this.props.itemState.loading) {
       return (
-        <FormComponents
+        <Form
           isSubmitting={this.state.isSubmitting}
           handleSubmit={this.handleSubmit}
           initialValues={this.getInitialValues(items[0])}
@@ -91,12 +91,12 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
     } else if (this.props.errorState.status) {
       return <NotFound404 />;
     } else {
-      return <p>ok</p>; //todo
+      return <></>;
     }
   }
 }
 
-const mapStateToProps = ({ itemState, authState, errorState }: AppState) => ({
+const mapStateToProps = ({ itemState, authState, errorState }: AppState): AppState => ({
   itemState,
   authState,
   errorState,

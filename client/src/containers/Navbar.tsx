@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { logout } from '../actions/auth/authActions';
 import Navbar from '../components/Navbar';
@@ -13,14 +13,14 @@ class NavbarContainer extends React.Component<PropsFromRedux> {
 
   handleToggle = (): void => this.context.toggleSidebar(!this.context.open);
 
-  render() {
+  render(): ReactElement {
     return (
       <Navbar actionItems={this.props.authState.isAuthenticated ? navbarItemsAuthenticated : navbarItemsNotAuthenticated} toggleSidebar={this.handleToggle} />
     );
   }
 }
 
-const mapStateToProps = ({ authState }: AppState) => ({
+const mapStateToProps = ({ authState }: AppState): Pick<AppState, 'authState'> => ({
   authState,
 });
 

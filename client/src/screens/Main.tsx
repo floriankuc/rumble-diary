@@ -17,21 +17,16 @@ import MainLayout from '../components/MainLayout';
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-interface IMain extends PropsFromRedux {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-const MainScreen = (props: IMain) => {
+const MainScreen = ({ authState }: PropsFromRedux): ReactElement => {
   const renderLoginModal = (): ReactElement => <Modal component={<LoginModal />} />;
   const renderRegisterModal = (): ReactElement => <Modal component={<RegisterModal />} />;
   const location = useLocation();
 
   const match404 = location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/register';
-  const matchAuth = !props.isLoading && !props.isAuthenticated && match404;
+  const matchAuth = !authState.isLoading && !authState.isAuthenticated && match404;
 
   return (
-    <div>
+    <>
       <AppNavbar />
       <SidebarContainer />
       <MainLayout>
@@ -48,13 +43,12 @@ const MainScreen = (props: IMain) => {
         <Route path={APP_ROUTES.login} component={renderLoginModal} />
         <Route path={APP_ROUTES.register} component={renderRegisterModal} />
       </Switch>
-    </div>
+    </>
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  isAuthenticated: state.authState.isAuthenticated,
-  isLoading: state.authState.isLoading,
+const mapStateToProps = ({ authState }: AppState): Pick<AppState, 'authState'> => ({
+  authState,
 });
 
 const connector = connect(mapStateToProps);

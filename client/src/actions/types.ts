@@ -5,7 +5,6 @@ import { ErrorAction } from '../reducers/errorReducer';
 import { ItemAction } from '../reducers/itemReducer';
 import store from '../store';
 
-// export type StoreDispatch<T extends ItemAction | AuthAction | ErrorAction> = Dispatch<T>;
 export type StoreDispatch<T extends ItemAction | AuthAction | ErrorAction> = Dispatch<T>;
 export type StoreDispatchType = typeof store.dispatch;
 export interface TokenAndUser {

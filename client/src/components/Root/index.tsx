@@ -23,6 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '2rem',
     letterSpacing: -2,
   },
+  appTitle: {
+    textAlign: 'center',
+    fontWeight: 400,
+    fontSize: '3rem',
+    letterSpacing: -4,
+  },
 }));
 
 const Root = (): ReactElement => {
@@ -30,18 +36,18 @@ const Root = (): ReactElement => {
 
   return (
     <div className={classes.rootContainer}>
-      <Typography component="h1" sx={{ textAlign: 'center', fontWeight: 400, fontSize: '3rem', letterSpacing: -4 }}>
+      <Typography component="h1" className={classes.appTitle}>
         <FormattedMessage id="app.title" />
       </Typography>
       <HotelIcon className={classes.icon} />
       <Typography className={classes.rootHeadline} sx={{ mt: 6 }}>
-        What is this?
+        <FormattedMessage id="home.headline1" />
       </Typography>
       <Typography>
         <FormattedMessage id="home.body1" />
       </Typography>
       <Typography className={classes.rootHeadline} sx={{ mt: 4 }}>
-        Why is this useful?
+        <FormattedMessage id="home.headline2" />
       </Typography>
       <Typography>
         <FormattedMessage id="home.body2" />

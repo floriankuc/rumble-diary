@@ -8,7 +8,7 @@ export interface CheckboxProps {
   value?: string | number;
 }
 
-const CustomCheckbox = ({ id, value, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
+const CustomCheckbox = ({ id, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
   const intl = useIntl();
   const [field, , helpers] = useField(restProps);
 

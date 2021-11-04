@@ -19,21 +19,22 @@ export interface ChartProps {
 
 const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
   const classes = useStyles();
+
   return (
     <div className={classes.chartWrapper}>
       <ResponsiveContainer>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="duration" tickFormatter={() => ''} tickLine={false} />
+          <XAxis dataKey="duration" tickFormatter={(): string => ''} tickLine={false} />
           <YAxis />
           <Tooltip content={<ChartTooltip />} />
-          <Brush dataKey="date" tickFormatter={(val) => format(new Date(val), 'dd.MM.yyyy')} />
+          <Brush dataKey="date" tickFormatter={(val): string => format(new Date(val), 'dd.MM.yyyy')} />
           <Bar dataKey="duration">
-            {data.map((entry: Night, index: number) =>
+            {data.map((entry: Night) =>
               entry.duration === 0 ? (
-                <Cell key={`cell-${index}`} onClick={(): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
+                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
               ) : (
-                <Cell key={`cell-${index}`} onClick={(): void => onBarClick(entry._id)} fill="#8884d8" />
+                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} fill="#8884d8" />
               )
             )}
           </Bar>

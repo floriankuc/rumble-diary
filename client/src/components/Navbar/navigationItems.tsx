@@ -1,3 +1,4 @@
+import React from 'react';
 import { createLogoutAction } from '../../actions/auth/authActionCreators';
 import { APP_ROUTES } from '../../routes';
 import history from '../../routes/history';

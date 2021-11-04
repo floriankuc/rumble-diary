@@ -1,6 +1,4 @@
 {
-  "app.title": "Sleep Diary",
-
   "404.body": "Page not found",
   "404.headline": "404",
 
@@ -9,6 +7,8 @@
   "action.login": "Login",
   "action.logout": "Logout",
   "action.register": "Register",
+
+  "app.title": "Sleep Diary",
 
   "chart.tooltip.duration": "{hours} hours",
 
@@ -23,23 +23,17 @@
   "form.edit.headline": "Edit night",
   "form.edit.submitText": "Save",
 
-  "form.item.validation.date.required": "Enter a date",
-  "form.item.validation.temperature.required": "Enter a temperature",
-  "form.item.validation.startTime.help": "Start of sleep must be on same day or one day after",
-  "form.item.validation.startTime.required": "Enter a start time",
-  "form.item.validation.endTime.help": "End date can't be before Start date",
-  "form.item.validation.endTime.required": "Enter an end time",
-  "form.item.validation.breakStart.help": "Break start of sleep must be between start and end",
-  "form.item.validation.breakStart.required": "Enter a break start time",
   "form.item.validation.breakEnd.help1": "Break end of sleep must be within start and end",
   "form.item.validation.breakEnd.help2": "Break end before break start",
   "form.item.validation.breakEnd.required": "Enter a break end time",
-
-  "form.login.validation.name.required": "Name is required",
-  "form.login.validation.email.help": "Enter a valid email",
-  "form.login.validation.email.required": "Email is required",
-  "form.login.validation.password.help": "Password should be of minimum 3 characters length",
-  "form.login.validation.password.required": "Password is required",
+  "form.item.validation.breakStart.help": "Break start of sleep must be between start and end",
+  "form.item.validation.breakStart.required": "Enter a break start time",
+  "form.item.validation.date.required": "Enter a date",
+  "form.item.validation.endTime.help": "End date can't be before Start date",
+  "form.item.validation.endTime.required": "Enter an end time",
+  "form.item.validation.startTime.help": "Start of sleep must be on same day or one day after",
+  "form.item.validation.startTime.required": "Enter a start time",
+  "form.item.validation.temperature.required": "Enter a temperature",
 
   "form.label.breaks": "Breaks",
   "form.label.conditions.fed": "Eaten enough",
@@ -61,11 +55,18 @@
   "form.login.headline": "Login",
   "form.login.label.email": "Email",
   "form.login.label.password": "Password",
+  "form.login.validation.email.help": "Enter a valid email",
+  "form.login.validation.email.required": "Email is required",
+  "form.login.validation.name.required": "Name is required",
+  "form.login.validation.password.help": "Password should be of minimum 3 characters length",
+  "form.login.validation.password.required": "Password is required",
+
   "form.register.btn.submit": "Register",
   "form.register.headline": "Register",
   "form.register.label.email": "Email",
   "form.register.label.name": "Name",
   "form.register.label.password": "Password",
+
   "form.subtitle1": "Conditions before",
   "form.subtitle2": "Conditions after",
   "form.summary": "You slept for ",
@@ -73,6 +74,10 @@
   "home.body1": "It's a diary to document your sleep. All commonly known parameters of sleep hygiene are covered. Additionally it is used to document the sleep duration itself by date.",
   "home.body2": "There are a number of reasons why one would document their sleep. One might suffer from either insomnia, light or little sleep, have trouble falling asleep or be prone to interruptions during the night.",
   "home.body3": "Sleep quality is determined by multiple variables. Getting to the bottom of sleeping problems requires examining the sleep environment, sleep hygiene and being mindful of your own condition. This app provides some overall support in serving as a diary for the afore-mentioned parameters and conditions.",
+  "home.headline1": "What is this?",
+  "home.headline2": "Why is this useful?",
+
+  "jwt.expired": "You have been logged out due to inactivity",
 
   "sidebar.headline": "Menu"
 }

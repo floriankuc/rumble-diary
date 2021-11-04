@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { logout } from '../actions/auth/authActions';
 import { ActionItemType } from '../components/ActionItem';
@@ -17,7 +17,7 @@ class SidebarContainer extends React.Component<PropsFromRedux> {
   sidebarItemsAuthenticated: ActionItemType[] = navbarItemsAuthenticated.map((item) => ({ ...item, component: 'listItem' }));
   sidebarItemsNotAuthenticated: ActionItemType[] = navbarItemsNotAuthenticated.map((item) => ({ ...item, component: 'listItem' }));
 
-  render() {
+  render(): ReactElement {
     return (
       <Sidebar
         actionItems={this.props.authState.isAuthenticated ? this.sidebarItemsAuthenticated : this.sidebarItemsNotAuthenticated}
@@ -28,7 +28,7 @@ class SidebarContainer extends React.Component<PropsFromRedux> {
   }
 }
 
-const mapStateToProps = ({ authState }: AppState) => ({
+const mapStateToProps = ({ authState }: AppState): Pick<AppState, 'authState'> => ({
   authState,
 });
 

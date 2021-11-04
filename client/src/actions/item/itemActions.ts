@@ -21,7 +21,7 @@ export const setItemsLoading = async (dispatch: StoreDispatch<ItemAction>): Prom
   dispatch(createItemsLoadingAction());
 };
 
-export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
+export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 
@@ -35,7 +35,7 @@ export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorA
   }
 };
 
-export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
+export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   dispatch(createItemsLoadingAction());
 
   try {
@@ -48,7 +48,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
   }
 };
 
-export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
+export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const newItem = { ...item, user: getState().authState.user?.id };
   dispatch(createItemsLoadingAction());
 
@@ -62,7 +62,7 @@ export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemActio
   }
 };
 
-export const editItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
+export const editItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const newItem = { ...item, user: getState().authState.user?.id };
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
@@ -77,7 +77,7 @@ export const editItem = (item: Night) => async (dispatch: StoreDispatch<ItemActi
   }
 };
 
-export const getItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState) => {
+export const getItem = (itemId: string) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
 

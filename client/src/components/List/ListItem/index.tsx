@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, ReactElement } from 'react';
 import { IconButton, ListItem as MuiListItem, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
@@ -19,11 +19,11 @@ export interface ListItemProps {
   onDeleteClick: (id: string) => void;
 }
 
-export const ListItem = ({ onItemClick, item, onDeleteClick }: ListItemProps) => {
+export const ListItem = ({ onItemClick, item, onDeleteClick }: ListItemProps): ReactElement => {
   const classes = useStyles();
 
   return (
-    <MuiListItem onClick={() => onItemClick(item._id)} button key={`${item._id}-listitem`} className={classes.listItem}>
+    <MuiListItem onClick={(): void => onItemClick(item._id)} button key={`${item._id}-listitem`} className={classes.listItem}>
       <Typography>{`${format(new Date(item.date), 'do MMMM yyyy (iiii)')} - ${outputMinutes(item.duration)}`}</Typography>
       <IconButton
         onClick={(e: MouseEvent): void => {

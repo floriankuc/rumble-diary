@@ -14,25 +14,27 @@ const Navbar = ({ actionItems, toggleSidebar }: NavbarProps): ReactElement => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const renderItem = (item: ActionItemType) => <ActionItem actionItem={item} key={item.id} />;
+  const renderItem = (item: ActionItemType): ReactElement => <ActionItem actionItem={item} key={item.id} />;
+
+  const renderMainMenuIcon = (): ReactElement => (
+    <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggleSidebar}>
+      <MenuIcon />
+    </IconButton>
+  );
+
+  const renderActionItems = (items: ActionItemType[]): ReactElement[] => {
+    return items.map((item) => renderItem(item));
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky">
         <Toolbar>
-          {matches && (
-            <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={toggleSidebar}>
-              <MenuIcon />
-            </IconButton>
-          )}
+          {matches && renderMainMenuIcon()}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <FormattedMessage id="app.title" />
           </Typography>
-          {!matches &&
-            actionItems &&
-            actionItems.map((item) => {
-              return renderItem(item);
-            })}
+          {!matches && actionItems && renderActionItems(actionItems)}
         </Toolbar>
       </AppBar>
     </Box>

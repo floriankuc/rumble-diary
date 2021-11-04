@@ -2,7 +2,6 @@ import { ItemActionTypes } from '../actions/item/itemActionTypes';
 import { Night } from '../entities/Night';
 
 export interface ItemActionGeneral {
-  //comment into ItemAction if problems
   type: ItemActionTypes;
   payload: any;
 }

@@ -50,8 +50,8 @@ export type AuthAction =
 
 export interface AuthUserLoadedState {
   token: any;
-  isAuthenticated: any;
-  isLoading: any;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   user: User;
 }
 export interface AuthUserNotLoadingState {
@@ -88,7 +88,7 @@ export interface AuthValidState {
   user: null;
 }
 
-export interface WHATEVER {
+export interface AuthPendingState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -102,7 +102,7 @@ export type AuthState =
   | AuthUserLoadingState
   | AuthUserNotLoadingState
   | AuthUserLoadingFalseState
-  | WHATEVER;
+  | AuthPendingState;
 
 const initialAuthState: AuthState = {
   token: localStorage.getItem('token'),

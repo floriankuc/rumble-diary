@@ -14,7 +14,7 @@ export interface ActionItemProps {
 }
 
 export const ActionItem = ({ actionItem }: ActionItemProps): ReactElement => {
-  const renderListActionItem = ({ id, action, icon, text }: ActionItemType) => (
+  const renderListActionItem = ({ id, action, icon, text }: ActionItemType): ReactElement => (
     <ListItem button key={id} onClick={action} disableRipple>
       {icon && <ListItemIcon>{icon}</ListItemIcon>}
       <ListItemText primary={text} />

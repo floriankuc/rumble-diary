@@ -1,9 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Checkbox, Divider, Paper, Theme, Typography } from '@mui/material';
+import { Button, Checkbox, Divider, Paper, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { FieldArray, Form as FormikForm, Formik, validateYupSchema, yupToFormErrors } from 'formik';
-import React, { ReactNode } from 'react';
+import { FieldArray, Form as FormikForm, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
+import React, { ReactElement, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormNight, Night } from '../../entities/Night';
 import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
@@ -14,8 +14,9 @@ import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from '@mui/styles';
+import uuid from 'uuid';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   breakWrapper: {
     width: '100%',
     margin: '24px 0',
@@ -40,9 +41,10 @@ interface FormProps {
   item?: FormNight;
 }
 
-const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps) => {
+const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps): ReactElement => {
   const classes = useStyles();
   const intl = useIntl();
+
   return (
     <div>
       <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
@@ -54,7 +56,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
       <Formik
         initialValues={initialValues}
         validateOnBlur
-        validate={(values) => {
+        validate={(values): FormikErrors<unknown> | undefined => {
           try {
             validateYupSchema(values, validationSchema(intl), true, values);
             if (values.sleepless) {
@@ -63,13 +65,13 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
             return yupToFormErrors(err);
           }
         }}
-        onSubmit={(values) => {
+        onSubmit={(values): void => {
           if (values.startTime && values.endTime) {
             handleSubmit(values as Night);
           }
         }}
       >
-        {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }) => (
+        {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }): ReactElement => (
           <FormikForm className="flexColumnStart">
             <CustomTextField type="number" id="conditions.temperature" name="conditions.temperature" />
             <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" />
@@ -87,7 +89,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
               control={
                 <Checkbox
                   checked={values.sleepless}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                  onChange={(): void => {
                     if (!values.date) {
                       setFieldValue('date', new Date(new Date().setHours(0, 0, 0, 0)), false);
                     }
@@ -108,7 +110,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
             <CustomDatePicker id="endTime" name="endTime" showTimeSelect disabled={values.sleepless} />
             <FieldArray
               name="breaks"
-              render={(arrayHelpers) => (
+              render={(arrayHelpers): ReactElement<any, any> => (
                 <div className={classes.breakWrapper}>
                   <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>
                     <FormattedMessage id="form.label.breaks" /> {values.breaks && values.breaks.length > 0 && `(${values.breaks.length})`}
@@ -118,15 +120,15 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
                     startIcon={<AddIcon />}
                     variant="outlined"
                     disabled={values.sleepless}
-                    onClick={() => arrayHelpers.push({ start: undefined, end: undefined })}
+                    onClick={(): void => arrayHelpers.push({ start: undefined, end: undefined })}
                   >
                     <FormattedMessage id="form.btn.breaks.add" />
                   </Button>
                   {values.breaks && values.breaks.length > 0 ? (
-                    values.breaks.map((f: any, i: any) => (
-                      <div key={i}>
+                    values.breaks.map((b, i) => (
+                      <div key={uuid.v1()}>
                         <Paper sx={{ padding: 2, my: 2 }}>
-                          <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={() => arrayHelpers.remove(i)}>
+                          <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={(): void => arrayHelpers.remove(i)}>
                             <FormattedMessage id="form.btn.breaks.remove" />
                           </Button>
                           <div className={classes.breakFieldsWrapper}>

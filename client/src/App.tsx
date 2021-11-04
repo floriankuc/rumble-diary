@@ -18,6 +18,7 @@ declare module '@mui/material/styles' {
       error: string;
       primary: string;
       default: string;
+      bar: string;
     };
   }
   interface ThemeOptions {
@@ -25,6 +26,7 @@ declare module '@mui/material/styles' {
       error?: string;
       primary?: string;
       default?: string;
+      bar?: string;
     };
   }
 }
@@ -34,6 +36,7 @@ const theme = createTheme({
     error: '#D32F2F',
     primary: '#1976D2',
     default: '#C4C4C4',
+    bar: '#FFFF99',
   },
   components: {
     MuiCssBaseline: {
@@ -74,41 +77,3 @@ const App = (): ReactElement => {
 };
 
 export default App;
-
-// export const AppWrapperPlain: React.FC<PropsWithChildren<AppWrapperProps>> = (props: PropsWithChildren<AppWrapperProps>): ReactElement => {
-//   // const locale = getSupportedLanguage(getCurrentLanguage(), Object.keys(props.messages));
-
-//   const requestedLanguage = props.language ? props.language : getBrowserLanguage();
-//   const supportedLanguageCode = getSupportedLanguageCode(requestedLanguage, Object.keys(props.messages));
-//   // get localeCode supported by the app / defaults to en-GB
-//   const supportedLocalCode = getSupportedLocaleCode(getBrowserLocale(), supportedLanguageCode);
-//   // get country supported by the app / defaults to GB or undefined if not defined
-//   const supportedCountryCode = getSupportedCountryCode(supportedLocalCode);
-
-//   const i18nContext: I18nContext = {
-//     browserDefaults: {
-//       languageCode: getBrowserLanguage(),
-//       localeCode: getBrowserLocale(),
-//       countryCode: getBrowserCountryCode(),
-//     },
-//     languageCode: supportedLanguageCode,
-//     localeCode: supportedLocalCode,
-//     countryCode: supportedCountryCode,
-//   };
-
-//   const messages = setupMessages(props.messages, i18nContext.languageCode);
-
-//   return (
-//     <Provider store={props.store}>
-//       <AuthProvider>
-//         <SetupApi>
-//           <IntlProvider defaultLocale={i18nContext.localeCode} locale={i18nContext.localeCode} key={i18nContext.localeCode} messages={messages}>
-//             <I18nContextProvider values={i18nContext}>
-//               <BrowserRouter basename={props.routerBasename}>{props.children}</BrowserRouter>
-//             </I18nContextProvider>
-//           </IntlProvider>
-//         </SetupApi>
-//       </AuthProvider>
-//     </Provider>
-//   );
-// };

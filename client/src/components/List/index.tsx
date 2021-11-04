@@ -11,9 +11,9 @@ export interface ListProps {
 
 const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement => (
   <MuiList>
-    {items.map((item: Night) => {
-      return <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />;
-    })}
+    {items.map((item: Night) => (
+      <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />
+    ))}
   </MuiList>
 );
 

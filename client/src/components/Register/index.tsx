@@ -2,7 +2,7 @@ import { TextField, Theme, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { makeStyles } from '@mui/styles';
 import { useFormik } from 'formik';
-import React, { ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import * as yup from 'yup';
 import { RegisterCredentials } from '../../actions/types';
 import { FormattedMessage, injectIntl, IntlShape, WrappedComponentProps } from 'react-intl';
@@ -31,7 +31,7 @@ export interface RegisterProps extends WrappedComponentProps {
   msg: ReactNode;
 }
 
-const validationSchema = (intl: IntlShape) =>
+const validationSchema = (intl: IntlShape): MixedSchema =>
   yup.object({
     name: yup.string().required(intl.formatMessage({ id: 'form.login.validation.name.required' })),
     email: yup
@@ -44,7 +44,7 @@ const validationSchema = (intl: IntlShape) =>
       .required(intl.formatMessage({ id: 'form.login.validation.password.required' })),
   });
 
-const Register = ({ handleSubmit, msg, intl }: RegisterProps) => {
+const Register = ({ handleSubmit, msg, intl }: RegisterProps): ReactElement => {
   const classes = useStyles();
 
   const formik = useFormik<RegisterCredentials>({

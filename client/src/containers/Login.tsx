@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { login } from '../actions/auth/authActions';
 import { clearErrors } from '../actions/error/errorActions';
@@ -22,12 +22,12 @@ class LoginContainer extends React.Component<PropsFromRedux> {
     }
   }
 
-  render() {
+  render(): ReactElement {
     return <Login msg={this.props.errorState.msg} handleSubmit={this.handleSubmit} />;
   }
 }
 
-const mapStateToProps = ({ authState, errorState }: AppState) => ({
+const mapStateToProps = ({ authState, errorState }: AppState): Omit<AppState, 'itemState'> => ({
   authState,
   errorState,
 });

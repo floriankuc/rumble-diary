@@ -68,7 +68,7 @@ const CustomDatePicker = ({ id, disabled, showTimeSelect, placeholder, label, ..
             dateFormat={`d MMMM yyyy${showTimeSelect ? ', kk:mm' : ''}`}
             name={id}
             className={`form-control ${classes.calendar}`}
-            onChange={(time: Date | null) => {
+            onChange={(time: Date | null): void => {
               helpers.setValue(time);
               helpers.setTouched(true);
             }}

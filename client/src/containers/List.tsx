@@ -42,26 +42,25 @@ class ListContainer extends React.Component<PropsFromRedux> {
     return <List onDeleteClick={this.onDeleteClick} onItemClick={this.navigateToNightShow} items={items} />;
   };
 
-  render() {
+  render(): ReactElement {
     if (this.props.itemState.loading) {
       return <CircularProgress />;
     } else if (this.props.itemState.items.length === 0 && !this.props.itemState.loading && this.props.itemState.success) {
       return <EmptyState />;
     } else {
-      return (
-        this.props.itemState.success &&
-        this.props.itemState.items && (
-          <>
-            <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
-            {this.renderList(this.props.itemState.items)}
-          </>
-        )
+      return this.props.itemState.success && this.props.itemState.items ? (
+        <>
+          <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
+          {this.renderList(this.props.itemState.items)}
+        </>
+      ) : (
+        <></>
       );
     }
   }
 }
 
-const mapStateToProps = ({ itemState, authState }: AppState) => ({
+const mapStateToProps = ({ itemState, authState }: AppState): Omit<AppState, 'errorState'> => ({
   itemState,
   authState,
 });

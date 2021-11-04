@@ -27,12 +27,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const jwtErrors = {
+  JWT_MALFORMED: 'jwt malformed',
+  JWT_EXPIRED: 'jwt expired',
+};
+
 export interface LoginProps extends WrappedComponentProps {
   handleSubmit: (values: LoginCredentials) => void;
-  msg: ReactNode;
+  msg: string | ReactNode;
 }
 
-const validationSchema = (intl: IntlShape) =>
+const validationSchema = (intl: IntlShape): MixedSchema =>
   yup.object({
     email: yup
       .string()
@@ -57,6 +62,16 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
       handleSubmit(values);
     },
   });
+
+  const getLoginErrorMessage = (message: string): ReactNode => {
+    if (message !== jwtErrors.JWT_MALFORMED) {
+      return message;
+    } else if (message === jwtErrors.JWT_EXPIRED) {
+      return <FormattedMessage id="jwt.expired" />;
+    } else {
+      return msg;
+    }
+  };
 
   const { handleSubmit: formikSubmit, errors, touched, values, handleChange, isValid } = formik;
 
@@ -91,7 +106,7 @@ const Login = ({ handleSubmit, msg, intl }: LoginProps): ReactElement => {
           helperText={touched.password && errors.password}
           variant="outlined"
         />
-        <Typography className={classes.errorMsg}>{msg !== 'jwt malformed' && msg}</Typography>
+        <Typography className={classes.errorMsg}>{msg && getLoginErrorMessage(msg.toString())}</Typography>
         <Button color="primary" variant="contained" type="submit" className={classes.button} disabled={!isValid}>
           <FormattedMessage id="form.login.btn.submit" />
         </Button>

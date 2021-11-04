@@ -1,8 +1,9 @@
 import { differenceInDays, differenceInHours, isWithinInterval } from 'date-fns';
 import { IntlShape } from 'react-intl';
 import * as yup from 'yup';
+import { MixedSchema } from 'yup/lib/mixed';
 
-export const validationSchema = (intl: IntlShape) =>
+export const validationSchema = (intl: IntlShape): MixedSchema =>
   yup.object({
     conditions: yup
       .object({
@@ -38,7 +39,7 @@ export const validationSchema = (intl: IntlShape) =>
       .date()
       .when('startTime', {
         is: (startTime: Date) => {
-          return !!startTime ? true : false;
+          return startTime ? true : false;
         },
         then: yup
           .date()
