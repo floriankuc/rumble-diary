@@ -14,14 +14,20 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const ChartTooltip = ({ active, payload }: TooltipProps): ReactElement => {
   const classes = useStyles();
+  console.log('payload', payload);
 
   if (active && payload && payload[0] && payload[0].payload.date) {
     return (
       <div className={classes.tooltip}>
-        <Typography>{format(new Date(payload[0].payload.date), 'dd.MM.yyyy')}</Typography>
+        {payload.map((el) => (
+          <p key={el.name}>
+            {el.payload.date} {el.payload.problemsWithNames}
+          </p>
+        ))}
+        {/* <Typography>{format(new Date(payload[0].payload.date), 'dd.MM.yyyy')}</Typography>
         <Typography>
           <FormattedMessage id="chart.tooltip.duration" values={{ hours: payload[0].value }} />
-        </Typography>
+        </Typography> */}
       </div>
     );
   }

@@ -16,13 +16,19 @@ export interface RatingFieldProps {
   value?: string | number;
 }
 
-const CustomRatingField = ({ id, disabled, ...restProps }: RatingFieldProps & FieldHookConfig<string>): ReactElement => {
+const CustomRatingField = ({ id, disabled, ...restProps }: RatingFieldProps & FieldHookConfig<number>): ReactElement => {
   const classes = useStyles();
-  const [field, meta] = useField(restProps);
+  const [field, meta, helpers] = useField(restProps);
+
+  const handleChangeok = (value: number | null): void => {
+    if (value) {
+      helpers.setValue(value);
+    }
+  };
 
   return (
     <FormControlLabel
-      control={<Rating name={id} id={id} value={+meta.value} onChange={field.onChange} onBlur={field.onBlur} disabled={disabled} />}
+      control={<Rating name={id} id={id} value={+meta.value} onChange={(_, value): void => handleChangeok(value)} onBlur={field.onBlur} disabled={disabled} />}
       label={<FormattedMessage id={`form.label.${id}`} />}
       labelPlacement="top"
       sx={{ my: 3 }}

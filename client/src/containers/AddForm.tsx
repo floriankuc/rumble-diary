@@ -4,10 +4,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { connect, ConnectedProps } from 'react-redux';
 import { addItem } from '../actions/item/itemActions';
 import { APP_ROUTES } from '../routes';
-import { calculateDurationInMinutes } from '../helpers/date';
 import Form from '../components/Form';
 import history from '../routes/history';
-import { FormNight, Night } from '../entities/Night';
+import { FormEntry, Entry } from '../entities/Night';
 import { AppState } from '../reducers';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -17,37 +16,37 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type AddFormContainerState = {
   isSubmitting: boolean;
 };
-class AddFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux & AddFormContainerState> {
+class AddFormContainer extends React.Component<FormikProps<FormEntry> & PropsFromRedux & AddFormContainerState> {
   state = { isSubmitting: false };
 
-  initialValues: FormNight = {
+  initialValues: FormEntry = {
     date: undefined,
-    sleepless: false,
-    startTime: undefined,
-    endTime: undefined,
-    breaks: undefined,
-    nightmares: false,
-    noise: false,
-    quality: 0,
-    notes: '',
     conditions: {
-      temperature: 0,
-      freshAir: false,
-      fed: false,
-      mentalStatus: 0,
-      noDrinks1HourBefore: false,
-      noCaffeine4HoursBefore: false,
-      noElectronicDevices: false,
+      fluidIntake: undefined,
+      medication: undefined,
+      meals: undefined,
+      activities: undefined,
+      stressLevel: undefined,
+      stoolPerDay: undefined,
+      wellbeing: undefined,
+    },
+    observations: {
+      bloating: false,
+      nausea: false,
+      cramps: false,
+      diarrhoea: false,
+      flatulence: false,
+      diffusePain: false,
     },
   };
 
-  handleSubmit = (values: Night): void => {
-    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
+  handleSubmit = (values: Entry): void => {
     this.setState({ isSubmitting: true });
-    this.props.addItem({ ...values, duration });
+    console.log('submitting this: ', values);
+    this.props.addItem({ ...values });
   };
 
-  componentDidUpdate(_: FormikProps<FormNight> & PropsFromRedux, prevState: AddFormContainerState): void {
+  componentDidUpdate(_: FormikProps<FormEntry> & PropsFromRedux, prevState: AddFormContainerState): void {
     if (!this.props.itemState.loading && this.props.itemState.success && this.state.isSubmitting) {
       this.setState({ isSubmitting: false });
     }

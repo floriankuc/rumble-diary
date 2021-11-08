@@ -1,5 +1,5 @@
 import { ItemActionTypes } from '../actions/item/itemActionTypes';
-import { Night } from '../entities/Night';
+import { Entry } from '../entities/Night';
 
 export interface ItemActionGeneral {
   type: ItemActionTypes;
@@ -8,7 +8,7 @@ export interface ItemActionGeneral {
 
 export interface ItemGetAllAction {
   type: ItemActionTypes.GET_ITEMS;
-  payload: Night[];
+  payload: Entry[];
 }
 
 export interface ItemsLoadingAction {
@@ -22,16 +22,16 @@ export interface ItemDeleteAction {
 
 export interface ItemAddAction {
   type: ItemActionTypes.ADD_ITEM;
-  payload: Night;
+  payload: Entry;
 }
 
 export interface ItemGetAction {
   type: ItemActionTypes.GET_ITEM;
-  payload: Night[];
+  payload: Entry[];
 }
 export interface ItemEditAction {
   type: ItemActionTypes.EDIT_ITEM;
-  payload: Night;
+  payload: Entry;
 }
 
 export interface ItemErrorAction {
@@ -42,7 +42,7 @@ export type ItemAction = ItemsLoadingAction | ItemGetAllAction | ItemDeleteActio
 export type ItemState = ItemNullState | ItemGeneralState;
 
 export interface ItemGeneralState {
-  items: Night[];
+  items: Entry[];
   loading: boolean;
   success: boolean;
 }

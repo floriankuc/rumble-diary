@@ -39,6 +39,12 @@ const CustomTextField = ({ disabled, type, id, multiline, ...restProps }: TextFi
           variant="outlined"
           multiline={multiline}
           minRows={multiline ? 3 : 0}
+          InputProps={{
+            inputProps: {
+              max: 100,
+              min: 0,
+            },
+          }}
           fullWidth
         />
       }

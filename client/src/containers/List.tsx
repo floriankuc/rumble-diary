@@ -6,7 +6,7 @@ import Chart from '../components/Chart';
 import List from '../components/List';
 import history from '../routes/history';
 import { AppState } from '../reducers';
-import { Night } from '../entities/Night';
+import { Entry } from '../entities/Night';
 import { CircularProgress } from '@mui/material';
 import EmptyState from '../components/EmptyState';
 
@@ -34,11 +34,45 @@ class ListContainer extends React.Component<PropsFromRedux> {
 
   navigateToNightShow = (id: string): void => history.push(APP_ROUTES.show.replace(':id', id));
 
-  transformItemsForChartDisplay = (items: Night[]): Night[] => {
-    return items.map((night) => ({ ...night, duration: night.duration / 60 }));
+  //   {
+  //  id: "klasdflkasdflkasfjkdlskaldj"
+  //  date: "2020-01-05"
+  //  observedProblems: {
+  //    nausea: 1;
+
+  //  }
+  // }
+
+  countBools = (obj: Entry['observations']): number => {
+    return Object.entries(obj).filter(([k, v]) => Boolean(v)).length;
   };
 
-  renderList = (items: Night[]): ReactElement => {
+  transform = (obj: Entry['observations']): { [key: string]: 1 } => {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, bool]) => bool)
+        .map((pair) => [...pair].map((i) => (typeof i !== 'string' ? 1 : i)))
+    );
+  };
+
+  transformok = (obj: Entry['observations']): any[] => {
+    return Object.entries(obj)
+      .filter(([k, v]) => v)
+      .map((pair) => pair[0]);
+  };
+
+  transformItemsForChartDisplay = (items: Entry[]): any => {
+    const transformedData = items.map(({ _id, date, observations }) => {
+      const problems = this.countBools(observations);
+      const problemsWithNames = this.transformok(observations);
+      return { _id, date, problems, problemsWithNames };
+    });
+    console.log(transformedData);
+    // return items.map(({ observations }) => ({ ...observations }));
+    return transformedData;
+  };
+
+  renderList = (items: Entry[]): ReactElement => {
     return <List onDeleteClick={this.onDeleteClick} onItemClick={this.navigateToNightShow} items={items} />;
   };
 
@@ -51,6 +85,7 @@ class ListContainer extends React.Component<PropsFromRedux> {
       return this.props.itemState.success && this.props.itemState.items ? (
         <>
           <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
+          {/* <Chart data={this.transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} /> */}
           {this.renderList(this.props.itemState.items)}
         </>
       ) : (

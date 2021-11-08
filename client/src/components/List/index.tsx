@@ -1,17 +1,17 @@
 import { List as MuiList } from '@mui/material';
 import React, { ReactElement } from 'react';
-import { Night } from '../../entities/Night';
+import { Entry } from '../../entities/Night';
 import { ListItem } from './ListItem';
 
 export interface ListProps {
   onItemClick: (id: string) => void;
   onDeleteClick: (id: string) => void;
-  items: Night[];
+  items: Entry[];
 }
 
 const List = ({ items, onDeleteClick, onItemClick }: ListProps): ReactElement => (
   <MuiList>
-    {items.map((item: Night) => (
+    {items.map((item: Entry) => (
       <ListItem key={item._id} onItemClick={onItemClick} onDeleteClick={onDeleteClick} item={item} />
     ))}
   </MuiList>

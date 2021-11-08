@@ -1,12 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Checkbox, Divider, Paper, Typography } from '@mui/material';
+import { Button, Checkbox, Divider, FormControl, FormLabel, Paper, Radio, RadioGroup, Typography } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FieldArray, Form as FormikForm, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FormNight, Night } from '../../entities/Night';
-import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import { FormEntry, Entry, MealType } from '../../entities/Night';
+// import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
 import CustomDatePicker from '../Form/Fields/DatePicker';
@@ -14,7 +14,7 @@ import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from '@mui/styles';
-import uuid from 'uuid';
+import CustomRadioGroup from './Fields/RadioGroup';
 
 const useStyles = makeStyles(() => ({
   breakWrapper: {
@@ -28,8 +28,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface FormProps {
-  handleSubmit: (values: Night) => void;
-  initialValues: FormNight;
+  handleSubmit: (values: Entry) => void;
+  initialValues: FormEntry;
   headline: ReactNode;
   submitText: ReactNode;
   isSubmitting: boolean;
@@ -38,12 +38,20 @@ interface FormProps {
     subtitle1: ReactNode;
     subTitle2: ReactNode;
   };
-  item?: FormNight;
+  item?: FormEntry;
 }
+
+export type MealTypeOptions = { [k in MealType]: string };
 
 const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps): ReactElement => {
   const classes = useStyles();
   const intl = useIntl();
+
+  const options: MealTypeOptions = {
+    fresh: 'Fresh',
+    eat_out: 'Eat out',
+    processed: 'Processed',
+  };
 
   return (
     <div>
@@ -59,90 +67,45 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
         validate={(values): FormikErrors<unknown> | undefined => {
           try {
             validateYupSchema(values, validationSchema(intl), true, values);
-            if (values.sleepless) {
-            }
           } catch (err: any) {
             return yupToFormErrors(err);
           }
         }}
         onSubmit={(values): void => {
-          if (values.startTime && values.endTime) {
-            handleSubmit(values as Night);
-          }
+          handleSubmit(values as Entry);
         }}
       >
         {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }): ReactElement => (
           <FormikForm className="flexColumnStart">
-            <CustomTextField type="number" id="conditions.temperature" name="conditions.temperature" />
-            <CustomRatingField id="conditions.mentalStatus" name="conditions.mentalStatus" />
-            <Typography sx={{ mb: 2 }}>Have you had... ?</Typography>
-            <CustomCheckbox id="conditions.freshAir" name="conditions.freshAir" />
-            <CustomCheckbox id="conditions.fed" name="conditions.fed" />
-            <CustomCheckbox id="conditions.noDrinks1HourBefore" name="conditions.noDrinks1HourBefore" />
-            <CustomCheckbox id="conditions.noCaffeine4HoursBefore" name="conditions.noCaffeine4HoursBefore" />
-            <CustomCheckbox id="conditions.noElectronicDevices" name="conditions.noElectronicDevices" />
-            <Divider />
-            <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
-              {subTitles.subTitle2}
-            </Typography>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={values.sleepless}
-                  onChange={(): void => {
-                    if (!values.date) {
-                      setFieldValue('date', new Date(new Date().setHours(0, 0, 0, 0)), false);
-                    }
-                    setFieldValue('startTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
-                    setFieldValue('endTime', new Date(values.date ? values.date : new Date(new Date()).setHours(0, 0, 0, 0)), false);
-                    setFieldValue('breaks', undefined, false);
-                    setFieldValue('sleepless', !values.sleepless);
-                    setTimeout(() => setFieldError('date', undefined));
-                    setTimeout(() => setFieldError('startTime', undefined));
-                    setTimeout(() => setFieldError('endTime', undefined));
-                  }}
-                />
-              }
-              label="Sleepless night"
-            />
-            <CustomDatePicker id="date" name="date" disabled={values.sleepless} />
-            <CustomDatePicker id="startTime" name="startTime" showTimeSelect disabled={values.sleepless} />
-            <CustomDatePicker id="endTime" name="endTime" showTimeSelect disabled={values.sleepless} />
+            <CustomDatePicker id="date" name="date" />
+            <CustomTextField type="number" id="conditions.fluidIntake" name="conditions.fluidIntake" />
+            <CustomTextField type="text" id="conditions.medication" name="conditions.medication" />
             <FieldArray
-              name="breaks"
-              render={(arrayHelpers): ReactElement<any, any> => (
+              name="conditions.meals"
+              render={(arrayHelpers): ReactElement => (
                 <div className={classes.breakWrapper}>
-                  <Typography style={{ color: values.sleepless ? '#C4C4C4' : '#000000' }}>
-                    <FormattedMessage id="form.label.breaks" /> {values.breaks && values.breaks.length > 0 && `(${values.breaks.length})`}
+                  <Typography>
+                    <FormattedMessage id="form.label.breaks" />{' '}
+                    {values.conditions?.meals && values.conditions?.meals.length > 0 && `(${values.conditions?.meals.length})`}
                   </Typography>
                   <Button
                     sx={{ mt: 1 }}
                     startIcon={<AddIcon />}
                     variant="outlined"
-                    disabled={values.sleepless}
-                    onClick={(): void => arrayHelpers.push({ start: undefined, end: undefined })}
+                    onClick={(): void => arrayHelpers.push({ name: undefined, mealType: undefined })}
                   >
                     <FormattedMessage id="form.btn.breaks.add" />
                   </Button>
-                  {values.breaks && values.breaks.length > 0 ? (
-                    values.breaks.map((b, i) => (
-                      <div key={uuid.v1()}>
+                  {values.conditions?.meals && values.conditions?.meals.length > 0 ? (
+                    values.conditions?.meals.map((b, i) => (
+                      <div key={values.conditions?.meals?.indexOf(b) + 'st'}>
                         <Paper sx={{ padding: 2, my: 2 }}>
                           <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={(): void => arrayHelpers.remove(i)}>
                             <FormattedMessage id="form.btn.breaks.remove" />
                           </Button>
                           <div className={classes.breakFieldsWrapper}>
-                            <div>
-                              <CustomDatePicker
-                                id={`${values.breaks && values.breaks[i].start}`}
-                                showTimeSelect
-                                name={`breaks.${i}.start`}
-                                label="Break start"
-                              />
-                            </div>
-                            <div>
-                              <CustomDatePicker id={`${values.breaks && values.breaks[i].end}`} showTimeSelect name={`breaks.${i}.end`} label="Break end" />
-                            </div>
+                            <CustomTextField type="text" id={`conditions.meals.${i}.name`} name={`conditions.meals.${i}.name`} />
+                            <CustomRadioGroup id={`conditions.meals.${i}.mealType`} name={`conditions.meals.${i}.mealType`} options={options} />
                           </div>
                         </Paper>
                       </div>
@@ -153,16 +116,19 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
                 </div>
               )}
             />
-            <CustomCheckbox id="nightmares" name="nightmares" />
-            <CustomCheckbox id="noise" name="noise" />
-            <CustomRatingField id="quality" name="quality" />
-            <CustomTextField multiline id="notes" type="text" name="notes" />
-            <Typography variant="h6" sx={{ my: 6 }}>
-              {summary}
-              {values.startTime && values.endTime && calculateDurationInMinutes(values.startTime, values.endTime, values.breaks) > 0
-                ? outputMinutes(calculateDurationInMinutes(values.startTime, values.endTime, values.breaks))
-                : 0}
+            <CustomTextField type="text" id="conditions.activities" name="conditions.activities" />
+            <CustomRatingField id="conditions.stressLevel" name="conditions.stressLevel" />
+            <CustomTextField type="number" id="conditions.stoolPerDay" name="conditions.stoolPerDay" />
+            <CustomRatingField id="conditions.wellbeing" name="conditions.wellbeing" />
+            <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
+              {subTitles.subTitle2}
             </Typography>
+            <CustomCheckbox id="observations.bloating" name="observations.bloating" />
+            <CustomCheckbox id="observations.nausea" name="observations.nausea" />
+            <CustomCheckbox id="observations.cramps" name="observations.cramps" />
+            <CustomCheckbox id="observations.diarrhoea" name="observations.diarrhoea" />
+            <CustomCheckbox id="observations.flatulence" name="observations.flatulence" />
+            <CustomCheckbox id="observations.diffusePain" name="observations.diffusePain" />
             <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
               {submitText}
             </Button>

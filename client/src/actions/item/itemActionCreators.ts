@@ -1,4 +1,4 @@
-import { Night } from '../../entities/Night';
+import { Entry } from '../../entities/Night';
 import {
   ItemAddAction,
   ItemDeleteAction,
@@ -11,11 +11,11 @@ import {
 import { ItemActionTypes } from './itemActionTypes';
 
 export type ActionCreatorItemsLoading = () => ItemsLoadingAction;
-export type ActionCreatorGetAllItems = (nights: Night[]) => ItemGetAllAction;
-export type ActionCreatorDeleteItem = (id: Night['_id']) => ItemDeleteAction;
-export type ActionCreatorAddItem = (night: Night) => ItemAddAction;
-export type ActionCreatorEditItem = (night: Night) => ItemEditAction;
-export type ActionCreatorGetItem = (nights: Night[]) => ItemGetAction;
+export type ActionCreatorGetAllItems = (nights: Entry[]) => ItemGetAllAction;
+export type ActionCreatorDeleteItem = (id: Entry['_id']) => ItemDeleteAction;
+export type ActionCreatorAddItem = (night: Entry) => ItemAddAction;
+export type ActionCreatorEditItem = (night: Entry) => ItemEditAction;
+export type ActionCreatorGetItem = (nights: Entry[]) => ItemGetAction;
 export type ActionCreatorItemsError = () => ItemErrorAction;
 
 export const createItemsLoadingAction: ActionCreatorItemsLoading = () => ({ type: ItemActionTypes.ITEMS_LOADING });

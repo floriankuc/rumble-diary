@@ -6,8 +6,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/item/itemActions';
 import Form from '../components/Form';
-import { FormNight, Night } from '../entities/Night';
-import { calculateDurationInMinutes } from '../helpers/date';
+import { FormEntry, Entry } from '../entities/Night';
+// import { calculateDurationInMinutes } from '../helpers/date';
 import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';
@@ -23,28 +23,28 @@ type EditFormContainerState = {
   isSubmitting: boolean;
 };
 
-class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFromRedux & RouteComponentProps<RouteParams>, EditFormContainerState> {
+class EditFormContainer extends React.Component<FormikProps<FormEntry> & PropsFromRedux & RouteComponentProps<RouteParams>, EditFormContainerState> {
   state = { isSubmitting: false };
 
-  getInitialValues = (item: Night): FormNight => ({
+  getInitialValues = (item: Entry): FormEntry => ({
     _id: item._id,
     date: item.date ? new Date(item.date) : new Date(),
-    sleepless: item.sleepless,
-    startTime: item.startTime ? new Date(item.startTime) : undefined,
-    endTime: item.endTime ? new Date(item.endTime) : undefined,
-    breaks: item.breaks,
-    nightmares: item.nightmares,
-    noise: item.noise,
-    quality: item.quality,
-    notes: item.notes,
     conditions: {
-      temperature: item.conditions.temperature,
-      freshAir: item.conditions.freshAir,
-      fed: item.conditions.fed,
-      mentalStatus: item.conditions.mentalStatus,
-      noDrinks1HourBefore: item.conditions.noDrinks1HourBefore,
-      noCaffeine4HoursBefore: item.conditions.noCaffeine4HoursBefore,
-      noElectronicDevices: item.conditions.noElectronicDevices,
+      fluidIntake: item.conditions.fluidIntake,
+      medication: item.conditions.medication,
+      meals: item.conditions.meals,
+      activities: item.conditions.activities,
+      stressLevel: item.conditions.stressLevel,
+      stoolPerDay: item.conditions.stoolPerDay,
+      wellbeing: item.conditions.wellbeing,
+    },
+    observations: {
+      bloating: item.observations.bloating,
+      nausea: item.observations.nausea,
+      cramps: item.observations.cramps,
+      diarrhoea: item.observations.diarrhoea,
+      flatulence: item.observations.flatulence,
+      diffusePain: item.observations.diffusePain,
     },
   });
 
@@ -66,10 +66,10 @@ class EditFormContainer extends React.Component<FormikProps<FormNight> & PropsFr
     }
   }
 
-  handleSubmit = (values: Night): void => {
-    const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
+  handleSubmit = (values: Entry): void => {
+    // const duration = calculateDurationInMinutes(values.startTime, values.endTime, values.breaks);
     this.setState({ isSubmitting: true });
-    this.props.editItem({ ...values, duration });
+    this.props.editItem({ ...values });
   };
 
   render(): ReactElement {

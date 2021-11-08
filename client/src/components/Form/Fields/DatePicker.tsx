@@ -46,9 +46,18 @@ export interface DatePickerProps {
   error?: ReactNode;
   value?: string | number;
   showTimeSelect?: boolean;
+  showTimeSelectOnly?: boolean;
 }
 
-const CustomDatePicker = ({ id, disabled, showTimeSelect, placeholder, label, ...restProps }: DatePickerProps & FieldHookConfig<Date | null>): ReactElement => {
+const CustomDatePicker = ({
+  id,
+  disabled,
+  showTimeSelect,
+  placeholder,
+  showTimeSelectOnly,
+  label,
+  ...restProps
+}: DatePickerProps & FieldHookConfig<Date | null>): ReactElement => {
   const classes = useStyles();
   const intl = useIntl();
   const [field, meta, helpers] = useField(restProps);
@@ -63,6 +72,7 @@ const CustomDatePicker = ({ id, disabled, showTimeSelect, placeholder, label, ..
             onBlur={field.onBlur}
             selected={meta.value ? new Date(meta.value) : null}
             showTimeSelect={showTimeSelect}
+            showTimeSelectOnly={showTimeSelectOnly}
             placeholderText={placeholder}
             timeFormat={showTimeSelect ? 'kk:mm' : ''}
             dateFormat={`d MMMM yyyy${showTimeSelect ? ', kk:mm' : ''}`}

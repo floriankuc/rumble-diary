@@ -12,7 +12,7 @@ import { AppState } from '../../reducers';
 import { ItemAction } from '../../reducers/itemReducer';
 import { StoreDispatch } from '../types';
 import { isApiError, tokenConfig } from '../helpers';
-import { Night } from '../../entities/Night';
+import { Entry } from '../../entities/Night';
 import { createErrorSetAction } from '../error/errorActions';
 import { ErrorAction } from '../../reducers/errorReducer';
 import { ApiRoutes, getAuthRoute, getItemRoute, getItemsRoute } from '../apiRoutes';
@@ -26,7 +26,7 @@ export const getItems = () => async (dispatch: StoreDispatch<ItemAction | ErrorA
   dispatch(createItemsLoadingAction());
 
   try {
-    const response: AxiosResponse<Night[]> = await axios.get(getAuthRoute(userId), tokenConfig(getState));
+    const response: AxiosResponse<Entry[]> = await axios.get(getAuthRoute(userId), tokenConfig(getState));
     dispatch(createItemsGetAction(response.data));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -39,7 +39,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
   dispatch(createItemsLoadingAction());
 
   try {
-    const response: AxiosResponse<Night> = await axios.delete(getItemsRoute(itemId), tokenConfig(getState));
+    const response: AxiosResponse<Entry> = await axios.delete(getItemsRoute(itemId), tokenConfig(getState));
     dispatch(createItemDeleteAction(response.data._id));
   } catch (error: any) {
     if (isApiError(error)) {
@@ -48,7 +48,7 @@ export const deleteItem = (itemId: string) => async (dispatch: StoreDispatch<Ite
   }
 };
 
-export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
+export const addItem = (item: Entry) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const newItem = { ...item, user: getState().authState.user?.id };
   dispatch(createItemsLoadingAction());
 
@@ -62,7 +62,7 @@ export const addItem = (item: Night) => async (dispatch: StoreDispatch<ItemActio
   }
 };
 
-export const editItem = (item: Night) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
+export const editItem = (item: Entry) => async (dispatch: StoreDispatch<ItemAction | ErrorAction>, getState: () => AppState): Promise<void> => {
   const newItem = { ...item, user: getState().authState.user?.id };
   const userId = getState().authState.user?.id;
   dispatch(createItemsLoadingAction());
