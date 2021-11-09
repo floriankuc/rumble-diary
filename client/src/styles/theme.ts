@@ -6,7 +6,13 @@ declare module '@mui/material/styles' {
       error: string;
       primary: string;
       default: string;
-      bar: string;
+      bar1: string;
+      bar2: string;
+      bar3: string;
+      bar4: string;
+      bar5: string;
+      bar6: string;
+      bar7: string;
     };
   }
   interface ThemeOptions {
@@ -14,7 +20,13 @@ declare module '@mui/material/styles' {
       error?: string;
       primary?: string;
       default?: string;
-      bar?: string;
+      bar1?: string;
+      bar2?: string;
+      bar3?: string;
+      bar4?: string;
+      bar5?: string;
+      bar6?: string;
+      bar7?: string;
     };
   }
 }
@@ -24,7 +36,13 @@ export const theme = createTheme({
     error: '#D32F2F',
     primary: '#1976D2',
     default: '#C4C4C4',
-    bar: '#FFFF99',
+    bar1: '#4CAF50',
+    bar2: '#8BC34A',
+    bar3: '#FFEB3B',
+    bar4: '#FF9800',
+    bar5: '#FF5722',
+    bar6: '#F50057',
+    bar7: '#AA2E25',
   },
   components: {
     MuiCssBaseline: {

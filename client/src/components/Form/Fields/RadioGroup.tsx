@@ -2,7 +2,7 @@ import { BaseTextFieldProps, FormControl, FormControlLabel, FormLabel, Radio, Ra
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement } from 'react';
-import { MealTypeOptions } from '..';
+import { MealTypeOptions } from '../../../entities/Night';
 
 const useStyles = makeStyles({
   formControlLabel: {

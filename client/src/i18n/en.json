@@ -10,13 +10,14 @@
 
   "app.title": "Sleep Diary",
 
+  "chart.bar.noProblems": "No problems!",
   "chart.tooltip.duration": "{hours} hours",
 
   "emptyState.body": "There is no data to display. Start by making new entries.",
   "emptyState.btn": "New entry",
   "emptyState.headline": "No data",
 
-  "form.add.headline": "Add night",
+  "form.add.headline": "Add entry",
   "form.add.submitText": "Add",
   "form.btn.breaks.add": "Add a break",
   "form.btn.breaks.remove": "Remove break",
@@ -35,21 +36,10 @@
   "form.item.validation.startTime.required": "Enter a start time",
   "form.item.validation.temperature.required": "Enter a temperature",
 
-  "form.label.breaks": "Breaks",
-  "form.label.conditions.fed": "Eaten enough",
-  "form.label.conditions.freshAir": "Fresh air",
-  "form.label.conditions.mentalStatus": "How was your mental state?",
-  "form.label.conditions.noCaffeine4HoursBefore": "No caffeine 4 hours before bed",
-  "form.label.conditions.noDrinks1HourBefore": "No drinks 1 hour before bed",
-  "form.label.conditions.noElectronicDevices": "No electronic devices running",
-  "form.label.conditions.temperature": "Room temperature",
   "form.label.date": "Date",
-  "form.label.endTime": "End of sleep",
-  "form.label.nightmares": "Nightmares",
-  "form.label.noise": "Noise",
-  "form.label.notes": "Notes",
-  "form.label.quality": "Overall quality of the night",
-  "form.label.startTime": "Start of sleep",
+  "form.label.conditions.fluidIntake": "Fluid intake (litres)",
+  "form.label.conditions.medication": "Medication",
+  "form.label.meals": "Meals",
 
   "form.login.btn.submit": "Login",
   "form.login.headline": "Login",
@@ -67,8 +57,8 @@
   "form.register.label.name": "Name",
   "form.register.label.password": "Password",
 
-  "form.subtitle1": "Conditions before",
-  "form.subtitle2": "Conditions after",
+  "form.subtitle1": "Describe your day",
+  "form.subtitle2": "Have you observed any problems?",
   "form.summary": "You slept for ",
 
   "home.body1": "It's a diary to document your sleep. All commonly known parameters of sleep hygiene are covered. Additionally it is used to document the sleep duration itself by date.",

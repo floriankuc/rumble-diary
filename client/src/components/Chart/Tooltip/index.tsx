@@ -1,34 +1,52 @@
-import { Typography, Theme } from '@mui/material';
+import { Typography, Paper } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { format } from 'date-fns';
 import React, { ReactElement } from 'react';
 import { TooltipProps } from 'recharts';
 import { FormattedMessage } from 'react-intl';
+import { capitalise, spacePascalCase } from '../../../helpers/common';
+import { EntryPayload } from '..';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  tooltip: {
-    padding: 10,
-    background: theme.colors.bar,
+const useStyles = makeStyles({
+  emptyTooltip: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
-}));
+  date: {
+    marginBottom: 12,
+  },
+});
 
 export const ChartTooltip = ({ active, payload }: TooltipProps): ReactElement => {
   const classes = useStyles();
-  console.log('payload', payload);
 
-  if (active && payload && payload[0] && payload[0].payload.date) {
+  const renderPayloadDate = (entryPayload: EntryPayload): ReactElement => (
+    <Typography className={classes.date} key={entryPayload._id}>
+      {format(new Date(entryPayload.date), 'dd.MM.yyyy')}
+    </Typography>
+  );
+
+  const renderProblems = ({ problemsWithNames, _id }: EntryPayload): ReactElement[] =>
+    problemsWithNames.map((p) => <Typography key={_id + p}>{spacePascalCase(capitalise(p))}</Typography>);
+
+  const renderNoProblems = (): ReactElement => (
+    <div className={classes.emptyTooltip}>
+      🎉
+      <Typography>
+        <FormattedMessage id="chart.bar.noProblems" />
+      </Typography>
+    </div>
+  );
+
+  if (active && payload && payload[0] && payload[0].payload) {
+    const entryPayload: EntryPayload = payload[0].payload;
+
     return (
-      <div className={classes.tooltip}>
-        {payload.map((el) => (
-          <p key={el.name}>
-            {el.payload.date} {el.payload.problemsWithNames}
-          </p>
-        ))}
-        {/* <Typography>{format(new Date(payload[0].payload.date), 'dd.MM.yyyy')}</Typography>
-        <Typography>
-          <FormattedMessage id="chart.tooltip.duration" values={{ hours: payload[0].value }} />
-        </Typography> */}
-      </div>
+      <Paper sx={{ p: 1 }} elevation={8}>
+        {renderPayloadDate(entryPayload)}
+        {entryPayload.problems > 0 ? renderProblems(entryPayload) : renderNoProblems()}
+      </Paper>
     );
   }
   return <></>;

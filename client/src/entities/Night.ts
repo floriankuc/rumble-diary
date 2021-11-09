@@ -51,3 +51,5 @@ export interface FormMeal {
 }
 
 export type MealType = 'fresh' | 'eat_out' | 'processed';
+
+export type MealTypeOptions = { [k in MealType]: string };

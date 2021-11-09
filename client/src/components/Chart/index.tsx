@@ -1,8 +1,8 @@
 import { makeStyles } from '@mui/styles';
 import { format } from 'date-fns';
 import React, { ReactElement } from 'react';
-import { Bar, BarChart, Brush, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Entry } from '../../entities/Night';
+import { Bar, BarChart, Brush, CartesianGrid, Cell, ResponsiveContainer, Tooltip, TooltipPayload, XAxis, YAxis } from 'recharts';
+import { theme } from '../../styles/theme';
 import { ChartTooltip } from './Tooltip';
 
 const useStyles = makeStyles({
@@ -12,14 +12,39 @@ const useStyles = makeStyles({
     height: 300,
   },
 });
+
+const colourFillsPerProblem: { [key: number]: string } = {
+  0: theme.colors.bar1,
+  1: theme.colors.bar2,
+  2: theme.colors.bar3,
+  3: theme.colors.bar4,
+  4: theme.colors.bar5,
+  5: theme.colors.bar6,
+  6: theme.colors.bar7,
+};
+
 export interface ChartProps {
-  readonly data: any[];
+  readonly data: EntryPayload[];
   readonly onBarClick: (id: string) => void;
+}
+
+export interface EntryPayload extends Omit<TooltipPayload, 'name' | 'value'> {
+  _id: string;
+  date: Date;
+  problems: number;
+  problemsWithNames: string[];
 }
 
 const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
   const classes = useStyles();
-  console.log('chartdata', data);
+
+  const renderProblemCell = (payload: EntryPayload): ReactElement => {
+    return <Cell key={`cell-${payload._id}`} onClick={(): void => onBarClick(payload._id)} fill={colourFillsPerProblem[payload.problems]} />;
+  };
+  const renderNoProblemCell = (payload: EntryPayload): ReactElement => {
+    return <Cell key={`cell-${payload._id}`} onClick={(): void => onBarClick(payload._id)} height={-28} fill={colourFillsPerProblem[0]} />;
+  };
+
   return (
     <div className={classes.chartWrapper}>
       <ResponsiveContainer>
@@ -28,23 +53,8 @@ const Chart = ({ data, onBarClick }: ChartProps): ReactElement => {
           <XAxis dataKey="date" tickFormatter={(): string => ''} tickLine={false} />
           <YAxis type="number" domain={[0, 6]} />
           <Tooltip content={<ChartTooltip />} />
-          {/* <Tooltip /> */}
-          <Brush dataKey="date" tickFormatter={(val): string => format(new Date(val), 'dd.MM.yyyy')} />
-          <Bar dataKey="problems" />
-          {/* <Bar dataKey="o.nausea" stackId="a" fill="#8884d8" />
-          <Bar dataKey="o.bloating" stackId="a" fill="#82ca9d" />
-          <Bar dataKey="o.flatulence" stackId="a" fill="#823154" />
-          <Bar dataKey="o.diarrhoea" stackId="a" fill="#123679" />
-          <Bar dataKey="o.diffusePain" stackId="a" fill="#ccca4d" /> */}
-          {/* {data.map((entry: Entry) => {
-              return entry === 0 ? (
-                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} height={-40} fill="#EEE" />
-              ) : (
-                <Cell key={`cell-${entry._id}`} onClick={(): void => onBarClick(entry._id)} fill="#8884d8" />
-              );
-            }
-            )} */}
-          {/* </Bar> */}
+          <Brush dataKey="date" tickFormatter={(val: string): string => format(new Date(val), 'dd.MM.yyyy')} />
+          <Bar dataKey="problems">{data.map((entry) => (entry.problems === 0 ? renderNoProblemCell(entry) : renderProblemCell(entry)))}</Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

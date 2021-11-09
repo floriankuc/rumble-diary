@@ -1,19 +1,17 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Checkbox, Divider, FormControl, FormLabel, Paper, Radio, RadioGroup, Typography } from '@mui/material';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { Button, Paper, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { FieldArray, Form as FormikForm, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FormEntry, Entry, MealType } from '../../entities/Night';
-// import { calculateDurationInMinutes, outputMinutes } from '../../helpers/date';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Entry, FormEntry, MealType, MealTypeOptions } from '../../entities/Night';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
 import CustomDatePicker from '../Form/Fields/DatePicker';
 import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@mui/styles';
 import CustomRadioGroup from './Fields/RadioGroup';
 
 const useStyles = makeStyles(() => ({
@@ -41,9 +39,7 @@ interface FormProps {
   item?: FormEntry;
 }
 
-export type MealTypeOptions = { [k in MealType]: string };
-
-const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, summary }: FormProps): ReactElement => {
+const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles }: FormProps): ReactElement => {
   const classes = useStyles();
   const intl = useIntl();
 
@@ -85,7 +81,7 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles, su
               render={(arrayHelpers): ReactElement => (
                 <div className={classes.breakWrapper}>
                   <Typography>
-                    <FormattedMessage id="form.label.breaks" />{' '}
+                    <FormattedMessage id="form.label.meals" />
                     {values.conditions?.meals && values.conditions?.meals.length > 0 && `(${values.conditions?.meals.length})`}
                   </Typography>
                   <Button
