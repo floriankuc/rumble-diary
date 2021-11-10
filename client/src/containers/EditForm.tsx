@@ -7,7 +7,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { editItem, getItem } from '../actions/item/itemActions';
 import Form from '../components/Form';
 import { FormEntry, Entry } from '../entities/Entry';
-// import { calculateDurationInMinutes } from '../helpers/date';
 import { AppState } from '../reducers';
 import { APP_ROUTES } from '../routes';
 import history from '../routes/history';

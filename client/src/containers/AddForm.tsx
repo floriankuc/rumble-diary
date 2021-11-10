@@ -42,7 +42,6 @@ class AddFormContainer extends React.Component<FormikProps<FormEntry> & PropsFro
 
   handleSubmit = (values: Entry): void => {
     this.setState({ isSubmitting: true });
-    console.log('submitting this: ', values);
     this.props.addItem({ ...values });
   };
 
