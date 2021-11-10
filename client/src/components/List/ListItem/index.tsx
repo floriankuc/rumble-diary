@@ -2,7 +2,7 @@ import React, { MouseEvent, ReactElement } from 'react';
 import { IconButton, ListItem as MuiListItem, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
-import { Entry } from '../../../entities/Night';
+import { Entry } from '../../../entities/Entry';
 import { makeStyles } from '@mui/styles';
 import { countBools } from '../../../helpers/common';
 import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';

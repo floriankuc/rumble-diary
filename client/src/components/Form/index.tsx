@@ -6,7 +6,7 @@ import { FieldArray, FieldArrayRenderProps, Form as FormikForm, Formik, FormikEr
 import React, { ReactElement, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Entry, FormEntry, Meal, MealTypeOptions } from '../../entities/Night';
+import { Entry, FormEntry, Meal, MealTypeOptions } from '../../entities/Entry';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
 import CustomDatePicker from '../Form/Fields/DatePicker';

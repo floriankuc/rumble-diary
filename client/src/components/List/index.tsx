@@ -1,6 +1,6 @@
 import { List as MuiList } from '@mui/material';
 import React, { ReactElement } from 'react';
-import { Entry } from '../../entities/Night';
+import { Entry } from '../../entities/Entry';
 import { ListItem } from './ListItem';
 
 export interface ListProps {

@@ -1,5 +1,5 @@
 import { ItemActionTypes } from '../actions/item/itemActionTypes';
-import { Entry } from '../entities/Night';
+import { Entry } from '../entities/Entry';
 
 export interface ItemActionGeneral {
   type: ItemActionTypes;

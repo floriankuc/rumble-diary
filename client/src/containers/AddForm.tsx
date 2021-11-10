@@ -6,7 +6,7 @@ import { addItem } from '../actions/item/itemActions';
 import { APP_ROUTES } from '../routes';
 import Form from '../components/Form';
 import history from '../routes/history';
-import { FormEntry, Entry } from '../entities/Night';
+import { FormEntry, Entry } from '../entities/Entry';
 import { AppState } from '../reducers';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';

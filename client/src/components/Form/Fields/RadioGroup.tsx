@@ -2,7 +2,7 @@ import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, RadioGroup
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
-import { MealTypeOptions } from '../../../entities/Night';
+import { MealTypeOptions } from '../../../entities/Entry';
 
 const useStyles = makeStyles({
   formControlLabel: {

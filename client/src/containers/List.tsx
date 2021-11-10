@@ -6,7 +6,7 @@ import Chart from '../components/Chart';
 import List from '../components/List';
 import history from '../routes/history';
 import { AppState } from '../reducers';
-import { Entry } from '../entities/Night';
+import { Entry } from '../entities/Entry';
 import { CircularProgress } from '@mui/material';
 import EmptyState from '../components/EmptyState';
 import { transformItemsForChartDisplay } from '../helpers/common';
@@ -33,10 +33,10 @@ class ListContainer extends React.Component<PropsFromRedux> {
     this.props.deleteItem(id);
   };
 
-  navigateToNightShow = (id: string): void => history.push(APP_ROUTES.show.replace(':id', id));
+  navigateToEntryShow = (id: string): void => history.push(APP_ROUTES.show.replace(':id', id));
 
   renderList = (items: Entry[]): ReactElement => {
-    return <List onDeleteClick={this.onDeleteClick} onItemClick={this.navigateToNightShow} items={items} />;
+    return <List onDeleteClick={this.onDeleteClick} onItemClick={this.navigateToEntryShow} items={items} />;
   };
 
   render(): ReactElement {
@@ -47,7 +47,7 @@ class ListContainer extends React.Component<PropsFromRedux> {
     } else {
       return this.props.itemState.success && this.props.itemState.items ? (
         <>
-          <Chart data={transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToNightShow} />
+          <Chart data={transformItemsForChartDisplay(this.props.itemState.items)} onBarClick={this.navigateToEntryShow} />
           {this.renderList(this.props.itemState.items)}
         </>
       ) : (

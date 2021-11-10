@@ -1,5 +1,5 @@
 import { EntryPayload } from '../components/Chart';
-import { Entry } from '../entities/Night';
+import { Entry } from '../entities/Entry';
 
 export const capitalise = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 

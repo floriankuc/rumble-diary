@@ -12,7 +12,7 @@ import { AppState } from '../../reducers';
 import { ItemAction } from '../../reducers/itemReducer';
 import { StoreDispatch } from '../types';
 import { isApiError, tokenConfig } from '../helpers';
-import { Entry } from '../../entities/Night';
+import { Entry } from '../../entities/Entry';
 import { createErrorSetAction } from '../error/errorActions';
 import { ErrorAction } from '../../reducers/errorReducer';
 import { ApiRoutes, getAuthRoute, getItemRoute, getItemsRoute } from '../apiRoutes';
