@@ -1,7 +1,7 @@
-import { BaseTextFieldProps, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, RadioGroupProps } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { MealTypeOptions } from '../../../entities/Night';
 
 const useStyles = makeStyles({
@@ -9,23 +9,28 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     marginLeft: 0,
   },
+  radioGroupLabel: {
+    color: '#000000DE',
+  },
 });
 
-export interface CustomRadioGroupProps {
-  id: BaseTextFieldProps['id'];
+export interface CustomRadioGroupProps extends RadioGroupProps {
   options: MealTypeOptions;
+  label: ReactNode;
 }
 
-const CustomRadioGroup = ({ disabled, type, id, options, ...restProps }: CustomRadioGroupProps & FieldHookConfig<string>): ReactElement => {
+const CustomRadioGroup = ({ label, id, options, ...restProps }: CustomRadioGroupProps & FieldHookConfig<string>): ReactElement => {
   const classes = useStyles();
   const [field, , helpers] = useField(restProps);
 
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">Gender</FormLabel>
+      <FormLabel component="legend" className={classes.radioGroupLabel}>
+        {label}
+      </FormLabel>
       <RadioGroup
         row
-        aria-label="gender"
+        aria-label={label?.toString()}
         name={id}
         id={id}
         value={field.value}
@@ -33,8 +38,8 @@ const CustomRadioGroup = ({ disabled, type, id, options, ...restProps }: CustomR
           helpers.setValue(e.currentTarget.value);
         }}
       >
-        {Object.entries(options).map(([option, label]) => (
-          <FormControlLabel key={option} value={option} control={<Radio />} label={label} />
+        {Object.entries(options).map(([option, optionLabel]) => (
+          <FormControlLabel key={option} value={option} control={<Radio />} label={optionLabel} />
         ))}
       </RadioGroup>
     </FormControl>

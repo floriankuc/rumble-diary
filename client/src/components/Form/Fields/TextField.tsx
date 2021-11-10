@@ -1,5 +1,5 @@
 import { FormControlLabel, TextField as MuiTextField, BaseTextFieldProps } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { makeStyles } from '@mui/styles';
 import { useField, FieldHookConfig } from 'formik';
 import { FormattedMessage } from 'react-intl';
@@ -11,14 +11,11 @@ const useStyles = makeStyles({
   },
 });
 
-export interface TextFieldProps {
-  type: BaseTextFieldProps['type'];
-  id: BaseTextFieldProps['id'];
-  value?: string | number;
-  multiline?: boolean;
+export interface TextFieldProps extends BaseTextFieldProps {
+  label?: ReactNode;
 }
 
-const CustomTextField = ({ disabled, type, id, multiline, ...restProps }: TextFieldProps & FieldHookConfig<string>): ReactElement => {
+const CustomTextField = ({ disabled, type, id, multiline, label, ...restProps }: TextFieldProps & FieldHookConfig<string>): ReactElement => {
   const classes = useStyles();
   const [field, meta] = useField(restProps);
 
@@ -48,7 +45,7 @@ const CustomTextField = ({ disabled, type, id, multiline, ...restProps }: TextFi
           fullWidth
         />
       }
-      label={<FormattedMessage id={`form.label.${id}`} />}
+      label={label || <FormattedMessage id={`form.label.${id}`} />}
       labelPlacement="top"
       className={classes.formControlLabel}
     />

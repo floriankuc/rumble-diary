@@ -1,8 +1,8 @@
-import { BaseTextFieldProps, FormControlLabel, Theme, Typography } from '@mui/material';
+import { FormControlLabel, Theme, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
-import DatePicker from 'react-datepicker';
+import DatePicker, { ReactDatePickerProps } from 'react-datepicker';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     transitionDuration: '0s',
     border: `1px solid ${theme.colors.default}`,
     borderRadius: 5,
-    height: 40,
+    height: 56,
     padding: 14,
     width: 260,
     fontSize: 16,
@@ -40,13 +40,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface DatePickerProps {
-  id: BaseTextFieldProps['id'];
+export interface DatePickerProps extends ReactDatePickerProps {
   label?: ReactNode;
-  error?: ReactNode;
-  value?: string | number;
-  showTimeSelect?: boolean;
-  showTimeSelectOnly?: boolean;
 }
 
 const CustomDatePicker = ({

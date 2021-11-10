@@ -1,4 +1,4 @@
-import { BaseTextFieldProps, FormControlLabel, Rating } from '@mui/material';
+import { FormControlLabel, Rating, RatingProps } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement } from 'react';
@@ -11,12 +11,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface RatingFieldProps {
-  id: BaseTextFieldProps['id'];
-  value?: string | number;
-}
-
-const CustomRatingField = ({ id, disabled, ...restProps }: RatingFieldProps & FieldHookConfig<number>): ReactElement => {
+const CustomRatingField = ({ id, disabled, ...restProps }: RatingProps & FieldHookConfig<number>): ReactElement => {
   const classes = useStyles();
   const [field, meta, helpers] = useField(restProps);
 
@@ -31,7 +26,6 @@ const CustomRatingField = ({ id, disabled, ...restProps }: RatingFieldProps & Fi
       control={<Rating name={id} id={id} value={+meta.value} onChange={(_, value): void => handleChangeok(value)} onBlur={field.onBlur} disabled={disabled} />}
       label={<FormattedMessage id={`form.label.${id}`} />}
       labelPlacement="top"
-      sx={{ my: 3 }}
       className={classes.formControlLabel}
     />
   );

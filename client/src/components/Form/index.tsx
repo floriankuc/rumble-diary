@@ -1,12 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Paper, Typography } from '@mui/material';
+import { Button, Divider, Paper, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { FieldArray, Form as FormikForm, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
+import { FieldArray, FieldArrayRenderProps, Form as FormikForm, Formik, FormikErrors, validateYupSchema, yupToFormErrors } from 'formik';
 import React, { ReactElement, ReactNode } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Entry, FormEntry, MealType, MealTypeOptions } from '../../entities/Night';
+import { Entry, FormEntry, Meal, MealTypeOptions } from '../../entities/Night';
 import { validationSchema } from '../../helpers/validationSchema';
 import CustomCheckbox from '../Form/Fields/Checkbox';
 import CustomDatePicker from '../Form/Fields/DatePicker';
@@ -14,18 +14,40 @@ import CustomRatingField from '../Form/Fields/Rating';
 import CustomTextField from '../Form/Fields/TextField';
 import CustomRadioGroup from './Fields/RadioGroup';
 
-const useStyles = makeStyles(() => ({
-  breakWrapper: {
-    width: '100%',
-    margin: '24px 0',
+const useStyles = makeStyles({
+  mealFieldsWrapper: {
+    marginTop: 12,
   },
-  breakFieldsWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
+  subtitle: {
+    textTransform: 'uppercase',
   },
-}));
+  formHeadline: {
+    fontWeight: 900,
+    marginBottom: 32,
+  },
+  form: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: 32,
+  },
+  divider: {
+    marginBottom: 32,
+  },
+  paper: {
+    padding: 20,
+  },
+  mealRemoveButton: {
+    width: 'max-content',
+    marginLeft: 'auto',
+    marginBottom: -30,
+  },
+  mealAddButton: {
+    margin: '10px 0',
+  },
+});
 
 interface FormProps {
+  item?: FormEntry;
   handleSubmit: (values: Entry) => void;
   initialValues: FormEntry;
   headline: ReactNode;
@@ -36,7 +58,6 @@ interface FormProps {
     subtitle1: ReactNode;
     subTitle2: ReactNode;
   };
-  item?: FormEntry;
 }
 
 const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles }: FormProps): ReactElement => {
@@ -49,91 +70,107 @@ const Form = ({ handleSubmit, initialValues, headline, submitText, subTitles }: 
     processed: 'Processed',
   };
 
+  const renderMealInputs = (arr: Meal[], helpers: FieldArrayRenderProps): ReactElement[] => {
+    return arr.map((b, i) => (
+      <div key={arr.indexOf(b) + '_meal'} className={classes.mealFieldsWrapper}>
+        <Paper className={`${classes.paper} ${classes.form}`} elevation={5}>
+          <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={(): void => helpers.remove(i)} className={classes.mealRemoveButton}>
+            <FormattedMessage id="form.btn.meals.remove" />
+          </Button>
+          <CustomTextField
+            type="text"
+            id={`conditions.meals.${i}.name`}
+            name={`conditions.meals.${i}.name`}
+            label={<FormattedMessage id="form.label.conditions.meals.name" />}
+          />
+          <CustomRadioGroup
+            id={`conditions.meals.${i}.mealType`}
+            name={`conditions.meals.${i}.mealType`}
+            options={options}
+            label={<FormattedMessage id="form.label.conditions.meals.mealType" />}
+          />
+        </Paper>
+      </div>
+    ));
+  };
+
+  const validate = (values: FormEntry): FormikErrors<unknown> | undefined => {
+    try {
+      validateYupSchema(values, validationSchema(intl), true, values);
+    } catch (err: any) {
+      return yupToFormErrors(err);
+    }
+  };
+
+  const renderFieldArray = (arr: Meal[], helpers: FieldArrayRenderProps): ReactElement => {
+    return (
+      <div>
+        <Typography>
+          <FormattedMessage id="form.label.conditions.meals" />
+          {` (${arr.length})`}
+        </Typography>
+        <Button
+          startIcon={<AddIcon />}
+          variant="outlined"
+          onClick={(): void => helpers.push({ name: undefined, mealType: undefined })}
+          className={classes.mealAddButton}
+        >
+          <FormattedMessage id="form.btn.meals.add" />
+        </Button>
+        {renderMealInputs(arr, helpers)}
+      </div>
+    );
+  };
+
   return (
     <div>
-      <Typography variant="h2" component="h1" sx={{ my: 4, fontWeight: 900 }}>
+      <Typography className={classes.formHeadline} variant="h2" component="h1">
         {headline}
       </Typography>
-      <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
+      <Divider className={classes.divider} />
+      <Typography className={classes.subtitle} variant="h6">
         {subTitles.subtitle1}
       </Typography>
       <Formik
         initialValues={initialValues}
         validateOnBlur
-        validate={(values): FormikErrors<unknown> | undefined => {
-          try {
-            validateYupSchema(values, validationSchema(intl), true, values);
-          } catch (err: any) {
-            return yupToFormErrors(err);
-          }
-        }}
+        validate={validate}
         onSubmit={(values): void => {
           handleSubmit(values as Entry);
         }}
       >
-        {({ values, errors, touched, setFieldValue, dirty, isValid, setFieldError }): ReactElement => (
-          <FormikForm className="flexColumnStart">
-            <CustomDatePicker id="date" name="date" />
+        {({ values, dirty, isValid, handleChange }): ReactElement => (
+          <FormikForm className={classes.form}>
+            <CustomDatePicker id="date" name="date" onChange={handleChange} />
             <CustomTextField type="number" id="conditions.fluidIntake" name="conditions.fluidIntake" />
             <CustomTextField type="text" id="conditions.medication" name="conditions.medication" />
-            <FieldArray
-              name="conditions.meals"
-              render={(arrayHelpers): ReactElement => (
-                <div className={classes.breakWrapper}>
-                  <Typography>
-                    <FormattedMessage id="form.label.meals" />
-                    {values.conditions?.meals && values.conditions?.meals.length > 0 && `(${values.conditions?.meals.length})`}
-                  </Typography>
-                  <Button
-                    sx={{ mt: 1 }}
-                    startIcon={<AddIcon />}
-                    variant="outlined"
-                    onClick={(): void => arrayHelpers.push({ name: undefined, mealType: undefined })}
-                  >
-                    <FormattedMessage id="form.btn.breaks.add" />
-                  </Button>
-                  {values.conditions?.meals && values.conditions?.meals.length > 0 ? (
-                    values.conditions?.meals.map((b, i) => (
-                      <div key={values.conditions?.meals?.indexOf(b) + 'st'}>
-                        <Paper sx={{ padding: 2, my: 2 }}>
-                          <Button startIcon={<DeleteIcon />} color="error" variant="outlined" onClick={(): void => arrayHelpers.remove(i)}>
-                            <FormattedMessage id="form.btn.breaks.remove" />
-                          </Button>
-                          <div className={classes.breakFieldsWrapper}>
-                            <CustomTextField type="text" id={`conditions.meals.${i}.name`} name={`conditions.meals.${i}.name`} />
-                            <CustomRadioGroup id={`conditions.meals.${i}.mealType`} name={`conditions.meals.${i}.mealType`} options={options} />
-                          </div>
-                        </Paper>
-                      </div>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              )}
-            />
+            {values.conditions?.meals && (
+              <FieldArray
+                name="conditions.meals"
+                render={(arrayhelpers): ReactElement | undefined =>
+                  values.conditions && values.conditions.meals && renderFieldArray(values.conditions.meals, arrayhelpers)
+                }
+              />
+            )}
             <CustomTextField type="text" id="conditions.activities" name="conditions.activities" />
             <CustomRatingField id="conditions.stressLevel" name="conditions.stressLevel" />
             <CustomTextField type="number" id="conditions.stoolPerDay" name="conditions.stoolPerDay" />
             <CustomRatingField id="conditions.wellbeing" name="conditions.wellbeing" />
-            <Typography variant="h6" sx={{ mt: 8, mb: 5, textTransform: 'uppercase' }}>
+            <Divider />
+            <Typography variant="h6" className={classes.subtitle}>
               {subTitles.subTitle2}
             </Typography>
-            <CustomCheckbox id="observations.bloating" name="observations.bloating" />
-            <CustomCheckbox id="observations.nausea" name="observations.nausea" />
-            <CustomCheckbox id="observations.cramps" name="observations.cramps" />
-            <CustomCheckbox id="observations.diarrhoea" name="observations.diarrhoea" />
-            <CustomCheckbox id="observations.flatulence" name="observations.flatulence" />
-            <CustomCheckbox id="observations.diffusePain" name="observations.diffusePain" />
+            <div className="flexColumnStart">
+              <CustomCheckbox id="observations.bloating" name="observations.bloating" />
+              <CustomCheckbox id="observations.nausea" name="observations.nausea" />
+              <CustomCheckbox id="observations.cramps" name="observations.cramps" />
+              <CustomCheckbox id="observations.diarrhoea" name="observations.diarrhoea" />
+              <CustomCheckbox id="observations.flatulence" name="observations.flatulence" />
+              <CustomCheckbox id="observations.diffusePain" name="observations.diffusePain" />
+            </div>
             <Button color="primary" variant="contained" fullWidth type="submit" disabled={!isValid || !dirty}>
               {submitText}
             </Button>
-            values:
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            errors:
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
-            touched:
-            <pre>{JSON.stringify(touched, null, 2)}</pre>
           </FormikForm>
         )}
       </Formik>

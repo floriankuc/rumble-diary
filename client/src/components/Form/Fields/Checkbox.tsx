@@ -1,12 +1,7 @@
-import { BaseTextFieldProps, Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, CheckboxProps, FormControlLabel } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-
-export interface CheckboxProps {
-  id: BaseTextFieldProps['id'];
-  value?: string | number;
-}
 
 const CustomCheckbox = ({ id, disabled, ...restProps }: CheckboxProps & FieldHookConfig<boolean>): ReactElement => {
   const intl = useIntl();
